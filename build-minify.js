@@ -44,3 +44,4 @@ try {
   console.error('Minification failed:', err);
   process.exit(1);
 }
+
