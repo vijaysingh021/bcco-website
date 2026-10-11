@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Replace https://www.YOURDOMAIN.com with your verified live domain name
+Sitemap: https://www.YOURDOMAIN.com/sitemap.xml

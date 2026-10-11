@@ -1,0 +1,21 @@
+{
+  "name": "Bihar Cancer Care Organisation",
+  "short_name": "BCCO",
+  "description": "Bihar Cancer Care Organisation works to build cancer awareness, support patients and families, and strengthen communities across Bihar.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FCFBFD",
+  "theme_color": "#5B176F",
+  "icons": [
+    {
+      "src": "assets/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
