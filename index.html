@@ -185,6 +185,8 @@
     <nav class="nav__links" aria-label="Primary">
       <a class="nav__link" data-route="home" href="#/home">Home</a>
       <a class="nav__link" data-route="cancer" href="#/cancer">Know Your Cancer</a>
+      <a class="nav__link" data-route="news" href="#/news">Media &amp; News</a>
+      <a class="nav__link" data-route="team" href="#/team">Board of Advisors</a>
       <a class="nav__link" data-route="certificates" href="#/certificates">Registration Certificates</a>
       <a class="nav__link" data-route="careers" href="#/careers">Careers</a>
       <a class="nav__link" data-route="contact" href="#/contact">Contact Us</a>
@@ -201,11 +203,11 @@
   <nav aria-label="Mobile primary">
     <a class="mmenu__link" style="--i:0" href="#/home">Home <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
     <a class="mmenu__link" style="--i:1" href="#/cancer">Know Your Cancer <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:2" href="#/certificates">Registration Certificates <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:3" href="#/careers">Careers <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:4" href="#/contact">Contact Us <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:5" href="#/news">News &amp; Events <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:6" href="#/team">Our Team <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:2" href="#/news">Media &amp; News <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:3" href="#/team">Board of Advisors <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:4" href="#/certificates">Registration Certificates <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:5" href="#/careers">Careers <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:6" href="#/contact">Contact Us <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
   </nav>
   <div class="mmenu__foot">
     <button class="btn btn--primary btn--lg" data-open-donate>Donate · Support Our Mission <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
@@ -478,39 +480,335 @@
     </div>
   </section>
 
-  <!-- NEWS PREVIEW -->
-  <section class="section section--white" id="updates" aria-labelledby="newsPrevTitle">
+  <!-- ================================================== -->
+  <!-- DEDICATED SECTION 1: MEDIA & NEWS (HOMEPAGE) -->
+  <!-- ================================================== -->
+  <section class="section section--white media-section" id="home-news" aria-labelledby="homeNewsTitle">
     <div class="container">
       <div class="sec-head">
-        <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>News &amp; Events</p>
-        <h2 class="h2 rl-parent" id="newsPrevTitle"><span class="rl"><span style="--i:0">What's happening at BCCO.</span></span></h2>
-        <p class="lead reveal">Guides worth reading today, and organisational updates the moment they're confirmed.</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px">
+          <div>
+            <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>Media &amp; News</p>
+            <h2 class="h2 rl-parent" id="homeNewsTitle"><span class="rl"><span style="--i:0">Latest updates, field stories</span></span><br><span class="rl"><span style="--i:1">&amp; video highlights.</span></span></h2>
+            <p class="lead reveal">Follow BCCO's journey across Bihar through news articles, press coverage, event captures, photo galleries, and video guides.</p>
+          </div>
+          <div class="reveal">
+            <a class="link-arrow" href="#/news" style="font-size:15px;font-weight:700">Explore All Media <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+          </div>
+        </div>
       </div>
-      <div class="ngrid" data-stagger="110">
-        <div class="reveal"><article class="ncard" data-cat="blog">
-          <span class="chip-s">Guide</span>
-          <h3>Talking about cancer at home: why words matter</h3>
-          <p>Silence rarely protects anyone. How honest, kind conversations help families face cancer together.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>3 min read</p>
-          <button class="link-arrow" data-article="talk">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="news">
-          <span class="chip-s">Announcement</span>
-          <h3>BCCO programme update — in preparation</h3>
-          <p>Organisational news is published here the moment it is confirmed by the BCCO team. Nothing appears before verification.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Awaiting confirmation</p>
-          <button class="link-arrow" data-toast="This announcement publishes once confirmed by the BCCO team.">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="event">
-          <span class="chip-s">Upcoming</span>
-          <h3>Community Awareness Session</h3>
-          <p>An open evening on early awareness — signs worth noticing and questions worth asking, in simple local language.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Date &amp; venue to be confirmed</p>
-          <button class="link-arrow" data-toast="Event details publish once the date and venue are confirmed.">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
+
+      <!-- Category Filter Pills -->
+      <div class="media-filter-bar reveal" role="group" aria-label="Filter Media and News">
+        <button class="media-filter-btn is-active" data-filter="all" aria-pressed="true">All Updates <span class="filter-count">6</span></button>
+        <button class="media-filter-btn" data-filter="news" aria-pressed="false">News <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="media" aria-pressed="false">Media Coverage <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="events" aria-pressed="false">Events <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="gallery" aria-pressed="false">Photo Gallery <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="videos" aria-pressed="false">Videos <span class="filter-count">2</span></button>
       </div>
-      <div style="text-align:center;margin-top:34px" class="reveal">
-        <a class="link-arrow" href="#/news">View all updates <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+
+      <!-- Media & News Grid with Left-to-Right Hover Animations -->
+      <div class="media-grid" data-stagger="90">
+        <!-- Card 1: News -->
+        <article class="media-card reveal" data-category="news">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="hn1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#351044"/><stop offset="100%" stop-color="#5B176F"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#hn1)"/>
+              <circle cx="200" cy="120" r="95" fill="none" stroke="#B985D8" stroke-width="1.2" opacity="0.3"/>
+              <path d="M120 160 Q200 90 280 160" fill="none" stroke="#B985D8" stroke-width="2" opacity="0.4"/>
+              <circle cx="120" cy="160" r="6" fill="#B985D8"/><circle cx="200" cy="115" r="8" fill="#E9DDF2"/><circle cx="280" cy="160" r="6" fill="#B985D8"/>
+              <g transform="translate(176, 82)" fill="#fff" opacity="0.9">
+                <path d="M4 5h16v14H6a2 2 0 0 1-2-2V5Z M17 8h3v9a2 2 0 0 1-2 2 M7.5 9h6 M7.5 12.5h6 M7.5 16h4"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--news">News</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> October 2026</time>
+              <span class="chip-s">Programme Update</span>
+            </div>
+            <h3 class="media-card__title">BCCO Expands Rural Cancer Awareness Drives Across North Bihar</h3>
+            <p class="media-card__desc">Field coordinators and volunteer teams launch grassroots awareness sessions focusing on symptom recognition and prompt medical consultation.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Full press release available once verified by the communications desk.">Read Article <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2: Media Coverage -->
+        <article class="media-card reveal" data-category="media">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="hm1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#241030"/><stop offset="100%" stop-color="#4C1960"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#hm1)"/>
+              <rect x="90" y="55" width="220" height="135" rx="8" fill="none" stroke="#B985D8" stroke-width="1.5" opacity="0.35"/>
+              <line x1="110" y1="85" x2="290" y2="85" stroke="#E9DDF2" stroke-width="2" opacity="0.5"/>
+              <line x1="110" y1="105" x2="250" y2="105" stroke="#B985D8" stroke-width="1.5" opacity="0.4"/>
+              <line x1="110" y1="125" x2="270" y2="125" stroke="#B985D8" stroke-width="1.5" opacity="0.4"/>
+              <g transform="translate(180, 140)" fill="#B985D8" opacity="0.8">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z M19 10v2a7 7 0 0 1-14 0v-2 M12 19v3 M8 22h8"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--media">Media Coverage</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> September 2026</time>
+              <span class="chip-s">Press Coverage</span>
+            </div>
+            <h3 class="media-card__title">State Dailies Feature BCCO Toll-Free Patient Helpline</h3>
+            <p class="media-card__desc">Leading publications highlight BCCO's confidential guidance initiative, helping families connect with verified oncology specialists.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Press clippings available upon publication confirmation.">View Clippings <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3: Events -->
+        <article class="media-card reveal" data-category="events">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="he1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0A3E34"/><stop offset="100%" stop-color="#1B6355"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#he1)"/>
+              <circle cx="200" cy="115" r="70" fill="none" stroke="#7AE2CF" stroke-width="1.2" opacity="0.3"/>
+              <g transform="translate(180, 85)" fill="#fff" opacity="0.9">
+                <rect x="4" y="5.5" width="20" height="19" rx="2.5" fill="none" stroke="#fff" stroke-width="2"/>
+                <path d="M4 11h20M9 3v5M19 3v5" stroke="#fff" stroke-width="2"/>
+                <circle cx="14" cy="17" r="2.5" fill="#7AE2CF"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--events">Event Highlight</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> August 2026</time>
+              <span class="chip-s">Community Event</span>
+            </div>
+            <h3 class="media-card__title">State Health Conclave: Perspectives on Early Cancer Detection</h3>
+            <p class="media-card__desc">BCCO representatives present community findings on diagnostic delays in tier-2 and tier-3 districts of Bihar.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Event summary notes will be posted after official proceedings.">Event Recap <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4: Photo Gallery -->
+        <article class="media-card reveal" data-category="gallery">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="hg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4A1563"/><stop offset="100%" stop-color="#8D4DB2"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#hg1)"/>
+              <path d="M60 190 L160 110 L240 160 L310 95 L370 190 Z" fill="#240B32" opacity="0.45"/>
+              <circle cx="120" cy="80" r="22" fill="#E9DDF2" opacity="0.35"/>
+              <rect x="70" y="45" width="260" height="155" rx="8" fill="none" stroke="#E9DDF2" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--gallery">Photo Gallery</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> July 2026</time>
+              <span class="chip-s">Field Gallery</span>
+            </div>
+            <h3 class="media-card__title">Glimpses from the Field: Awareness Camp in Muzaffarpur</h3>
+            <p class="media-card__desc">A visual documentary capturing local families, community volunteers and health workers participating in early detection discussions.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Photo gallery opens in verified CMS collection.">View Photos <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 5: Video Highlight 1 -->
+        <article class="media-card reveal" data-category="videos"
+          data-video
+          data-title="Recognising Warning Signs Early: A Practical Guide for Families"
+          data-desc="An educational documentary in simple local language explaining the subtle signs worth noticing early and how to prepare for your first doctor's visit."
+          data-duration="4:12"
+          data-date="October 2026">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="hv1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1E0526"/><stop offset="100%" stop-color="#4B125C"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#hv1)"/>
+              <path d="M40 122 L140 122 L160 85 L180 155 L200 95 L220 135 L240 122 L360 122" fill="none" stroke="#B985D8" stroke-width="2.2" opacity="0.5"/>
+              <circle cx="200" cy="122" r="54" fill="none" stroke="#E9DDF2" stroke-width="1.2" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--videos">Video Highlight</span>
+            <!-- Play Button Overlay -->
+            <button class="media-card__play-btn" aria-label="Play video: Recognising Warning Signs Early">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+            </button>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> October 2026</time>
+              <span class="media-card__duration"><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-clock"/></svg> 4:12</span>
+            </div>
+            <h3 class="media-card__title">Recognising Warning Signs Early: A Guide for Families</h3>
+            <p class="media-card__desc">A gentle, accessible video explanation covering non-healing sores, persistent lumps, unexplained weight loss, and timely doctor visits.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link">Watch Video <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 6: Video Highlight 2 -->
+        <article class="media-card reveal" data-category="videos"
+          data-video
+          data-title="Care, Hope, Life: The BCCO Journey &amp; Mission for Bihar"
+          data-desc="Behind the scenes with our coordinators, field workers and advisory doctors discussing how compassionate guidance changes lives across rural and urban Bihar."
+          data-duration="5:45"
+          data-date="May 2026">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="hv2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2D0B38"/><stop offset="100%" stop-color="#601874"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#hv2)"/>
+              <circle cx="200" cy="122" r="85" fill="none" stroke="#E9DDF2" stroke-width="1.2" opacity="0.25"/>
+              <path d="M160 80 Q200 40 240 80 T320 80" fill="none" stroke="#B985D8" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--videos">Video Highlight</span>
+            <!-- Play Button Overlay -->
+            <button class="media-card__play-btn" aria-label="Play video: The BCCO Journey & Mission">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+            </button>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> May 2026</time>
+              <span class="media-card__duration"><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-clock"/></svg> 5:45</span>
+            </div>
+            <h3 class="media-card__title">Care, Hope, Life: The BCCO Journey &amp; Mission for Bihar</h3>
+            <p class="media-card__desc">Behind the scenes with our coordinators, volunteers and doctors on how steady support turns confusion into calm, purposeful action.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link">Watch Video <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div style="text-align:center;margin-top:44px" class="reveal">
+        <a class="btn btn--primary btn--md magnetic" href="#/news">View All News &amp; Multimedia <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- DEDICATED SECTION 2: BOARD OF ADVISORS (HOMEPAGE) -->
+  <!-- ================================================== -->
+  <section class="section section--deep advisors-section" id="home-advisory" aria-labelledby="homeAdvTitle">
+    <div class="container">
+      <div class="sec-head">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px">
+          <div>
+            <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>Our Team · Board of Advisors</p>
+            <h2 class="h2 rl-parent" id="homeAdvTitle"><span class="rl"><span style="--i:0">Guiding Bihar Cancer Care</span></span><br><span class="rl"><span style="--i:1">with wisdom and integrity.</span></span></h2>
+            <p class="lead reveal">Meet our esteemed honorary advisors who lend their clinical experience, healthcare leadership, and dedication to our humanitarian cause.</p>
+          </div>
+          <div class="reveal">
+            <a class="link-arrow link-arrow--light" href="#/team" style="font-size:15px;font-weight:700">View Full Team <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advisory Cards Grid with Upward Pop-Up Lift Animations -->
+      <div class="advisors-grid" data-stagger="90">
+        <!-- Advisor 1 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="hap1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5B176F"/><stop offset="100%" stop-color="#351044"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#hap1)"/>
+              <path d="M72 26C56 35 42 45 42 58a13 13 0 0 0 22.7 8.5" fill="none" stroke="#B985D8" stroke-width="1.8" opacity="0.35"/>
+              <path d="M56 26c16 9 30 19 30 32a13 13 0 0 1-22.7 8.5" fill="none" stroke="#B985D8" stroke-width="1.8" opacity="0.35"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M48 68 C48 80 54 88 60 92 C66 88 72 80 72 68" fill="none" stroke="#5B176F" stroke-width="2.5" opacity="0.9"/>
+              <circle cx="60" cy="94" r="3.5" fill="#5B176F"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Clinical Oncology]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisor 2 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="hap2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4B125C"/><stop offset="100%" stop-color="#2D0B38"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#hap2)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <circle cx="60" cy="85" r="7" fill="none" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Public Health Policy]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisor 3 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="hap3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#351044"/><stop offset="100%" stop-color="#5B176F"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#hap3)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M52 82 C52 78 68 78 68 82" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Palliative Care]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisor 4 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="hap4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4C1960"/><stop offset="100%" stop-color="#241030"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#hap4)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M60 74 L60 92 M54 84 L66 84" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Patient Advocacy]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+      </div>
+
+      <div style="text-align:center;margin-top:40px" class="reveal">
+        <a class="btn btn--light btn--md magnetic" href="#/team">Meet Our Full Team &amp; Committee <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
       </div>
     </div>
   </section>
@@ -1068,75 +1366,260 @@
     </div>
   </div>
 
-  <section class="section section--white" id="latest" aria-labelledby="latestTitle">
+  <section class="section section--white media-section" id="latest" aria-labelledby="latestTitle">
     <div class="container">
       <div class="sec-head">
-        <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>Latest</p>
-        <h2 class="h2 rl-parent" id="latestTitle"><span class="rl"><span style="--i:0">News, events &amp; blog.</span></span></h2>
+        <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>Press, Articles &amp; Multimedia</p>
+        <h2 class="h2 rl-parent" id="latestTitle"><span class="rl"><span style="--i:0">Media, News &amp;</span></span><br><span class="rl"><span style="--i:1">Video Gallery.</span></span></h2>
+        <p class="lead reveal">Verified announcements, state media coverage, community health camps, photo galleries, and educational videos explaining cancer care simply.</p>
       </div>
-      <div class="ftabs reveal" role="group" aria-label="Filter updates">
-        <button class="ftab" data-cat="all" aria-pressed="true">All</button>
-        <button class="ftab" data-cat="news" aria-pressed="false">News</button>
-        <button class="ftab" data-cat="event" aria-pressed="false">Events</button>
-        <button class="ftab" data-cat="blog" aria-pressed="false">Blog</button>
+
+      <!-- 5-Category Filter Tabs -->
+      <div class="media-filter-bar reveal" role="group" aria-label="Filter Media and News Collections">
+        <button class="media-filter-btn is-active" data-filter="all" aria-pressed="true">All Collections <span class="filter-count">8</span></button>
+        <button class="media-filter-btn" data-filter="news" aria-pressed="false">News <span class="filter-count">2</span></button>
+        <button class="media-filter-btn" data-filter="media" aria-pressed="false">Media Coverage <span class="filter-count">2</span></button>
+        <button class="media-filter-btn" data-filter="events" aria-pressed="false">Events <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="gallery" aria-pressed="false">Photo Gallery <span class="filter-count">1</span></button>
+        <button class="media-filter-btn" data-filter="videos" aria-pressed="false">Videos <span class="filter-count">2</span></button>
       </div>
-      <div class="ngrid" id="ngrid" data-stagger="100">
-        <div class="reveal"><article class="ncard ncard--feat" data-cat="blog">
-          <svg class="ribbon-art" viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6C18 13 8 21 8 31a10 10 0 0 0 17.5 6.6"/><path d="M18 6c12 7 22 15 22 25a10 10 0 0 1-17.5 6.6"/></svg>
-          <div class="ncard--feat__in">
-            <span class="chip-s chip-s--light">Featured guide · Blog</span>
-            <h3>Preparing for your first oncology visit: a practical checklist</h3>
-            <p>A little preparation turns anxiety into purpose — what to write down, who to bring, and the questions doctors wish they were asked more often.</p>
-            <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>4 min read · Educational guide</p>
+
+      <!-- Multi-column Grid with Left-to-Right Hover Animations -->
+      <div class="media-grid" id="mediaGrid" data-stagger="90">
+        <!-- 1. News: Rural Awareness -->
+        <article class="media-card reveal" data-category="news">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgn1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#351044"/><stop offset="100%" stop-color="#5B176F"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgn1)"/>
+              <circle cx="200" cy="120" r="95" fill="none" stroke="#B985D8" stroke-width="1.2" opacity="0.3"/>
+              <path d="M120 160 Q200 90 280 160" fill="none" stroke="#B985D8" stroke-width="2" opacity="0.4"/>
+              <circle cx="120" cy="160" r="6" fill="#B985D8"/><circle cx="200" cy="115" r="8" fill="#E9DDF2"/><circle cx="280" cy="160" r="6" fill="#B985D8"/>
+              <g transform="translate(176, 82)" fill="#fff" opacity="0.9">
+                <path d="M4 5h16v14H6a2 2 0 0 1-2-2V5Z M17 8h3v9a2 2 0 0 1-2 2 M7.5 9h6 M7.5 12.5h6 M7.5 16h4"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--news">News</span>
           </div>
-          <div class="ncard--feat__cta">
-            <button class="btn btn--light" data-article="visit">Read the guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> October 2026</time>
+              <span class="chip-s">Programme Update</span>
+            </div>
+            <h3 class="media-card__title">BCCO Expands Rural Cancer Awareness Drives Across North Bihar</h3>
+            <p class="media-card__desc">Field coordinators and volunteer teams launch grassroots awareness sessions focusing on early symptom recognition and hospital referral navigation.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Full press release available once verified by the communications desk.">Read Article <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
           </div>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="blog">
-          <span class="chip-s">Blog</span>
-          <h3>Talking about cancer at home: why words matter</h3>
-          <p>Silence rarely protects anyone — it only leaves people alone with their imagination.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>3 min read</p>
-          <button class="link-arrow" data-article="talk">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="blog">
-          <span class="chip-s">Blog</span>
-          <h3>Caring for the caregiver: small practices that sustain</h3>
-          <p>Caregivers are the quiet infrastructure of cancer care. Their wellbeing is not a luxury; it is what keeps the whole household standing.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>4 min read</p>
-          <button class="link-arrow" data-article="caregiver">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="news">
-          <span class="chip-s">Announcement</span>
-          <h3>BCCO programme update — in preparation</h3>
-          <p>Organisational news is published here the moment it is confirmed by the BCCO team. Nothing appears before verification.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Awaiting confirmation</p>
-          <button class="link-arrow" data-toast="This announcement publishes once confirmed by the BCCO team.">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="news">
-          <span class="chip-s">Update</span>
-          <h3>Annual organisational update — drafting</h3>
-          <p>A yearly summary of BCCO's activities, learning and community feedback, published openly in the Updates collection.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Awaiting confirmation</p>
-          <button class="link-arrow" data-toast="This update publishes once confirmed by the BCCO team.">Read More <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="event">
-          <span class="chip-s">Event</span>
-          <h3>Community Awareness Session</h3>
-          <p>An open evening on early awareness — signs worth noticing and questions worth asking, in local language.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Date &amp; venue to be confirmed</p>
-          <button class="link-arrow" data-toast="Event details publish once the date and venue are confirmed.">View Event <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
-        <div class="reveal"><article class="ncard" data-cat="event">
-          <span class="chip-s">Event</span>
-          <h3>Volunteer Orientation</h3>
-          <p>An introduction for new volunteers — what BCCO does, how we serve, and where your skills fit.</p>
-          <p class="ncard__meta"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Next date pending</p>
-          <button class="link-arrow" data-toast="The next orientation date publishes once confirmed.">View Event <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
-        </article></div>
+        </article>
+
+        <!-- 2. News: Educational Guide -->
+        <article class="media-card reveal" data-category="news">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgn2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4A1563"/><stop offset="100%" stop-color="#351044"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgn2)"/>
+              <circle cx="200" cy="120" r="75" fill="none" stroke="#E9DDF2" stroke-width="1.2" opacity="0.25"/>
+              <g transform="translate(180, 85)" fill="#B985D8">
+                <path d="M12 6c-2-1.8-4.8-2.4-8-2.4v14.8c3.2 0 6 .6 8 2.4 2-1.8 4.8-2.4 8-2.4V3.6C16.8 3.6 14 4.2 12 6Z" fill="none" stroke="#E9DDF2" stroke-width="2"/>
+                <path d="M12 6v14.8" stroke="#E9DDF2" stroke-width="2"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--news">Educational Guide</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> October 2026</time>
+              <span class="chip-s">4 min read</span>
+            </div>
+            <h3 class="media-card__title">Preparing for Your First Oncology Visit: A Checklist</h3>
+            <p class="media-card__desc">A practical guide turning anxiety into purpose — what to write down, who to bring, and the key questions doctors wish families asked.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-article="visit">Read Guide <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. Media Coverage: Press Release -->
+        <article class="media-card reveal" data-category="media">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgm1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#241030"/><stop offset="100%" stop-color="#4C1960"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgm1)"/>
+              <rect x="90" y="55" width="220" height="135" rx="8" fill="none" stroke="#B985D8" stroke-width="1.5" opacity="0.35"/>
+              <line x1="110" y1="85" x2="290" y2="85" stroke="#E9DDF2" stroke-width="2" opacity="0.5"/>
+              <line x1="110" y1="105" x2="250" y2="105" stroke="#B985D8" stroke-width="1.5" opacity="0.4"/>
+              <line x1="110" y1="125" x2="270" y2="125" stroke="#B985D8" stroke-width="1.5" opacity="0.4"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--media">Media Coverage</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> September 2026</time>
+              <span class="chip-s">Press Coverage</span>
+            </div>
+            <h3 class="media-card__title">Prabhat Khabar &amp; Dainik Jagran Feature BCCO Helpline</h3>
+            <p class="media-card__desc">State media outlets report on BCCO's toll-free support line providing confidential cancer navigation and guidance across 38 districts.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Press clippings available in archived records.">View Clippings <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. Media Coverage: Health Editorial -->
+        <article class="media-card reveal" data-category="media">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#381347"/><stop offset="100%" stop-color="#67247D"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgm2)"/>
+              <circle cx="200" cy="120" r="80" fill="none" stroke="#B985D8" stroke-width="1.5" opacity="0.3"/>
+              <path d="M160 140 C160 100 240 100 240 140" fill="none" stroke="#E9DDF2" stroke-width="2"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--media">Editorial</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> August 2026</time>
+              <span class="chip-s">Special Feature</span>
+            </div>
+            <h3 class="media-card__title">Talking About Cancer at Home: Why Words Matter</h3>
+            <p class="media-card__desc">How open, kind conversations dismantle silence and fear, helping families stay united during screening and diagnosis.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-article="talk">Read Editorial <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 5. Events: State Health Conclave -->
+        <article class="media-card reveal" data-category="events">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pge1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0A3E34"/><stop offset="100%" stop-color="#1B6355"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pge1)"/>
+              <circle cx="200" cy="115" r="70" fill="none" stroke="#7AE2CF" stroke-width="1.2" opacity="0.3"/>
+              <g transform="translate(180, 85)" fill="#fff" opacity="0.9">
+                <rect x="4" y="5.5" width="20" height="19" rx="2.5" fill="none" stroke="#fff" stroke-width="2"/>
+                <path d="M4 11h20M9 3v5M19 3v5" stroke="#fff" stroke-width="2"/>
+                <circle cx="14" cy="17" r="2.5" fill="#7AE2CF"/>
+              </g>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--events">Event Highlight</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> August 2026</time>
+              <span class="chip-s">Conclave</span>
+            </div>
+            <h3 class="media-card__title">State Health Conclave: Early Cancer Detection Strategies</h3>
+            <p class="media-card__desc">BCCO coordinators share grassroots clinical observations and patient navigation workflows with healthcare leaders.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Conclave minutes will be released upon documentation sign-off.">Event Details <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6. Photo Gallery: Muzaffarpur Camp -->
+        <article class="media-card reveal" data-category="gallery">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4A1563"/><stop offset="100%" stop-color="#8D4DB2"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgg1)"/>
+              <path d="M60 190 L160 110 L240 160 L310 95 L370 190 Z" fill="#240B32" opacity="0.45"/>
+              <circle cx="120" cy="80" r="22" fill="#E9DDF2" opacity="0.35"/>
+              <rect x="70" y="45" width="260" height="155" rx="8" fill="none" stroke="#E9DDF2" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--gallery">Photo Gallery</span>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> July 2026</time>
+              <span class="chip-s">Field Album</span>
+            </div>
+            <h3 class="media-card__title">Field Highlights: Awareness Drive &amp; Guidance in Muzaffarpur</h3>
+            <p class="media-card__desc">Photographic documentary capturing doctors, counselors and rural volunteers conducting health literacy classes.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link" data-toast="Gallery photographs load from verified archive.">View Album <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 7. Video Highlight: Warning Signs -->
+        <article class="media-card reveal" data-category="videos"
+          data-video
+          data-title="Recognising Warning Signs Early: A Practical Guide for Families"
+          data-desc="An educational documentary in simple local language explaining the subtle signs worth noticing early and how to prepare for your first doctor's visit."
+          data-duration="4:12"
+          data-date="October 2026">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgv1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1E0526"/><stop offset="100%" stop-color="#4B125C"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgv1)"/>
+              <path d="M40 122 L140 122 L160 85 L180 155 L200 95 L220 135 L240 122 L360 122" fill="none" stroke="#B985D8" stroke-width="2.2" opacity="0.5"/>
+              <circle cx="200" cy="122" r="54" fill="none" stroke="#E9DDF2" stroke-width="1.2" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--videos">Video Highlight</span>
+            <!-- Play Button Overlay -->
+            <button class="media-card__play-btn" aria-label="Play video: Recognising Warning Signs Early">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+            </button>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> October 2026</time>
+              <span class="media-card__duration"><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-clock"/></svg> 4:12</span>
+            </div>
+            <h3 class="media-card__title">Recognising Warning Signs Early: A Practical Guide</h3>
+            <p class="media-card__desc">A gentle, accessible video explanation covering non-healing sores, persistent lumps, unexplained weight loss, and timely check-ups.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link">Watch Video <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 8. Video Highlight: BCCO Journey -->
+        <article class="media-card reveal" data-category="videos"
+          data-video
+          data-title="Care, Hope, Life: The BCCO Journey &amp; Mission for Bihar"
+          data-desc="Behind the scenes with our coordinators, field workers and advisory doctors discussing how compassionate guidance changes lives across rural and urban Bihar."
+          data-duration="5:45"
+          data-date="May 2026">
+          <div class="media-card__thumb-wrap">
+            <svg class="media-card__thumb-img" viewBox="0 0 400 245" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="pgv2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2D0B38"/><stop offset="100%" stop-color="#601874"/></linearGradient></defs>
+              <rect width="400" height="245" fill="url(#pgv2)"/>
+              <circle cx="200" cy="122" r="85" fill="none" stroke="#E9DDF2" stroke-width="1.2" opacity="0.25"/>
+              <path d="M160 80 Q200 40 240 80 T320 80" fill="none" stroke="#B985D8" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            <div class="media-card__thumb-overlay"></div>
+            <span class="media-card__badge media-card__badge--videos">Video Highlight</span>
+            <!-- Play Button Overlay -->
+            <button class="media-card__play-btn" aria-label="Play video: The BCCO Journey & Mission">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+            </button>
+          </div>
+          <div class="media-card__body">
+            <div class="media-card__meta-top">
+              <time class="media-card__date"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> May 2026</time>
+              <span class="media-card__duration"><svg class="icon" style="width:12px;height:12px" aria-hidden="true"><use href="#i-clock"/></svg> 5:45</span>
+            </div>
+            <h3 class="media-card__title">Care, Hope, Life: The BCCO Journey &amp; Mission for Bihar</h3>
+            <p class="media-card__desc">Documenting how compassionate guidance turns confusion into calm, purposeful action for families across Bihar.</p>
+            <div class="media-card__foot">
+              <button class="media-card__link">Watch Video <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+            </div>
+          </div>
+        </article>
       </div>
-      <p class="cms-note reveal" style="margin-top:30px"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>News and event cards are CMS placeholders — publish confirmed titles, dates, venues and registration links via the Updates / Events collections. Blog guides are ready to publish as-is.</p>
+
+      <p class="cms-note reveal" style="margin-top:34px"><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>News, media clippings and event cards are published with official verification via the BCCO updates collection. All educational guides are verified by medical advisors.</p>
     </div>
   </section>
 
@@ -1295,39 +1778,107 @@
     </div>
   </section>
 
-  <section class="section section--deep" id="advisory" aria-labelledby="advTitle">
+  <!-- ================================================== -->
+  <!-- DEDICATED SECTION: BOARD OF ADVISORS -->
+  <!-- ================================================== -->
+  <section class="section section--deep advisors-section" id="advisory" aria-labelledby="advTitle">
     <div class="container">
       <div class="sec-head">
         <p class="eyebrow reveal"><svg class="eb__mark mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>Advisory Board</p>
-        <h2 class="h2 rl-parent" id="advTitle"><span class="rl"><span style="--i:0">Guidance we trust.</span></span></h2>
-        <p class="lead reveal">Experienced professionals who advise BCCO — distinct from the committee, they govern nothing; they guide.</p>
+        <h2 class="h2 rl-parent" id="advTitle"><span class="rl"><span style="--i:0">Guidance we trust —</span></span><br><span class="rl"><span style="--i:1">our honorary advisors.</span></span></h2>
+        <p class="lead reveal">Experienced healthcare leaders and professionals who advise BCCO — distinct from the committee, they govern nothing; they guide our direction, clinical ethics and patient-first standards.</p>
       </div>
-      <div class="mgrid" data-stagger="90">
-        <div class="reveal"><article class="mcard mcard--dark">
-          <span class="avatar"><svg class="mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg></span>
-          <h3>[Member Name]</h3><p class="mcard__role">[Designation — Advisory Board]</p>
-          <p class="mcard__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
-          <div class="mcard__tags"><span class="chip-s chip-s--light">[Advisory role]</span></div>
-        </article></div>
-        <div class="reveal"><article class="mcard mcard--dark">
-          <span class="avatar"><svg class="mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg></span>
-          <h3>[Member Name]</h3><p class="mcard__role">[Designation — Advisory Board]</p>
-          <p class="mcard__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
-          <div class="mcard__tags"><span class="chip-s chip-s--light">[Advisory role]</span></div>
-        </article></div>
-        <div class="reveal"><article class="mcard mcard--dark">
-          <span class="avatar"><svg class="mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg></span>
-          <h3>[Member Name]</h3><p class="mcard__role">[Designation — Advisory Board]</p>
-          <p class="mcard__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
-          <div class="mcard__tags"><span class="chip-s chip-s--light">[Advisory role]</span></div>
-        </article></div>
-        <div class="reveal"><article class="mcard mcard--dark">
-          <span class="avatar"><svg class="mk" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg></span>
-          <h3>[Member Name]</h3><p class="mcard__role">[Designation — Advisory Board]</p>
-          <p class="mcard__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
-          <div class="mcard__tags"><span class="chip-s chip-s--light">[Advisory role]</span></div>
-        </article></div>
+
+      <!-- Advisory Cards Grid with Upward Pop-Up Lift Animations -->
+      <div class="advisors-grid" data-stagger="90">
+        <!-- Advisory Member 1 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="tap1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5B176F"/><stop offset="100%" stop-color="#351044"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#tap1)"/>
+              <path d="M72 26C56 35 42 45 42 58a13 13 0 0 0 22.7 8.5" fill="none" stroke="#B985D8" stroke-width="1.8" opacity="0.35"/>
+              <path d="M56 26c16 9 30 19 30 32a13 13 0 0 1-22.7 8.5" fill="none" stroke="#B985D8" stroke-width="1.8" opacity="0.35"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M48 68 C48 80 54 88 60 92 C66 88 72 80 72 68" fill="none" stroke="#5B176F" stroke-width="2.5" opacity="0.9"/>
+              <circle cx="60" cy="94" r="3.5" fill="#5B176F"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Medical Oncology &amp; Clinical Guidance]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisory Member 2 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="tap2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4B125C"/><stop offset="100%" stop-color="#2D0B38"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#tap2)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <circle cx="60" cy="85" r="7" fill="none" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Public Health Policy &amp; Prevention]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisory Member 3 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="tap3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#351044"/><stop offset="100%" stop-color="#5B176F"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#tap3)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M52 82 C52 78 68 78 68 82" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Palliative Care &amp; Community Medicine]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
+
+        <!-- Advisory Member 4 -->
+        <article class="advisor-card advisor-card--dark reveal">
+          <div class="advisor-card__portrait-frame">
+            <svg class="advisor-card__photo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><linearGradient id="tap4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4C1960"/><stop offset="100%" stop-color="#241030"/></linearGradient></defs>
+              <rect width="120" height="120" rx="60" fill="url(#tap4)"/>
+              <circle cx="60" cy="46" r="18" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M30 102 C30 76 44 68 60 68 C76 68 90 76 90 102 Z" fill="#E9DDF2" opacity="0.9"/>
+              <path d="M60 74 L60 92 M54 84 L66 84" stroke="#5B176F" stroke-width="2"/>
+            </svg>
+            <span class="advisor-card__status-dot" title="Verified Advisory Member"></span>
+          </div>
+          <h3 class="advisor-card__name">[Member Name]</h3>
+          <p class="advisor-card__role">[Designation — Advisory Board]</p>
+          <span class="advisor-card__badge"><svg class="icon" style="width:13px;height:13px" aria-hidden="true"><use href="#i-shield"/></svg> [Advisory role — Patient Advocacy &amp; Healthcare Ethics]</span>
+          <p class="advisor-card__bio">[Professional background and short biography — published only after verification, with an approved photograph.]</p>
+          <div class="advisor-card__bio-drawer">
+            <button class="advisor-card__bio-toggle" aria-expanded="false">Read Bio <svg class="icon" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+          </div>
+        </article>
       </div>
+
       <p class="cms-note reveal" style="margin-top:34px;color:#9D8BB0"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Profiles appear only with each member's approval, using verified details and approved photographs. Add members via the Team / Committee / Advisory collections — the three groups are intentionally styled apart so visitors never confuse them.</p>
     </div>
   </section>
@@ -1495,7 +2046,7 @@
           <li><a href="#/home/initiatives">Our Mission</a></li>
           <li><a href="#/team">Our Team</a></li>
           <li><a href="#/team/committee">Core Committee</a></li>
-          <li><a href="#/team/advisory">Advisory Board</a></li>
+          <li><a href="#/team/advisory">Board of Advisors</a></li>
           <li><a href="#/certificates">Certificates</a></li>
         </ul>
       </div>
@@ -1512,7 +2063,7 @@
       <div>
         <h3>Updates &amp; Involvement</h3>
         <ul>
-          <li><a href="#/news">News &amp; Events</a></li>
+          <li><a href="#/news">Media &amp; News</a></li>
           <li><a href="#/careers">Careers &amp; Volunteering</a></li>
           <li><a href="#" data-open-donate>Donate</a></li>
           <li><a href="#/contact">Partner With Us</a></li>
@@ -1632,6 +2183,39 @@
       </div>
     </div>
     <p class="form-note">Questions about this document? <a class="link-arrow" style="font-style:normal;margin-left:4px" href="#/contact" data-close>Ask BCCO directly</a></p>
+  </div>
+</div>
+
+<!-- ============ VIDEO LIGHTBOX MODAL ============ -->
+<div class="vmodal" id="videoModal" role="dialog" aria-modal="true" aria-labelledby="vmodalTitle" hidden>
+  <div class="vmodal__backdrop" data-close-vmodal></div>
+  <div class="vmodal__panel">
+    <div class="vmodal__head">
+      <div class="vmodal__badge"><span class="badge-dot"></span> Video Highlight</div>
+      <button class="vmodal__close" data-close-vmodal aria-label="Close video dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+    <div class="vmodal__screen">
+      <div class="vmodal__player" id="vmodalPlayer">
+        <div class="vmodal__poster">
+          <svg class="mk" style="width:52px;height:52px;color:#B985D8" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-ribbon"/></svg>
+          <div class="vmodal__play-pulse">
+            <svg style="width:26px;height:26px;margin-left:4px;fill:#fff" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6,4 20,12 6,20"/></svg>
+          </div>
+          <span style="font-family:var(--fh);font-size:13.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#E9DDF2">BCCO Video Highlight Player</span>
+        </div>
+      </div>
+    </div>
+    <div class="vmodal__body">
+      <h3 class="vmodal__title" id="vmodalTitle">Recognising Warning Signs Early: A Practical Guide</h3>
+      <p class="vmodal__desc" id="vmodalDesc">An educational documentary in simple local language explaining warning signs worth noticing and when to visit a specialist.</p>
+      <div class="vmodal__meta" id="vmodalMeta">
+        <span><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> <b id="vmodalDuration">4:12</b></span>
+        <span><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> <b id="vmodalDate">October 2026</b></span>
+        <span><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg> Bihar Cancer Care Organisation</span>
+      </div>
+    </div>
   </div>
 </div>
 

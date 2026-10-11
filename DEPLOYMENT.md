@@ -133,3 +133,4 @@ Search and replace the placeholder values across the project files before final 
    ```
 4. In GoDaddy cPanel File Manager, upload only the updated files (e.g. `index.html`, `css/style.min.css`, etc.) into `public_html`.
 5. Clear browser cache (Ctrl+F5 / Cmd+Shift+R) to verify the new update.
+
