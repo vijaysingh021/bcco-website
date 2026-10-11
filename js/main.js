@@ -231,7 +231,7 @@
     $$('.reveal', p).forEach((el, i) => el.style.setProperty('--d', (i * step) + 'ms'));
   });
 
-  const revealEls = $$('.reveal, .rl-parent, .reveal-img, .journey');
+  const revealEls = $$('.reveal, .rl-parent, .reveal-img, .journey, .smartphones-stage');
   if (reduced || !('IntersectionObserver' in window)) {
     revealEls.forEach(el => el.classList.add('in'));
   } else {
