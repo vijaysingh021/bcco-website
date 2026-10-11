@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bihar Cancer Care Team — 3D Carousel</title>
+<style>
+  /* ====== Easy settings: yahan se change karo ====== */
+  :root {
+    --card-w: 240px;      /* card ki width */
+    --card-h: 420px;      /* card ki height */
+    --gap: 24px;          /* cards ke beech gap */
+    --speed: 60s;         /* ek full loop ka time */
+    --radius: 32px;
+    --bg-color: #150a21;  /* Dark Purple Background */
+    --phone-bg: #2a1b38;  /* Phone Card Background */
+    --text-light: #ffffff;
+    --text-muted: #b3a6c4;
+    --btn-bg: #ffffff;
+    --btn-text: #150a21;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg-color);
+    color: var(--text-light);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ====== Header Section ====== */
+  .header-section {
+    text-align: center;
+    max-width: 800px;
+    margin: 60px auto 40px;
+    padding: 0 20px;
+  }
+
+  .header-tag {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .header-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #8a5cf6;
+    border-radius: 50%;
+  }
+
+  .header-section h1 {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .header-section h2 {
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 24px;
+    color: var(--text-light);
+  }
+
+  .header-section p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .view-full-link {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.3s;
+  }
+
+  .view-full-link:hover {
+    opacity: 0.7;
+  }
+
+  /* ====== Carousel Section ====== */
+  .carousel-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .stage {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+  }
+
+  .track {
+    display: flex;
+    gap: var(--gap);
+    width: max-content;
+    padding-left: var(--gap);
+    transform-style: preserve-3d;
+    animation: slide var(--speed) linear infinite;
+  }
+
+  /* hover karne par ruk jata hai */
+  .stage:hover .track { animation-play-state: paused; }
+
+  @keyframes slide {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+  }
+
+  /* ====== Phone Card Styling ====== */
+  .card {
+    flex: 0 0 auto;
+    width: var(--card-w);
+    height: var(--card-h);
+    border-radius: var(--radius);
+    background: var(--phone-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform-style: preserve-3d;
+    animation: hover 6s ease-in-out infinite;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    overflow: hidden;
+  }
+
+  /* Phone notch */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    width: 60px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  /* Phone inner content */
+  .phone-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a2b6e, #2a1b38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .phone-avatar svg {
+    width: 40px;
+    height: 40px;
+    fill: var(--text-muted);
+  }
+
+  .phone-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .phone-role {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 10px;
+    line-height: 1.4;
+  }
+
+  .phone-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-light);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .phone-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+  }
+
+  /* Hover animation for cards */
+  @keyframes hover {
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50%      { transform: translateY(-10px) translateZ(30px); }
+  }
+
+  .card:nth-child(4n+1) { animation-delay: 0s; }
+  .card:nth-child(4n+2) { animation-delay: -1.5s; }
+  .card:nth-child(4n+3) { animation-delay: -3s; }
+  .card:nth-child(4n+4) { animation-delay: -4.5s; }
+
+  /* ====== Bottom Button ====== */
+  .bottom-btn-container {
+    margin-bottom: 60px;
+    text-align: center;
+  }
+
+  .bottom-btn {
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .bottom-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    :root { --card-w: 200px; --card-h: 360px; --gap: 16px; }
+    .header-section h1 { font-size: 32px; }
+    .header-section h2 { font-size: 24px; }
+    .carousel-container { border-radius: 24px; padding: 20px 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track, .card { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-tag">OUR TEAM / BOARD OF GOVERNORS</div>
+    <h1>Guiding Bihar Cancer Care</h1>
+    <h2>with wisdom and integrity.</h2>
+    <p>Meet our esteemed honorary advisors who lend their clinical expertise, healthcare leadership, and dedication to our humanitarian mission.</p>
+    <a href="index.html#/team" class="view-full-link">View Full Team &rarr;</a>
+  </div>
+
+  <!-- Carousel Section -->
+  <div class="carousel-container">
+    <div class="stage">
+      <div class="track">
+        <!-- Set 1 -->
+        <div class="card">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button">Show More &rarr;</button>
+        </div>
+        <div class="card">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button">Show More &rarr;</button>
+        </div>
+        <div class="card">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button">Show More &rarr;</button>
+        </div>
+        <div class="card">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button">Show More &rarr;</button>
+        </div>
+
+        <!-- Set 2 (Duplicate for seamless loop) -->
+        <div class="card" aria-hidden="true">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button" tabindex="-1">Show More &rarr;</button>
+        </div>
+        <div class="card" aria-hidden="true">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button" tabindex="-1">Show More &rarr;</button>
+        </div>
+        <div class="card" aria-hidden="true">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button" tabindex="-1">Show More &rarr;</button>
+        </div>
+        <div class="card" aria-hidden="true">
+          <div class="phone-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="phone-name">[Member Name]</div>
+          <div class="phone-role">[Designation]</div>
+          <button class="phone-btn" type="button" tabindex="-1">Show More &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Button -->
+  <div class="bottom-btn-container">
+    <a href="index.html#/team" class="bottom-btn">Meet Our Full Team &amp; Committee &rarr;</a>
+  </div>
+
+</body>
+</html>
