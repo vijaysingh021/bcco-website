@@ -19,7 +19,7 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
-bcco-website.zip
+*.zip
 
 # Node modules (for local tooling/testing only)
 node_modules/
