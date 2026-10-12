@@ -13,7 +13,7 @@ bcco-website/
 ├── contact.php           # Secure PHP form handler (rate limiting, honeypot, mail())
 ├── .htaccess             # Apache configuration (HTTPS, caching, security headers, compression)
 ├── robots.txt            # Search engine crawler instructions
-├── sitemap.xml           # XML sitemap with YOURDOMAIN placeholder
+├── sitemap.xml           # XML sitemap for https://bcco.ngo/
 ├── site.webmanifest      # Progressive Web App manifest
 ├── favicon.ico           # Multi-resolution root favicon
 ├── apple-touch-icon.png  # Apple touch icon (180x180)
@@ -81,9 +81,9 @@ Then open `http://localhost:8000/`.
    - Built-in honeypot bot trap (`website` hidden input field).
    - IP-based rate limiting to prevent spam floods.
    - Server-side sanitization and RFC-compliant email header assembly.
-   - Configurable recipient address (`$TO_EMAIL = "info@YOURDOMAIN.com"`).
-7. **Production Apache `.htaccess`**:
-   - Canonical 301 redirection to HTTPS and `www` (switchable with one commented line).
+   - Configurable recipient address (`$TO_EMAIL = "bccoofficial01@gmail.com"`).
+8. **Production Apache `.htaccess`**:
+   - Canonical 301 redirection to apex non-www (`https://bcco.ngo/`) with safe HTTPS toggle.
    - `mod_deflate` gzip compression for all text, vector, and font MIME types.
    - 1-year immutable caching for static assets with instant revalidation for HTML.
    - Security headers: CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy.
@@ -96,10 +96,13 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step instructions (with Hindi hin
 
 ---
 
-## Placeholders to Customize Before Launch
+## Production Configuration Status
 
-Before public launch, replace the following clearly marked placeholders:
-- **Domain URL**: Replace `https://www.YOURDOMAIN.com/` in `index.html`, `404.html`, `robots.txt`, `sitemap.xml`, and `.htaccess`.
-- **Email Recipient**: Set `$TO_EMAIL = "info@yourdomain.com"` in `contact.php`.
-- **Helpline & Contact Details**: Replace `[Official Helpline Number]`, `[Official Email Address]`, and `[Registered Office Address]` in `index.html` and `404.html`.
-- **Impact Stats & Partner Logos**: Update counter targets (`data-count`) and partner logos in `index.html` once verified.
+The following official production values have been integrated:
+- **Canonical Domain**: `https://bcco.ngo/` (configured in `index.html`, `404.html`, `robots.txt`, `sitemap.xml`, and `.htaccess`).
+- **Email Recipient**: Set to `$TO_EMAIL = "bccoofficial01@gmail.com"` in `contact.php`.
+- **Helplines**: `+91 9431893358` and `+91 6123573290` across all pages.
+- **Office Address**: Ward No. 8, Satyabha Niwas, IAS Nagar, Beside Patel Bhawan, Police Headquarters, Patna, Bihar - 800023.
+- **Statutory Details**: PAN `AAQAB0546B`, CSR Registration `CSR00107875`, `12A and 80G Certified`.
+- **Donation Details**: Account No. `44908340531`, IFSC `SBIN0009004`, UPI `biharcancercareorganisation@sbi`.
+- **Pending Verification**: Verified board/committee member profiles, client-specific impact counter statistics (`data-count`), and partner endorsement logos.

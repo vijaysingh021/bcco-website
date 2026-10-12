@@ -71,50 +71,48 @@ Depending on how your domain and hosting are setup on GoDaddy:
 ---
 
 ### Step 5: Configure Business Email & `contact.php` *(ईमेल सेटअप)*
-1. In cPanel, click **Email Accounts** -> **Create**.
-2. Create your official mailbox, e.g., `info@YOURDOMAIN.com`.
-3. Set a strong password.
-4. In cPanel File Manager, right-click `contact.php` -> **Edit**:
+1. In cPanel, click **Email Accounts** -> **Create** (if creating a custom domain mailbox like `contact@bcco.ngo`).
+2. Alternatively, BCCO's confirmed official mailbox is currently configured:
    ```php
-   // Line 11:
-   $TO_EMAIL = "info@YOURDOMAIN.com"; // Replace with your exact email address
+   // contact.php (Line 11):
+   $TO_EMAIL = "bccoofficial01@gmail.com";
    ```
-5. Click **Save Changes**.
-   *(अब वेबसाइट के सारे संपर्क फॉर्म और कॉलबैक अनुरोध सीधे आपके इस इनबॉक्स पर आएंगे।)*
+3. To change this address in the future, right-click `contact.php` in File Manager -> **Edit**, update `$TO_EMAIL`, and save.
+   *(वेबसाइट के संपर्क फॉर्म, कॉलबैक और करियर फॉर्म के अनुरोध सीधे इस इनबॉक्स पर आएंगे।)*
 
 ---
 
-### Step 6: Replace All Placeholders *(डोमेन और फोन नंबर अपडेट करना)*
-Search and replace the placeholder values across the project files before final public launch:
+### Step 6: Verified Organization Details *(पुष्टीकृत आधिकारिक विवरण)*
+The website is pre-configured with BCCO's verified statutory and contact details:
 
-| Placeholder | Where to find | Replace with |
+| Field | Configuration / Value | Where Configured |
 | :--- | :--- | :--- |
-| `https://www.YOURDOMAIN.com/` | `index.html`, `404.html`, `sitemap.xml`, `robots.txt`, `.htaccess` | Your live website URL (e.g. `https://www.biharcancercare.org/`) |
-| `info@YOURDOMAIN.com` | `contact.php` | Your actual receiving email address |
-| `[Official Helpline Number]` | `index.html`, `404.html` | Official telephone / helpline number |
-| `[Official Email Address]` | `index.html` | Official contact email address |
-| `[Registered Office Address]` | `index.html` | Official physical address in Bihar |
-| `[Hours to be confirmed]` | `index.html` | Helpline operational hours |
-| `[Partner Logo]` | `index.html` | Verified partner logos / names |
-| `[Registration Certificate]` | `index.html` | Official government registration numbers & PDF links |
+| **Production Domain** | `https://bcco.ngo/` | `index.html`, `404.html`, `sitemap.xml`, `robots.txt`, `.htaccess` |
+| **Recipient Email** | `bccoofficial01@gmail.com` | `contact.php`, `index.html`, `404.html` |
+| **Helpline Numbers** | `+91 9431893358` · `+91 6123573290` | Header, Hero, Contact, Footer, Call bar |
+| **Registered Office** | Ward No. 8, Satyabha Niwas, IAS Nagar, Beside Patel Bhawan, Police Headquarters, Patna, Bihar - 800023 | Contact page, Footer, JSON-LD Schema |
+| **PAN & CSR** | PAN: `AAQAB0546B` · CSR: `CSR00107875` | Certificates page, Contact, Footer |
+| **Tax Exemption** | `12A and 80G Certified` (50% Tax Exemption) | Certificates page, Donate modal |
+| **Donation Bank** | SBI A/C: `44908340531` · IFSC: `SBIN0009004` · UPI: `biharcancercareorganisation@sbi` | `#donateModal` |
 
 ---
 
 ### Step 7: Launch Verification Checklist *(लॉन्च से पहले जांच सूची)*
 - [ ] **Desktop & Mobile Display**: Test on desktop, tablet, and mobile device. Check that navigation, hero, and all sections render cleanly.
-- [ ] **HTTPS Redirection**: Type `http://yourdomain.com` in your browser; verify it redirects to `https://www.yourdomain.com/`.
-- [ ] **404 Page**: Type `https://www.yourdomain.com/non-existent-page`; verify the branded 404 page loads and links back to home.
+- [ ] **Canonical Apex Redirection**: Type `http://www.bcco.ngo` or `http://bcco.ngo` in your browser; verify it resolves to `bcco.ngo`.
+- [ ] **AutoSSL Activation**: In cPanel > **SSL/TLS Status**, verify AutoSSL certificate is issued and valid for `bcco.ngo` and `www.bcco.ngo`.
+- [ ] **404 Page**: Type `https://bcco.ngo/non-existent-page`; verify the branded 404 page loads and links back to home.
 - [ ] **Contact Form Test**: Submit a test message on the Contact page; verify the confirmation message appears and the email arrives in your inbox.
 - [ ] **Newsletter Test**: Submit an email address in the footer; verify confirmation appears.
-- [ ] **Donation Modal**: Click the "Donate" button; verify modal opens, tabs work, and payment preview disclaimer displays properly.
+- [ ] **Donation Modal**: Click the "Donate" button; verify modal opens, direct bank/UPI details and copy buttons work, and amount selection operates properly.
 - [ ] **FAQ Accordion**: Open and close each question.
-- [ ] **Testimonial Carousel**: Test next/previous buttons and swipe on mobile.
+- [ ] **Advisory Carousel**: Verify smooth infinite scrolling on desktop and mobile.
 
 ---
 
 ### Step 8: Google Search Console & Sitemap Submission *(गूगल सर्च में जोड़ना)*
 1. Open [Google Search Console](https://search.google.com/search-console).
-2. Add your property (URL prefix: `https://www.yourdomain.com/`).
+2. Add your property (URL prefix: `https://bcco.ngo/`).
 3. Verify ownership (choose HTML Tag, DNS TXT record, or upload an HTML verification file to `public_html`).
 4. In the left menu, click **Sitemaps**.
 5. Enter `sitemap.xml` and click **Submit**.
