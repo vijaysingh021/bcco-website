@@ -8,7 +8,7 @@
 // CONFIGURATION
 // ============================================================================
 // Replace with your verified official organization mailbox created in cPanel
-$TO_EMAIL = "info@YOURDOMAIN.com";
+$TO_EMAIL = "bccoofficial01@gmail.com";
 $SITE_NAME = "Bihar Cancer Care Organisation";
 
 // Set JSON response header
@@ -111,7 +111,7 @@ if ($type === 'newsletter') {
           . "IP Address: $clientIp\n";
 
     $headers = [
-        "From: noreply@" . ($_SERVER['SERVER_NAME'] ?? 'yourdomain.com'),
+        "From: noreply@" . ($_SERVER['SERVER_NAME'] ?? 'bcco.ngo'),
         "Reply-To: $email",
         "X-Mailer: PHP/" . phpversion(),
         "Content-Type: text/plain; charset=UTF-8"
@@ -169,7 +169,7 @@ $body .= "\n---\n"
       . "Date: " . date('Y-m-d H:i:s T') . "\n"
       . "IP: $clientIp\n";
 
-$fromHost = $_SERVER['SERVER_NAME'] ?? 'yourdomain.com';
+$fromHost = $_SERVER['SERVER_NAME'] ?? 'bcco.ngo';
 if (preg_match('/^www\./i', $fromHost)) {
     $fromHost = substr($fromHost, 4);
 }

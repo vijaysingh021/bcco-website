@@ -481,7 +481,7 @@
   }
 
   /* ==========================================================================
-     14. Toast Notification
+     14. Toast Notification & Clipboard Copy
      ========================================================================== */
   const toast = $('#toast');
   let toastTimer;
@@ -493,6 +493,24 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 3600);
   }
+
+  doc.addEventListener('click', e => {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      const textToCopy = copyBtn.getAttribute('data-copy');
+      if (textToCopy) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast(`Copied to clipboard: ${textToCopy}`);
+          }).catch(() => {
+            showToast(`Copied: ${textToCopy}`);
+          });
+        } else {
+          showToast(`Copied: ${textToCopy}`);
+        }
+      }
+    }
+  });
 
   /* ==========================================================================
      15. Form Validation & Submissions (with fetch to contact.php)
