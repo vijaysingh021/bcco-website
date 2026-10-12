@@ -3737,7 +3737,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   --gap: 24px;          /* gap between cards */
   --speed: 60s;         /* full loop duration */
   --radius: 32px;
-  --bg-color: #150a21;  /* Dark Purple Background */
+  --bg-color: #24133b;  /* Slightly lighter purple area */
   --phone-bg: #2a1b38;  /* Phone Card Background */
   --text-light: #ffffff;
   --text-muted: #b3a6c4;
@@ -3746,11 +3746,24 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 }
 
 .advisors-section {
-  background: var(--bg-color);
+  background: linear-gradient(180deg, #1f0e33 0%, #2a1443 50%, #1f0e33 100%);
   color: var(--text-light);
   position: relative;
   overflow: hidden;
   padding: 80px 0 90px;
+}
+
+.advisors-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 500px;
+  background: radial-gradient(ellipse at center, rgba(138, 92, 246, 0.1) 0%, rgba(91, 23, 111, 0.05) 50%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ====== Header Section ====== */
@@ -3831,15 +3844,15 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 /* ====== Carousel Section ====== */
 .carousel-container {
   width: 100%;
-  max-width: 1200px;
-  padding: 40px 20px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 40px;
-  margin: 0 auto 40px;
+  max-width: 100%;
+  padding: 20px 0 30px;
+  background: transparent;
+  border-radius: 0;
+  margin: 0 auto 30px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: none;
+  box-shadow: none;
 }
 
 .stage {
@@ -3850,6 +3863,9 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   perspective-origin: 50% 50%;
   overflow: hidden;
   width: 100%;
+  padding: 20px 0;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
 .track {
@@ -3868,8 +3884,8 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 }
 
 @keyframes slide {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
 
 /* ====== Phone Card Styling ====== */
@@ -3881,10 +3897,11 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   background: var(--phone-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 14px 36px rgba(0, 0, 0, 0.45),
+    0 2px 10px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transform-style: preserve-3d;
-  animation: hover 6s ease-in-out infinite;
+  animation: hover 6.5s ease-in-out infinite;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -3892,6 +3909,17 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   padding: 30px 20px;
   overflow: hidden;
   will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.card:hover {
+  border-color: rgba(185, 133, 216, 0.35);
+  box-shadow: 
+    0 20px 45px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(138, 92, 246, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Phone notch */
@@ -3968,14 +3996,18 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 
 /* Hover animation for cards */
 @keyframes hover {
-  0%, 100% { transform: translateY(0) translateZ(0); }
-  50%      { transform: translateY(-10px) translateZ(30px); }
+  0%, 100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-12px) translateZ(24px);
+  }
 }
 
 .card:nth-child(4n+1) { animation-delay: 0s; }
-.card:nth-child(4n+2) { animation-delay: -1.5s; }
-.card:nth-child(4n+3) { animation-delay: -3s; }
-.card:nth-child(4n+4) { animation-delay: -4.5s; }
+.card:nth-child(4n+2) { animation-delay: -1.6s; }
+.card:nth-child(4n+3) { animation-delay: -3.2s; }
+.card:nth-child(4n+4) { animation-delay: -4.8s; }
 
 /* ====== Bottom Button ====== */
 .bottom-btn-container {
@@ -4009,7 +4041,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   :root { --card-w: 200px; --card-h: 360px; --gap: 16px; }
   .header-section h1 { font-size: 32px; }
   .header-section h2 { font-size: 24px; }
-  .carousel-container { border-radius: 24px; padding: 20px 10px; }
+  .carousel-container { padding: 12px 0; }
   .phone-avatar { width: 68px; height: 68px; margin-top: 20px; margin-bottom: 12px; }
   .phone-avatar svg { width: 34px; height: 34px; }
 }
