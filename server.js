@@ -39,7 +39,7 @@ const MIME_TYPES = {
 // ============================================================================
 // BACKEND AUTHENTICATION REPOSITORY (STORED ONLY ON BACKEND)
 // ============================================================================
-const BACKEND_ADMIN_USER = 'DirctorNavin';
+const BACKEND_ADMIN_USER = 'DirectorNaveenJha';
 const BACKEND_ADMIN_SALT = 'bcco_sec_salt_2026';
 // Salted SHA-512 cryptographic hash of master password:
 let backendPasswordHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';

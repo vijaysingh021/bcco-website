@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (empty($username) || empty($password)) {
             $error = 'Please enter both username and password.';
         } else {
-            $masterUser = 'DirctorNavin';
+            $masterUser = 'DirectorNaveenJha';
             $masterSalt = 'bcco_sec_salt_2026';
             $masterHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
 

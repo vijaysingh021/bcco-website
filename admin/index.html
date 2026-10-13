@@ -213,7 +213,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <b id="activeAdminUser">DirctorNavin</b>
+        <b id="activeAdminUser">DirectorNaveenJha</b>
         <span>Super Administrator</span>
       </div>
       <a href="login.html" onclick="logoutAdmin(event)" class="btn btn-outline btn-sm" title="Log Out" style="color:#fff;border-color:rgba(255,255,255,0.25);">
@@ -881,8 +881,8 @@ let sections = JSON.parse(localStorage.getItem('bcco_cms_sections')) || DEFAULT_
 let profiles = JSON.parse(localStorage.getItem('bcco_cms_profiles')) || DEFAULT_PROFILES;
 let media = JSON.parse(localStorage.getItem('bcco_cms_media')) || DEFAULT_MEDIA;
 let activities = JSON.parse(localStorage.getItem('bcco_cms_activities')) || [
-  { time: 'Just now', user: 'DirctorNavin', action: 'Dashboard Initialized', details: 'CMS running in active dual mode', ip: '127.0.0.1' },
-  { time: '10 mins ago', user: 'DirctorNavin', action: 'System Audit', details: 'All 11 homepage image slots verified', ip: '127.0.0.1' }
+  { time: 'Just now', user: 'DirectorNaveenJha', action: 'Dashboard Initialized', details: 'CMS running in active dual mode', ip: '127.0.0.1' },
+  { time: '10 mins ago', user: 'DirectorNaveenJha', action: 'System Audit', details: 'All 11 homepage image slots verified', ip: '127.0.0.1' }
 ];
 
 // ================= RENDER FUNCTIONS =================
@@ -1464,7 +1464,7 @@ function logoutAdmin(e) {
 }
 
 function logClientActivity(action, details) {
-  const currentUser = localStorage.getItem('bcco_admin_user') || 'DirctorNavin';
+  const currentUser = localStorage.getItem('bcco_admin_user') || 'DirectorNaveenJha';
   const newAct = {
     time: 'Just now',
     user: currentUser,
@@ -1541,7 +1541,7 @@ document.addEventListener('DOMContentLoaded', () => {
   localStorage.removeItem('bcco_auth_password');
 
   // Set active user display
-  const storedUser = localStorage.getItem('bcco_admin_user') || 'DirctorNavin';
+  const storedUser = localStorage.getItem('bcco_admin_user') || 'DirectorNaveenJha';
   const userEl = document.getElementById('activeAdminUser');
   if (userEl) userEl.textContent = storedUser;
 

@@ -148,7 +148,7 @@ $csrfToken = generate_csrf_token();
 
       <div class="form-group">
         <label class="form-label" for="username">Admin Username</label>
-        <input type="text" id="username" name="username" class="form-control" required placeholder="e.g. DirctorNavin">
+        <input type="text" id="username" name="username" class="form-control" required placeholder="e.g. DirectorNaveenJha">
       </div>
 
       <div class="form-group">
