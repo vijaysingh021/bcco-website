@@ -1,0 +1,336 @@
+{
+  "sections": [
+    {
+      "section_key": "hero_panel",
+      "category": "Hero Section",
+      "title": "Hero Stage Live Care Visual",
+      "subtitle": "Guiding Care",
+      "alt_text": "BCCO patient care and consultation",
+      "image_url": "uploads/img_1791926749848_9bc6a2e2.png",
+      "recommended_size": "800 x 820 px",
+      "updated_at": "2026-10-13T21:26:15.368Z"
+    },
+    {
+      "section_key": "about_editorial",
+      "category": "About Us",
+      "title": "About Editorial Photograph",
+      "subtitle": "Guiding Bihar Cancer Care",
+      "alt_text": "Oncologist and community health volunteers examining medical reports in Patna",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "700 x 820 px"
+    },
+    {
+      "section_key": "media_card_1",
+      "category": "Media & News",
+      "title": "Photo Gallery Card Thumbnail",
+      "subtitle": "Field Album Muzaffarpur",
+      "alt_text": "Community cancer awareness camp banner and team in Muzaffarpur",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "800 x 490 px"
+    },
+    {
+      "section_key": "media_card_2",
+      "category": "Media & News",
+      "title": "Video Highlight 1 Poster",
+      "subtitle": "Recognising Warning Signs Early",
+      "alt_text": "Video tutorial covering 7 warning signs of cancer and early screening",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "800 x 490 px"
+    },
+    {
+      "section_key": "media_card_3",
+      "category": "Media & News",
+      "title": "Video Highlight 2 Poster",
+      "subtitle": "Care, Hope, Life Mission Video",
+      "alt_text": "BCCO team documentary on patient navigation across Bihar districts",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "800 x 490 px"
+    },
+    {
+      "section_key": "gallery_1",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 1: Awareness Drive",
+      "subtitle": "Rural District Outreach",
+      "alt_text": "Patients receiving screening and educational booklet at district health centre",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "gallery_2",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 2: Community Session",
+      "subtitle": "Doctor Consultation & Q&A",
+      "alt_text": "Senior oncologist consulting with cancer patient and family members",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "gallery_3",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 3: Volunteer Orientation",
+      "subtitle": "Youth Health Volunteers",
+      "alt_text": "Volunteer orientation session explaining patient guidance protocols",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "gallery_4",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 4: Outreach Visit",
+      "subtitle": "Home Care Guidance",
+      "alt_text": "BCCO outreach coordinator visiting a patient home in Patna",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "gallery_5",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 5: Health Education",
+      "subtitle": "Women's Health & Early Signs",
+      "alt_text": "Health education class on self-examination for women in Bihar",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "gallery_6",
+      "category": "Photo Gallery",
+      "title": "Past Highlights 6: State Campaign",
+      "subtitle": "World Cancer Day Campaign",
+      "alt_text": "Awareness rally and public oath ceremony for tobacco prevention",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "600 x 450 px"
+    },
+    {
+      "section_key": "contact_map",
+      "category": "Contact Us",
+      "title": "Patna HQ Map & Office Photo",
+      "subtitle": "Registered Office Location",
+      "alt_text": "Map illustration showing BCCO office near Patel Bhawan, Police HQ, Patna",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "800 x 450 px"
+    },
+    {
+      "section_key": "cert_preview",
+      "category": "Certificates",
+      "title": "Official Certificate Preview",
+      "subtitle": "12A, 80G & Trust Deed Frame",
+      "alt_text": "Official registration certificate of Bihar Cancer Care Organisation",
+      "image_url": "assets/images/placeholder-image.svg",
+      "recommended_size": "800 x 1100 px"
+    },
+    {
+      "section_key": "partner_1",
+      "category": "Partners",
+      "title": "Partner Recognition 1",
+      "subtitle": "Clinical & Oncology Partner",
+      "alt_text": "Partner Healthcare Network Logo",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "300 x 120 px"
+    },
+    {
+      "section_key": "partner_2",
+      "category": "Partners",
+      "title": "Partner Recognition 2",
+      "subtitle": "Diagnostic & Pathology Partner",
+      "alt_text": "Partner Diagnostic Centre Logo",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "300 x 120 px"
+    },
+    {
+      "section_key": "partner_3",
+      "category": "Partners",
+      "title": "Partner Recognition 3",
+      "subtitle": "Academic & Research Partner",
+      "alt_text": "Medical College Partner Logo",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "300 x 120 px"
+    },
+    {
+      "section_key": "partner_4",
+      "category": "Partners",
+      "title": "Partner Recognition 4",
+      "subtitle": "CSR & Foundation Partner",
+      "alt_text": "Community CSR Foundation Logo",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "300 x 120 px"
+    },
+    {
+      "section_key": "header_logo",
+      "category": "Branding",
+      "title": "Header Navigation Logo",
+      "subtitle": "Primary Organization Brand Mark",
+      "alt_text": "Bihar Cancer Care Organisation logo — Care, Hope, Life",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "264 x 96 px"
+    },
+    {
+      "section_key": "footer_logo",
+      "category": "Branding",
+      "title": "Footer Brand Plate Logo",
+      "subtitle": "Organization Brand Mark for Footer",
+      "alt_text": "Bihar Cancer Care Organisation logo",
+      "image_url": "assets/images/logo.png",
+      "recommended_size": "252 x 92 px"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "title": "Preparing for your first oncology visit: a practical checklist",
+      "slug": "visit",
+      "category": "Medical",
+      "author": "BCCO Clinical Team",
+      "excerpt": "A first appointment with a cancer specialist can feel overwhelming — but a little preparation turns anxiety into purpose.",
+      "content": "A first appointment with a cancer specialist can feel overwhelming — but a little preparation turns anxiety into purpose. Before the visit, write down everything you want to remember: when symptoms began, what tests you have already had, and every medicine or supplement being taken.\n\nBring someone you trust. Two pairs of ears catch more than one, and a companion can take notes while you listen. Ask the doctor to slow down whenever you need — good doctors are grateful for clear questions.\n\nQuestions worth asking: What do we know so far, and what remains uncertain? Which tests are next, and why? What should we watch for at home? Who do we call if something changes?\n\nFinally, ask for the plan in writing, or write it down yourself before leaving. A visit that ends with everyone understanding the next step is a visit that worked.",
+      "featured_image": "assets/images/placeholder-image.svg",
+      "status": "published",
+      "created_at": "2026-10-10 10:00:00"
+    },
+    {
+      "id": 2,
+      "title": "Talking about cancer at home: why words matter",
+      "slug": "talk",
+      "category": "Awareness",
+      "author": "BCCO Counselors",
+      "excerpt": "In many families, the word cancer is still spoken in a whisper. But silence rarely protects anyone — it only leaves people alone.",
+      "content": "In many families, the word 'cancer' is still spoken in a whisper. But silence rarely protects anyone — it only leaves people alone with their imagination.\n\nIf someone in your family is facing cancer, honesty shaped with kindness usually helps most. Share what is known, admit what is not, and let everyone — including children — ask their questions. A simple 'we don't know yet, but the doctors are helping us find out' is more comforting than evasion.\n\nAsk what kind of support they actually want. Some want company at appointments; others want the kitchen to smell of normal food and the house to sound of ordinary life. Following their lead is itself a form of care.\n\nAnd if you are the one carrying the diagnosis, you are allowed to set the pace. Telling people is not an obligation you owe everyone at once — it is a conversation you can have when you are ready.",
+      "featured_image": "assets/images/logo.png",
+      "status": "published",
+      "created_at": "2026-10-08 14:30:00"
+    },
+    {
+      "id": 3,
+      "title": "Caring for the caregiver: small practices that sustain",
+      "slug": "caregiver",
+      "category": "Community",
+      "author": "BCCO Volunteer Network",
+      "excerpt": "Caregivers are the quiet infrastructure of cancer care. They cook, remember, drive, wait and worry — often while managing jobs.",
+      "content": "Caregivers are the quiet infrastructure of cancer care. They cook, remember, drive, wait and worry — often while managing jobs and households. Their wellbeing is not a luxury; it is what keeps the whole household standing.\n\nSmall practices sustain: sleep before screens, one daily walk, one honest conversation with someone outside the situation. Accepting specific help — 'can you take Amma to Tuesday's appointment?' — works far better than 'I'm fine.'\n\nGuilt is the caregiver's most common companion, and it deserves a direct answer: resting is not abandoning. You cannot pour from an empty cup, and the person you care for needs you durable, not heroic.\n\nIf the weight grows heavy, speak to your own doctor or a counsellor, and let BCCO's volunteers share the load. Asking for help is not failure — it is part of the care.",
+      "featured_image": "assets/images/placeholder-image.svg",
+      "status": "published",
+      "created_at": "2026-10-05 09:15:00"
+    }
+  ],
+  "profiles": [
+    {
+      "id": 1,
+      "name": "Dr. A. K. Singh",
+      "role": "Chairman & Managing Trustee",
+      "organization": "Senior Oncologist, Patna",
+      "category": "advisor",
+      "photo_url": "assets/images/avatar-default.svg"
+    },
+    {
+      "id": 2,
+      "name": "Dr. Rita Verma",
+      "role": "Chief Medical Advisor",
+      "organization": "Ex-IGIMS Patna",
+      "category": "advisor",
+      "photo_url": "assets/images/avatar-default.svg"
+    },
+    {
+      "id": 3,
+      "name": "Dr. S. K. Sinha",
+      "role": "Director of Palliative Care",
+      "organization": "AIIMS Patna Affiliate",
+      "category": "advisor",
+      "photo_url": "assets/images/avatar-default.svg"
+    },
+    {
+      "id": 4,
+      "name": "S. N. Sharma",
+      "role": "Honorary Secretary",
+      "organization": "Trust Board",
+      "category": "committee",
+      "photo_url": "assets/images/avatar-default.svg"
+    },
+    {
+      "id": 5,
+      "name": "P. K. Choudhary",
+      "role": "Treasurer & Accounts Officer",
+      "organization": "Finance Committee",
+      "category": "committee",
+      "photo_url": "assets/images/avatar-default.svg"
+    },
+    {
+      "id": 6,
+      "name": "Amit Kumar",
+      "role": "Field Operations Lead",
+      "organization": "Patna District Outreach",
+      "category": "team",
+      "photo_url": "assets/images/avatar-default.svg"
+    }
+  ],
+  "media": [
+    {
+      "id": 1791926749851,
+      "file_name": "img_1791926749848_9bc6a2e2.png",
+      "original_name": "test_upload.png",
+      "file_path": "uploads/img_1791926749848_9bc6a2e2.png",
+      "file_size": 70,
+      "dimensions": "Optimized Image",
+      "alt_text": "",
+      "created_at": "2026-10-13T21:25:49.851Z"
+    },
+    {
+      "id": 1791925819226,
+      "file_name": "img_1791925819224_0e05f327.png",
+      "original_name": "test_pixel.png",
+      "file_path": "uploads/img_1791925819224_0e05f327.png",
+      "file_size": 70,
+      "dimensions": "Optimized Image",
+      "alt_text": "Test Pixel Image",
+      "created_at": "2026-10-13T21:10:19.226Z"
+    },
+    {
+      "id": 1,
+      "file_name": "logo.png",
+      "file_path": "assets/images/logo.png",
+      "dimensions": "691x251",
+      "file_size": 61667,
+      "usage": [
+        "Header Brand Logo",
+        "Footer Brand Logo",
+        "Partners"
+      ]
+    },
+    {
+      "id": 2,
+      "file_name": "logo-icon.png",
+      "file_path": "assets/images/logo-icon.png",
+      "dimensions": "34x34",
+      "file_size": 99504,
+      "usage": [
+        "Admin Sidebar",
+        "Favicon"
+      ]
+    },
+    {
+      "id": 3,
+      "file_name": "avatar-default.svg",
+      "file_path": "assets/images/avatar-default.svg",
+      "dimensions": "Vector SVG",
+      "file_size": 1024,
+      "usage": [
+        "Profile Avatars"
+      ]
+    },
+    {
+      "id": 4,
+      "file_name": "placeholder-image.svg",
+      "file_path": "assets/images/placeholder-image.svg",
+      "dimensions": "Vector SVG",
+      "file_size": 1536,
+      "usage": [
+        "Section Image Slots"
+      ]
+    }
+  ],
+  "settings": {
+    "site_name": "Bihar Cancer Care Organisation",
+    "helpline_phone_1": "+91 9431893358",
+    "helpline_phone_2": "+91 6123573290",
+    "official_email": "bccoofficial01@gmail.com",
+    "registered_address": "Ward No. 8, Satyabha Niwas, IAS Nagar, Beside Patel Bhawan, Police Headquarters, Patna, Bihar - 800023, India"
+  }
+}

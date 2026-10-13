@@ -34,18 +34,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['section_key'])) {
         }
 
         if (empty($error)) {
-            try {
-                $updateStmt = $db->prepare("
-                    UPDATE `cms_sections` 
-                    SET `title` = ?, `subtitle` = ?, `alt_text` = ?, `image_url` = ?, `updated_at` = NOW() 
-                    WHERE `section_key` = ?
-                ");
-                $updateStmt->execute([$title, $subtitle, $altText, $imageUrl, $sectionKey]);
+            $jsonFilePath = __DIR__ . '/../data/cms_data.json';
+            if ($db) {
+                try {
+                    $updateStmt = $db->prepare("
+                        UPDATE `cms_sections` 
+                        SET `title` = ?, `subtitle` = ?, `alt_text` = ?, `image_url` = ?, `updated_at` = NOW() 
+                        WHERE `section_key` = ?
+                    ");
+                    $updateStmt->execute([$title, $subtitle, $altText, $imageUrl, $sectionKey]);
 
-                log_activity('update_section', 'cms_sections', null, "Updated website section image: {$sectionKey}");
-                $message = "Section slot '{$sectionKey}' updated successfully!";
-            } catch (PDOException $e) {
-                $error = 'Failed to update section: ' . $e->getMessage();
+                    log_activity('update_section', 'cms_sections', null, "Updated website section image: {$sectionKey}");
+                    $message = "Section slot '{$sectionKey}' updated successfully!";
+                } catch (PDOException $e) {
+                    $error = 'Failed to update section: ' . $e->getMessage();
+                }
+            }
+            
+            // Keep JSON store in sync
+            if (file_exists($jsonFilePath)) {
+                $cmsData = json_decode(file_get_contents($jsonFilePath), true);
+                if ($cmsData && !empty($cmsData['sections'])) {
+                    foreach ($cmsData['sections'] as &$s) {
+                        if ($s['section_key'] === $sectionKey) {
+                            $s['title'] = $title;
+                            $s['subtitle'] = $subtitle;
+                            $s['alt_text'] = $altText;
+                            $s['image_url'] = $imageUrl;
+                            $s['updated_at'] = date('c');
+                            break;
+                        }
+                    }
+                    file_put_contents($jsonFilePath, json_encode($cmsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                    if (!$db) {
+                        $message = "Section slot '{$sectionKey}' updated successfully in CMS storage!";
+                    }
+                }
             }
         }
     }
@@ -56,8 +80,25 @@ require_once __DIR__ . '/includes/header.php';
 $csrfToken = generate_csrf_token();
 
 // Fetch all configured sections
-$sectionsStmt = $db->query("SELECT * FROM `cms_sections` ORDER BY `id` ASC");
-$sections = $sectionsStmt->fetchAll();
+$sections = [];
+if ($db) {
+    try {
+        $sectionsStmt = $db->query("SELECT * FROM `cms_sections` ORDER BY `id` ASC");
+        $sections = $sectionsStmt->fetchAll();
+    } catch (PDOException $e) {
+        $error = 'Database query failed: ' . $e->getMessage();
+    }
+}
+
+if (empty($sections)) {
+    $jsonFilePath = __DIR__ . '/../data/cms_data.json';
+    if (file_exists($jsonFilePath)) {
+        $cmsData = json_decode(file_get_contents($jsonFilePath), true);
+        if ($cmsData && !empty($cmsData['sections'])) {
+            $sections = $cmsData['sections'];
+        }
+    }
+}
 ?>
 
 <?php if (!empty($message)): ?>

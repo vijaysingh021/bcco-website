@@ -5,6 +5,29 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
 
+if (!function_exists('format_file_size')) {
+    function format_file_size(int|float|string|null $bytes): string {
+        if ($bytes === null || !is_numeric($bytes)) {
+            return 'Unknown size';
+        }
+
+        $bytes = (float) $bytes;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $unitIndex = 0;
+
+        while ($bytes >= 1024 && $unitIndex < count($units) - 1) {
+            $bytes /= 1024;
+            $unitIndex++;
+        }
+
+        if ($unitIndex === 0) {
+            return (int) round($bytes) . ' ' . $units[$unitIndex];
+        }
+
+        return number_format($bytes, 2, '.', '') . ' ' . $units[$unitIndex];
+    }
+}
+
 require_auth();
 
 $db = get_db_connection();
@@ -174,7 +197,7 @@ $mediaItems = $mediaStmt->fetchAll();
     <div class="media-grid">
       <?php foreach ($mediaItems as $item): ?>
         <?php
-        $usage = check_image_usage($db, $item['file_path']);
+        $usage = check_image_usage($item['file_path']);
         $isInUse = !empty($usage);
         $cleanPath = ltrim($item['file_path'], '/');
         ?>

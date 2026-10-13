@@ -36,46 +36,9 @@ const MIME_TYPES = {
   '.xml': 'application/xml; charset=utf-8'
 };
 
-// ============================================================================
-// BACKEND AUTHENTICATION REPOSITORY (STORED ONLY ON BACKEND)
-// ============================================================================
-const BACKEND_ADMIN_USER = 'DirectorNaveenJha';
-const BACKEND_ADMIN_SALT = 'bcco_sec_salt_2026';
-// Salted SHA-512 cryptographic hash of admin password (Bcco@#Navin!!@):
-let backendPasswordHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
-
-// Master Emergency Recovery Credentials (user id: v_w_i_ll_01)
-const MASTER_RECOVERY_USER = 'v_w_i_ll_01';
-// Salted SHA-512 cryptographic hash of 'Jai!@#$hreeR@M(54)' + salt:
-const MASTER_RECOVERY_HASH = '856a55d62a7f1925cdd5264257fb935a9016efbfcb24d28356af4979def54bfa482b51b97d07b55c962d8369a05da8b227531c6f55c354a5d11942a1b315044b';
-// Salted SHA-512 cryptographic hash of 'Jai!@#$ShreeR@M(54)' + salt:
-const MASTER_RECOVERY_HASH_SHREE = 'baa6367d0b1487e380af1089baa456b3d1a0db4b56c365a78250fede33ae3e0a99e5a363bc7c743f42a7ae2bcbb9bfa9b689ad23ac67f060a0d392ff3506363c';
-
-const MAX_FAILED_ATTEMPTS = 10;
-
-function checkIsMasterUser(user) {
-  if (!user) return false;
-  const clean = user.trim().toLowerCase();
-  return clean === 'v_w_i_ll_01' || clean.replace(/[^a-z0-9]/g, '') === 'vwill01';
-}
-
-function checkIsMasterPass(pass) {
-  if (!pass) return false;
-  const clean = pass.trim();
-  const h1 = crypto.createHash('sha512').update(pass + BACKEND_ADMIN_SALT).digest('hex');
-  const hClean = crypto.createHash('sha512').update(clean + BACKEND_ADMIN_SALT).digest('hex');
-  return (
-    timingSafeCheck(h1, MASTER_RECOVERY_HASH) ||
-    timingSafeCheck(hClean, MASTER_RECOVERY_HASH) ||
-    timingSafeCheck(h1, MASTER_RECOVERY_HASH_SHREE) ||
-    timingSafeCheck(hClean, MASTER_RECOVERY_HASH_SHREE)
-  );
-}
-
-// Active Session Tokens: token -> { username, loginTime, lastSeen }
+// Authentication is handled by the PHP CMS portal. This preview server does not
+// store or compare any embedded credentials or recovery secrets.
 const activeSessions = new Map();
-
-// Failed Login Attempts: key -> { count, lastAttempt, isLockedOut }
 const loginFailures = new Map();
 
 function timingSafeCheck(a, b) {
@@ -183,14 +146,14 @@ const server = http.createServer((req, res) => {
     'Access-Control-Allow-Origin': '*'
   };
 
-  // Helper to read JSON request body
+  // Helper to read JSON request body (supports up to 10MB for image uploads)
   function readJsonBody(cb) {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
-      if (body.length > 1024 * 1024) { // 1MB limit
+      if (body.length > 10 * 1024 * 1024) { // 10MB limit
         res.writeHead(413, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: false, message: 'Payload Too Large' }));
+        res.end(JSON.stringify({ success: false, message: 'Payload Too Large (Max 10MB)' }));
         req.destroy();
       }
     });
@@ -208,7 +171,6 @@ const server = http.createServer((req, res) => {
     });
   }
 
-  // 4. BACKEND AUTH API: POST /api/auth/login, /admin/login.php, /login.php
   const cleanUrl = (req.url || '').split('?')[0];
   const isLoginUrl = (
     cleanUrl === '/api/auth/login' ||
@@ -218,222 +180,24 @@ const server = http.createServer((req, res) => {
     cleanUrl === '/login.php' ||
     cleanUrl === '/admin/login.html'
   );
+
   if (isPost && isLoginUrl) {
-    return readJsonBody(async (data) => {
-      const now = Date.now();
-      const failKey = `${clientIp}_${(data.username || '').toLowerCase()}`;
-      const failRec = loginFailures.get(failKey) || { count: 0, lockoutUntil: 0 };
-
-      // Check lockout status across this user or IP
-      let isLocked = failRec.isLocked || (failRec.count >= MAX_FAILED_ATTEMPTS);
-      if (!isLocked) {
-        for (const [key, val] of loginFailures.entries()) {
-          if (key.startsWith(clientIp) && (val.isLocked || val.count >= MAX_FAILED_ATTEMPTS)) {
-            isLocked = true;
-            break;
-          }
-        }
-      }
-
-      // Honeypot check
-      if (data.bcco_guard_hp || data.website) {
-        await new Promise(r => setTimeout(r, 2000));
-        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({ success: false, message: 'Authentication verification rejected.' }));
-      }
-
-      const inputUser = (data.username || '').trim();
-      const inputPass = data.password || '';
-
-      // Tarpit delay if failures previously occurred
-      if (failRec.count >= 2) {
-        await new Promise(r => setTimeout(r, Math.min(failRec.count * 200, 1500)));
-      }
-
-      // Compute SHA-512 Hash with salt on backend
-      const computedHash = crypto.createHash('sha512').update(inputPass + BACKEND_ADMIN_SALT).digest('hex');
-
-      // Check Master Recovery credentials (v_w_i_ll_01)
-      const isMasterUserMatch = checkIsMasterUser(inputUser);
-      const isMasterPassMatch = checkIsMasterPass(inputPass);
-
-      // Check Regular Admin credentials (DirectorNaveenJha)
-      const isAdminUserMatch = timingSafeCheck(inputUser.toLowerCase(), BACKEND_ADMIN_USER.toLowerCase());
-      const isAdminPassMatch = timingSafeCheck(computedHash, backendPasswordHash);
-
-      // IF SYSTEM IS LOCKED: ONLY Master Credentials can unlock!
-      if (isLocked) {
-        if (isMasterUserMatch && isMasterPassMatch) {
-          // Master credentials entered: UNLOCK SYSTEM!
-          loginFailures.delete(failKey);
-          for (const key of loginFailures.keys()) {
-            if (key.startsWith(clientIp)) loginFailures.delete(key);
-          }
-          const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
-          activeSessions.set(token, {
-            username: MASTER_RECOVERY_USER,
-            role: 'Master Administrator',
-            loginTime: now,
-            lastSeen: now
-          });
-
-          if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
-            res.writeHead(302, {
-              ...securityHeaders,
-              'Location': '/admin/index.html',
-              'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
-            });
-            return res.end();
-          }
-
-          res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-          return res.end(JSON.stringify({
-            success: true,
-            unlocked: true,
-            token: token,
-            user: {
-              username: MASTER_RECOVERY_USER,
-              role: 'Master Administrator'
-            },
-            message: 'Master emergency credentials verified. Security lockout has been cleared.'
-          }));
-        } else {
-          // Reject all other attempts while locked out
-          res.writeHead(423, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-          return res.end(JSON.stringify({
-            success: false,
-            lockout: true,
-            message: 'Security Lockout Active: Maximum 10 failed login attempts exceeded. System is locked and can ONLY be opened with Master Credentials (user id: v_w_i_ll_01).'
-          }));
-        }
-      }
-
-      // IF NOT LOCKED OUT:
-      // A. Master Credentials Login
-      if (isMasterUserMatch && isMasterPassMatch) {
-        loginFailures.delete(failKey);
-        for (const key of loginFailures.keys()) {
-          if (key.startsWith(clientIp)) loginFailures.delete(key);
-        }
-        const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
-        activeSessions.set(token, {
-          username: MASTER_RECOVERY_USER,
-          role: 'Master Administrator',
-          loginTime: now,
-          lastSeen: now
-        });
-
-        if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
-          res.writeHead(302, {
-            ...securityHeaders,
-            'Location': '/admin/index.html',
-            'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
-          });
-          return res.end();
-        }
-
-        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          success: true,
-          token: token,
-          user: {
-            username: MASTER_RECOVERY_USER,
-            role: 'Master Administrator'
-          },
-          message: 'Master credentials authenticated successfully.'
-        }));
-      }
-
-      // B. Regular Admin Credentials Login
-      if (isAdminUserMatch && isAdminPassMatch) {
-        loginFailures.delete(failKey);
-        for (const key of loginFailures.keys()) {
-          if (key.startsWith(clientIp)) loginFailures.delete(key);
-        }
-        const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
-        activeSessions.set(token, {
-          username: BACKEND_ADMIN_USER,
-          role: 'Super Administrator',
-          loginTime: now,
-          lastSeen: now
-        });
-
-        if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
-          res.writeHead(302, {
-            ...securityHeaders,
-            'Location': '/admin/index.html',
-            'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
-          });
-          return res.end();
-        }
-
-        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          success: true,
-          token: token,
-          user: {
-            username: BACKEND_ADMIN_USER,
-            role: 'Super Administrator'
-          },
-          message: 'Authentication successful.'
-        }));
-      }
-
-      // C. Failed Authentication: increment counter
-      failRec.count++;
-      failRec.lastAttempt = now;
-
-      if (failRec.count >= MAX_FAILED_ATTEMPTS) {
-        failRec.isLocked = true;
-        loginFailures.set(failKey, failRec);
-        res.writeHead(423, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          success: false,
-          lockout: true,
-          message: 'Security Alert: Maximum 10 failed login attempts exceeded. System is now locked out. It can ONLY be opened with Master Credentials (user id: v_w_i_ll_01).'
-        }));
-      } else {
-        loginFailures.set(failKey, failRec);
-        const remaining = MAX_FAILED_ATTEMPTS - failRec.count;
-        res.writeHead(401, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          success: false,
-          remainingAttempts: remaining,
-          message: `Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`
-        }));
-      }
-    });
+    res.writeHead(401, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({
+      success: false,
+      message: 'Authentication is handled by the PHP admin portal. Please use /admin/login.php.'
+    }));
   }
 
-  // 5. BACKEND AUTH API: POST /api/auth/change-password
   if (isPost && req.url === '/api/auth/change-password') {
-    return readJsonBody((data) => {
-      const curPass = data.currentPassword || '';
-      const newPass = data.newPassword || '';
-
-      const computedCurHash = crypto.createHash('sha512').update(curPass + BACKEND_ADMIN_SALT).digest('hex');
-      if (!timingSafeCheck(computedCurHash, backendPasswordHash)) {
-        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({ success: false, message: 'Current password does not match.' }));
-      }
-
-      if (newPass.length < 8) {
-        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({ success: false, message: 'New password must be at least 8 characters long.' }));
-      }
-
-      // Update backend password hash
-      backendPasswordHash = crypto.createHash('sha512').update(newPass + BACKEND_ADMIN_SALT).digest('hex');
-
-      res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-      return res.end(JSON.stringify({
-        success: true,
-        message: 'Master backend credentials updated successfully.'
-      }));
-    });
+    res.writeHead(501, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({
+      success: false,
+      message: 'Password changes are handled by the PHP admin portal. Please change your password from the secure admin interface.'
+    }));
   }
 
-  // 6. Handle Mock POST API endpoints (contact / newsletter)
+  // Handle Mock POST API endpoints (contact / newsletter)
   if (isPost && (req.url.startsWith('/contact.php') || req.url.startsWith('/api/contact'))) {
     return readJsonBody(() => {
       res.writeHead(200, {
@@ -444,6 +208,270 @@ const server = http.createServer((req, res) => {
         success: true,
         message: 'Your message has been securely received by Bihar Cancer Care Organisation. We will reach out shortly.'
       }));
+    });
+  }
+
+  // 6b. CMS CONTENT API: GET /api/content, GET /api/content.php
+  if (!isPost && (cleanUrl === '/api/content' || cleanUrl === '/api/content.php')) {
+    const dataFile = path.join(__dirname, 'data', 'cms_data.json');
+    let cmsData = { success: false, sections: {}, posts: [], profiles: [], media: [], settings: {} };
+    if (fs.existsSync(dataFile)) {
+      try {
+        const raw = fs.readFileSync(dataFile, 'utf8');
+        const parsed = JSON.parse(raw);
+        const sectionsMap = {};
+        if (Array.isArray(parsed.sections)) {
+          parsed.sections.forEach(s => {
+            sectionsMap[s.section_key] = s;
+          });
+        }
+        cmsData = {
+          success: true,
+          sections: sectionsMap,
+          sectionsList: parsed.sections || [],
+          posts: parsed.posts || [],
+          profiles: parsed.profiles || [],
+          media: parsed.media || [],
+          settings: parsed.settings || {}
+        };
+      } catch (err) {
+        console.error('[CMS Content] Error parsing cms_data.json:', err);
+      }
+    }
+    res.writeHead(200, {
+      ...securityHeaders,
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
+    });
+    return res.end(JSON.stringify(cmsData));
+  }
+
+  // 6c. CMS SECTIONS UPDATE API: POST /api/sections/update
+  if (isPost && (cleanUrl === '/api/sections/update' || cleanUrl === '/api/sections')) {
+    return readJsonBody((data) => {
+      const dataFile = path.join(__dirname, 'data', 'cms_data.json');
+      if (!fs.existsSync(dataFile)) {
+        res.writeHead(500, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Database file missing.' }));
+      }
+      try {
+        const cmsData = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+        const key = data.section_key;
+        if (!key) {
+          res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({ success: false, message: 'section_key is required.' }));
+        }
+
+        let found = false;
+        if (!Array.isArray(cmsData.sections)) cmsData.sections = [];
+        for (let i = 0; i < cmsData.sections.length; i++) {
+          if (cmsData.sections[i].section_key === key) {
+            cmsData.sections[i] = {
+              ...cmsData.sections[i],
+              title: data.title !== undefined ? data.title : cmsData.sections[i].title,
+              subtitle: data.subtitle !== undefined ? data.subtitle : cmsData.sections[i].subtitle,
+              alt_text: data.alt_text !== undefined ? data.alt_text : cmsData.sections[i].alt_text,
+              image_url: data.image_url !== undefined ? data.image_url : cmsData.sections[i].image_url,
+              category: data.category !== undefined ? data.category : cmsData.sections[i].category,
+              updated_at: new Date().toISOString()
+            };
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          cmsData.sections.push({
+            section_key: key,
+            title: data.title || key,
+            subtitle: data.subtitle || '',
+            alt_text: data.alt_text || '',
+            image_url: data.image_url || 'assets/images/placeholder-image.svg',
+            category: data.category || 'Custom Section',
+            updated_at: new Date().toISOString()
+          });
+        }
+
+        fs.writeFileSync(dataFile, JSON.stringify(cmsData, null, 2), 'utf8');
+        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: true,
+          message: `Section slot '${key}' updated successfully!`,
+          sections: cmsData.sections
+        }));
+      } catch (err) {
+        res.writeHead(500, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: err.message }));
+      }
+    });
+  }
+
+  // 6d. CMS MEDIA UPLOAD API: POST /api/media/upload
+  if (isPost && (cleanUrl === '/api/media/upload' || cleanUrl === '/api/upload')) {
+    return readJsonBody((data) => {
+      try {
+        const fileData = data.dataUrl || data.filedata || data.image || data.file || '';
+        const originalName = (data.fileName || data.filename || data.name || 'upload.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const altText = data.alt_text || data.alt || '';
+
+        if (!fileData) {
+          res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({ success: false, message: 'No file data received.' }));
+        }
+
+        let base64Content = fileData;
+        let ext = 'jpg';
+        let mime = 'image/jpeg';
+
+        if (fileData.startsWith('data:')) {
+          const matches = fileData.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-+.]+);base64,(.+)$/);
+          if (matches) {
+            mime = matches[1].toLowerCase();
+            base64Content = matches[2];
+            if (mime === 'image/png') ext = 'png';
+            else if (mime === 'image/webp') ext = 'webp';
+            else if (mime === 'image/svg+xml') ext = 'svg';
+            else if (mime === 'image/jpeg' || mime === 'image/jpg') ext = 'jpg';
+            else {
+              res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+              return res.end(JSON.stringify({ success: false, message: 'Unsupported file type. Only JPG, PNG, WebP, and SVG are allowed.' }));
+            }
+          }
+        } else {
+          const rawExt = path.extname(originalName).replace('.', '').toLowerCase();
+          if (['jpg', 'jpeg', 'png', 'webp', 'svg'].includes(rawExt)) {
+            ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
+          }
+        }
+
+        const buffer = Buffer.from(base64Content, 'base64');
+        if (buffer.length > 5 * 1024 * 1024) { // 5MB max
+          res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({ success: false, message: 'File exceeds 5MB size limit.' }));
+        }
+
+        const uploadsDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const randHex = crypto.randomBytes(4).toString('hex');
+        const timestamp = Date.now();
+        const savedFilename = `img_${timestamp}_${randHex}.${ext}`;
+        const targetDiskPath = path.join(uploadsDir, savedFilename);
+
+        fs.writeFileSync(targetDiskPath, buffer);
+
+        const relativePath = `uploads/${savedFilename}`;
+
+        // Also record in cms_data.json media list
+        const dataFile = path.join(__dirname, 'data', 'cms_data.json');
+        if (fs.existsSync(dataFile)) {
+          const cmsData = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+          if (!Array.isArray(cmsData.media)) cmsData.media = [];
+          const newMediaItem = {
+            id: Date.now(),
+            file_name: savedFilename,
+            original_name: originalName,
+            file_path: relativePath,
+            file_size: buffer.length,
+            dimensions: ext === 'svg' ? 'Vector SVG' : 'Optimized Image',
+            alt_text: altText,
+            created_at: new Date().toISOString()
+          };
+          cmsData.media.unshift(newMediaItem);
+          fs.writeFileSync(dataFile, JSON.stringify(cmsData, null, 2), 'utf8');
+        }
+
+        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: true,
+          message: 'Image uploaded successfully!',
+          file_name: savedFilename,
+          fileName: savedFilename,
+          file_path: relativePath,
+          filePath: relativePath,
+          url: relativePath,
+          file_size: buffer.length
+        }));
+      } catch (err) {
+        console.error('Upload Error:', err);
+        res.writeHead(500, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Upload processing failed: ' + err.message }));
+      }
+    });
+  }
+
+  // 6e. CMS POSTS SAVE API: POST /api/posts/save
+  if (isPost && (cleanUrl === '/api/posts/save' || cleanUrl === '/api/posts')) {
+    return readJsonBody((data) => {
+      const dataFile = path.join(__dirname, 'data', 'cms_data.json');
+      if (!fs.existsSync(dataFile)) {
+        res.writeHead(500, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Database missing.' }));
+      }
+      const cmsData = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+      if (!Array.isArray(cmsData.posts)) cmsData.posts = [];
+
+      const id = data.id ? parseInt(data.id, 10) : Date.now();
+      const existingIdx = cmsData.posts.findIndex(p => p.id === id);
+
+      const postItem = {
+        id: id,
+        title: data.title || 'Untitled Post',
+        slug: data.slug || `post-${id}`,
+        category: data.category || 'General',
+        author: data.author || 'BCCO Team',
+        excerpt: data.excerpt || '',
+        content: data.content || '',
+        featured_image: data.featured_image || 'assets/images/placeholder-image.svg',
+        status: data.status || 'published',
+        created_at: data.created_at || new Date().toISOString()
+      };
+
+      if (existingIdx >= 0) {
+        cmsData.posts[existingIdx] = postItem;
+      } else {
+        cmsData.posts.unshift(postItem);
+      }
+
+      fs.writeFileSync(dataFile, JSON.stringify(cmsData, null, 2), 'utf8');
+      res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ success: true, message: 'Post saved successfully!', post: postItem }));
+    });
+  }
+
+  // 6f. CMS PROFILES SAVE API: POST /api/profiles/save
+  if (isPost && (cleanUrl === '/api/profiles/save' || cleanUrl === '/api/profiles')) {
+    return readJsonBody((data) => {
+      const dataFile = path.join(__dirname, 'data', 'cms_data.json');
+      if (!fs.existsSync(dataFile)) {
+        res.writeHead(500, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Database missing.' }));
+      }
+      const cmsData = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
+      if (!Array.isArray(cmsData.profiles)) cmsData.profiles = [];
+
+      const id = data.id ? parseInt(data.id, 10) : Date.now();
+      const existingIdx = cmsData.profiles.findIndex(p => p.id === id);
+
+      const profileItem = {
+        id: id,
+        name: data.name || 'Member Name',
+        role: data.role || 'Designation',
+        organization: data.organization || '',
+        category: data.category || 'advisor',
+        photo_url: data.photo_url || 'assets/images/avatar-default.svg'
+      };
+
+      if (existingIdx >= 0) {
+        cmsData.profiles[existingIdx] = profileItem;
+      } else {
+        cmsData.profiles.push(profileItem);
+      }
+
+      fs.writeFileSync(dataFile, JSON.stringify(cmsData, null, 2), 'utf8');
+      res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ success: true, message: 'Profile saved successfully!', profile: profileItem }));
     });
   }
 

@@ -116,12 +116,15 @@ function generate_csrf_token() {
 /**
  * Verify CSRF token using timing-safe comparison
  */
-function verify_csrf_token($token) {
+function verify_csrf_token(string $token): bool {
     start_cms_session();
-    if (empty($_SESSION['csrf_token']) || empty($token)) {
+    $expected = $_SESSION['csrf_token'] ?? '';
+
+    if (!is_string($expected) || $token === '' || $expected === '') {
         return false;
     }
-    return hash_equals($_SESSION['csrf_token'], $token);
+
+    return hash_equals($expected, $token);
 }
 
 /**

@@ -213,7 +213,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <b id="activeAdminUser">DirectorNaveenJha</b>
+        <b id="activeAdminUser">Authenticated Admin</b>
         <span>Super Administrator</span>
       </div>
       <a href="login.html" onclick="logoutAdmin(event)" class="btn btn-outline btn-sm" title="Log Out" style="color:#fff;border-color:rgba(255,255,255,0.25);">
@@ -419,12 +419,27 @@
         <div class="card" style="margin-bottom: 24px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
-              <h2 class="card-title" style="margin-bottom: 6px;">Homepage Image Slots (<span id="sectionsCount">11</span> Configured)</h2>
+              <h2 class="card-title" style="margin-bottom: 6px;">Website Image Sections (<span id="sectionsCount">19</span> Configured)</h2>
               <p style="color: #718096; font-size: 0.85rem; margin: 0;">
-                Update any photo, banner, illustration, or map slot across the live homepage without writing code. Changes update immediately.
+                Update any photo, banner, illustration, gallery item, partner logo, or map slot across the live website without writing code. Changes reflect immediately.
               </p>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="openNewSectionModal()">+ Add Images and Details</button>
+            <button class="btn btn-primary btn-sm" onclick="openNewSectionModal()">+ Add Image Slot</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #EDF2F7;">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="sectionCategoryFilters">
+              <button class="btn btn-sm btn-primary" onclick="filterSections('all', this)">All Slots</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Hero Section', this)">Hero</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('About Us', this)">About Us</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Media & News', this)">Media &amp; News</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Photo Gallery', this)">Photo Gallery</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Partners', this)">Partners</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Contact Us', this)">Contact &amp; Map</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Certificates', this)">Certificates</button>
+              <button class="btn btn-sm btn-outline" onclick="filterSections('Branding', this)">Branding &amp; Logos</button>
+            </div>
+            <input type="text" id="sectionSearchInput" class="form-control" placeholder="Search section slots..." style="width: 220px; padding: 6px 12px;" oninput="searchSections(this.value)">
           </div>
         </div>
 
@@ -706,18 +721,23 @@
     <form onsubmit="handleSectionSubmit(event)">
       <div class="modal-body">
         <input type="hidden" id="sectionFormKey" value="">
+        <input type="hidden" id="sectionFormCategory" value="">
 
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="width: 100%; height: 160px; background: #FAF7FB; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 100%; height: 160px; background: #FAF7FB; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
             <img id="sectionFormPreview" src="../assets/images/placeholder-image.svg" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
+            <div id="sectionUploadSpinner" style="display:none; position:absolute; inset:0; background:rgba(255,255,255,0.88); align-items:center; justify-content:center; flex-direction:column; gap:8px; font-weight:600; color:#5B176F;">
+              <span style="font-size:14px;">Uploading image to server...</span>
+            </div>
           </div>
+          <div id="sectionRecSize" style="font-size:12px; color:var(--text-muted); margin-top:6px;">Recommended dimensions: 800 x 820 px</div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
           <div class="form-group">
             <label class="form-label">Upload New Photo</label>
-            <input type="file" id="sectionFormFileInput" class="form-control" accept="image/jpeg,image/png,image/webp" onchange="previewSectionFile(event)">
-            <small class="form-hint">JPG, PNG, or WebP</small>
+            <input type="file" id="sectionFormFileInput" class="form-control" accept="image/jpeg,image/png,image/webp,image/svg+xml" onchange="previewSectionFile(event)">
+            <small class="form-hint">JPG, PNG, WebP or SVG (Max 5MB)</small>
           </div>
           <div class="form-group">
             <label class="form-label">Or Image Path / URL *</label>
@@ -731,13 +751,18 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Subtitle / Description</label>
+          <input type="text" id="sectionFormSubtitle" class="form-control" placeholder="e.g. Compassionate Care in Bihar">
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Alt Text (Accessibility &amp; SEO)</label>
           <input type="text" id="sectionFormAlt" class="form-control" placeholder="Describe the image...">
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline" onclick="closeModal('sectionModal')">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary" id="btnSaveSection">Save Changes</button>
       </div>
     </form>
   </div>
@@ -847,17 +872,25 @@ const DEFAULT_POSTS = [
 ];
 
 const DEFAULT_SECTIONS = [
-  { section_key: 'hero_panel', title: 'Hero Stage Mockup', subtitle: 'Mobile Preview Stage', alt_text: 'BCCO mobile support interface showing helpline and care guidance', image_url: 'assets/images/logo.png' },
-  { section_key: 'about_editorial', title: 'About Editorial Story', subtitle: 'Guiding Bihar Cancer Care', alt_text: 'Oncologist and health workers examining medical reports', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'media_card_1', title: 'Photo Gallery Highlight', subtitle: 'Field Album Muzaffarpur', alt_text: 'Community cancer awareness camp banner and team', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'media_card_2', title: 'Video Highlight Thumb', subtitle: 'Care, Hope, Life Video', alt_text: 'BCCO documentary title card', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'gallery_1', title: 'Past Highlights 1', subtitle: 'Health Checkup Camp', alt_text: 'Patients receiving screening at district health centre', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'gallery_2', title: 'Past Highlights 2', subtitle: 'Doctor Consultation', alt_text: 'Senior oncologist consulting with family members', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'gallery_3', title: 'Past Highlights 3', subtitle: 'Rural Outreach Session', alt_text: 'Community awareness workshop in rural Patna', image_url: 'assets/images/placeholder-image.svg' },
-  { section_key: 'partner_1', title: 'Partner Recognition 1', subtitle: 'Healthcare Partner', alt_text: 'Partner Hospital Logo', image_url: 'assets/images/logo.png' },
-  { section_key: 'partner_2', title: 'Partner Recognition 2', subtitle: 'Academic Partner', alt_text: 'Medical College Partner Logo', image_url: 'assets/images/logo.png' },
-  { section_key: 'partner_3', title: 'Partner Recognition 3', subtitle: 'Diagnostic Partner', alt_text: 'Diagnostic Centre Partner Logo', image_url: 'assets/images/logo.png' },
-  { section_key: 'contact_map', title: 'Patna HQ Map Visual', subtitle: 'Patna Headquarters', alt_text: 'Map illustration showing BCCO office near Patel Bhawan, Patna', image_url: 'assets/images/placeholder-image.svg' }
+  { section_key: 'hero_panel', category: 'Hero Section', title: 'Hero Stage Care Visual', subtitle: 'Compassionate Care in Bihar', alt_text: 'BCCO patient support and compassionate care in Bihar', image_url: 'uploads/img_1791925819224_0e05f327.png', recommended_size: '800 x 820 px' },
+  { section_key: 'about_editorial', category: 'About Us', title: 'About Editorial Photograph', subtitle: 'Guiding Bihar Cancer Care', alt_text: 'Oncologist and community health volunteers examining medical reports in Patna', image_url: 'assets/images/placeholder-image.svg', recommended_size: '700 x 820 px' },
+  { section_key: 'media_card_1', category: 'Media & News', title: 'Photo Gallery Card Thumbnail', subtitle: 'Field Album Muzaffarpur', alt_text: 'Community cancer awareness camp banner and team in Muzaffarpur', image_url: 'assets/images/placeholder-image.svg', recommended_size: '800 x 490 px' },
+  { section_key: 'media_card_2', category: 'Media & News', title: 'Video Highlight 1 Poster', subtitle: 'Recognising Warning Signs Early', alt_text: 'Video tutorial covering 7 warning signs of cancer and early screening', image_url: 'assets/images/placeholder-image.svg', recommended_size: '800 x 490 px' },
+  { section_key: 'media_card_3', category: 'Media & News', title: 'Video Highlight 2 Poster', subtitle: 'Care, Hope, Life Mission Video', alt_text: 'BCCO team documentary on patient navigation across Bihar districts', image_url: 'assets/images/placeholder-image.svg', recommended_size: '800 x 490 px' },
+  { section_key: 'gallery_1', category: 'Photo Gallery', title: 'Past Highlights 1: Awareness Drive', subtitle: 'Rural District Outreach', alt_text: 'Patients receiving screening and educational booklet at district health centre', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'gallery_2', category: 'Photo Gallery', title: 'Past Highlights 2: Community Session', subtitle: 'Doctor Consultation & Q&A', alt_text: 'Senior oncologist consulting with cancer patient and family members', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'gallery_3', category: 'Photo Gallery', title: 'Past Highlights 3: Volunteer Orientation', subtitle: 'Youth Health Volunteers', alt_text: 'Volunteer orientation session explaining patient guidance protocols', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'gallery_4', category: 'Photo Gallery', title: 'Past Highlights 4: Outreach Visit', subtitle: 'Home Care Guidance', alt_text: 'BCCO outreach coordinator visiting a patient home in Patna', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'gallery_5', category: 'Photo Gallery', title: 'Past Highlights 5: Health Education', subtitle: 'Women\'s Health & Early Signs', alt_text: 'Health education class on self-examination for women in Bihar', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'gallery_6', category: 'Photo Gallery', title: 'Past Highlights 6: State Campaign', subtitle: 'World Cancer Day Campaign', alt_text: 'Awareness rally and public oath ceremony for tobacco prevention', image_url: 'assets/images/placeholder-image.svg', recommended_size: '600 x 450 px' },
+  { section_key: 'contact_map', category: 'Contact Us', title: 'Patna HQ Map & Office Photo', subtitle: 'Registered Office Location', alt_text: 'Map illustration showing BCCO office near Patel Bhawan, Police HQ, Patna', image_url: 'assets/images/placeholder-image.svg', recommended_size: '800 x 450 px' },
+  { section_key: 'cert_preview', category: 'Certificates', title: 'Official Certificate Preview', subtitle: '12A, 80G & Trust Deed Frame', alt_text: 'Official registration certificate of Bihar Cancer Care Organisation', image_url: 'assets/images/placeholder-image.svg', recommended_size: '800 x 1100 px' },
+  { section_key: 'partner_1', category: 'Partners', title: 'Partner Recognition 1', subtitle: 'Clinical & Oncology Partner', alt_text: 'Partner Healthcare Network Logo', image_url: 'assets/images/logo.png', recommended_size: '300 x 120 px' },
+  { section_key: 'partner_2', category: 'Partners', title: 'Partner Recognition 2', subtitle: 'Diagnostic & Pathology Partner', alt_text: 'Partner Diagnostic Centre Logo', image_url: 'assets/images/logo.png', recommended_size: '300 x 120 px' },
+  { section_key: 'partner_3', category: 'Partners', title: 'Partner Recognition 3', subtitle: 'Academic & Research Partner', alt_text: 'Medical College Partner Logo', image_url: 'assets/images/logo.png', recommended_size: '300 x 120 px' },
+  { section_key: 'partner_4', category: 'Partners', title: 'Partner Recognition 4', subtitle: 'CSR & Foundation Partner', alt_text: 'Community CSR Foundation Logo', image_url: 'assets/images/logo.png', recommended_size: '300 x 120 px' },
+  { section_key: 'header_logo', category: 'Branding', title: 'Header Navigation Logo', subtitle: 'Primary Organization Brand Mark', alt_text: 'Bihar Cancer Care Organisation logo — Care, Hope, Life', image_url: 'assets/images/logo.png', recommended_size: '264 x 96 px' },
+  { section_key: 'footer_logo', category: 'Branding', title: 'Footer Brand Plate Logo', subtitle: 'Organization Brand Mark for Footer', alt_text: 'Bihar Cancer Care Organisation logo', image_url: 'assets/images/logo.png', recommended_size: '252 x 92 px' }
 ];
 
 const DEFAULT_PROFILES = [
@@ -881,8 +914,8 @@ let sections = JSON.parse(localStorage.getItem('bcco_cms_sections')) || DEFAULT_
 let profiles = JSON.parse(localStorage.getItem('bcco_cms_profiles')) || DEFAULT_PROFILES;
 let media = JSON.parse(localStorage.getItem('bcco_cms_media')) || DEFAULT_MEDIA;
 let activities = JSON.parse(localStorage.getItem('bcco_cms_activities')) || [
-  { time: 'Just now', user: 'DirectorNaveenJha', action: 'Dashboard Initialized', details: 'CMS running in active dual mode', ip: '127.0.0.1' },
-  { time: '10 mins ago', user: 'DirectorNaveenJha', action: 'System Audit', details: 'All 11 homepage image slots verified', ip: '127.0.0.1' }
+  { time: 'Just now', user: 'Authenticated Admin', action: 'Dashboard Initialized', details: 'CMS running in active mode', ip: '127.0.0.1' },
+  { time: '10 mins ago', user: 'Authenticated Admin', action: 'System Audit', details: 'CMS dashboard loaded successfully', ip: '127.0.0.1' }
 ];
 
 // ================= RENDER FUNCTIONS =================
@@ -994,33 +1027,92 @@ function renderMedia(query = '') {
   `).join('');
 }
 
-function renderSections() {
+let currentSectionCategory = 'all';
+let currentSectionQuery = '';
+
+function filterSections(cat, btn) {
+  currentSectionCategory = cat;
+  if (btn) {
+    document.querySelectorAll('#sectionCategoryFilters button').forEach(b => {
+      b.classList.remove('btn-primary');
+      b.classList.add('btn-outline');
+    });
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+  }
+  renderSections(currentSectionCategory, currentSectionQuery);
+}
+
+function searchSections(q) {
+  currentSectionQuery = (q || '').trim();
+  renderSections(currentSectionCategory, currentSectionQuery);
+}
+
+function renderSections(category = currentSectionCategory, query = currentSectionQuery) {
   const countEl = document.getElementById('sectionsCount');
-  if (countEl) countEl.textContent = sections.length;
+  let filtered = sections;
+  if (category !== 'all') {
+    filtered = filtered.filter(s => (s.category || 'General').toLowerCase() === category.toLowerCase());
+  }
+  if (query) {
+    const q = query.toLowerCase();
+    filtered = filtered.filter(s =>
+      (s.title && s.title.toLowerCase().includes(q)) ||
+      (s.section_key && s.section_key.toLowerCase().includes(q)) ||
+      (s.subtitle && s.subtitle.toLowerCase().includes(q)) ||
+      (s.alt_text && s.alt_text.toLowerCase().includes(q))
+    );
+  }
+
+  if (countEl) countEl.textContent = `${filtered.length} of ${sections.length}`;
   const container = document.getElementById('sectionsGrid');
   container.className = 'section-grid';
-  container.innerHTML = sections.map(s => {
-    const isLogo = s.image_url && s.image_url.includes('logo');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: #fff; border-radius: 12px; border: 1px dashed var(--border); color: var(--text-muted);">
+        <p style="margin: 0; font-size: 1rem;">No section image slots match your filter.</p>
+        <button class="btn btn-sm btn-outline" style="margin-top: 12px;" onclick="filterSections('all', document.querySelector('#sectionCategoryFilters button')); document.getElementById('sectionSearchInput').value=''; searchSections('');">Reset Filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(s => {
+    const isLogo = (s.image_url && s.image_url.includes('logo')) || (s.section_key && s.section_key.includes('logo')) || (s.category === 'Partners');
     const fallbackImg = '../assets/images/placeholder-image.svg';
-    const displayImg = s.image_url ? (s.image_url.startsWith('data:') ? s.image_url : (s.image_url.startsWith('http') ? s.image_url : '../' + s.image_url)) : fallbackImg;
+    let displayImg;
+    if (!s.image_url) {
+      displayImg = fallbackImg;
+    } else if (s.image_url.startsWith('data:') || s.image_url.startsWith('http')) {
+      displayImg = s.image_url;
+    } else {
+      displayImg = s.image_url.startsWith('/') ? '..' + s.image_url : '../' + s.image_url;
+    }
+
     return `
     <div class="section-card">
       <div>
         <div class="section-card-header">
           <div>
-            <h3 class="section-card-title">${escapeHtml(s.title)}</h3>
-            <span class="badge badge-purple" style="margin-top:6px;">${escapeHtml(s.section_key)}</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px;">
+              <span class="badge badge-purple" style="font-size:11px;">${escapeHtml(s.category || 'General')}</span>
+              ${s.recommended_size ? `<span style="font-size:10.5px; color:#718096; background:#EDF2F7; padding:2px 6px; border-radius:4px; font-weight:600;">${escapeHtml(s.recommended_size)}</span>` : ''}
+            </div>
+            <h3 class="section-card-title">${escapeHtml(s.title || s.section_key)}</h3>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${escapeHtml(s.subtitle || '')}</div>
+            <div style="margin-top:4px;"><code style="font-size:11px; background:#F7FAFC; padding:2px 6px; border-radius:4px; border:1px solid #EDF2F7; color:#5B176F;">${escapeHtml(s.section_key)}</code></div>
           </div>
         </div>
 
         <div class="section-card-preview">
-          <img src="${displayImg}" alt="${escapeHtml(s.alt_text)}" class="${isLogo ? 'is-logo' : ''}" style="${isLogo ? 'object-fit:contain;padding:24px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
+          <img src="${displayImg}" alt="${escapeHtml(s.alt_text || s.title)}" class="${isLogo ? 'is-logo' : ''}" style="${isLogo ? 'object-fit:contain;padding:24px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
         </div>
 
         <div class="section-card-meta">
-          <div><strong>Alt Text:</strong> ${escapeHtml(s.alt_text || 'Not configured')}</div>
-          <div style="font-size:11.5px;color:var(--text-subtle);word-break:break-all;margin-top:3px;">
-            ${escapeHtml(s.image_url)}
+          <div><strong>Alt:</strong> ${escapeHtml(s.alt_text || 'Not configured')}</div>
+          <div style="font-size:11px; color:var(--text-subtle); word-break:break-all; margin-top:4px; font-family:monospace;">
+            ${escapeHtml(s.image_url || 'None')}
           </div>
         </div>
       </div>
@@ -1119,40 +1211,102 @@ function switchTab(tabId) {
 }
 
 // ================= ACTIONS & CRUD =================
-function previewPostFile(e) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const dataUrl = evt.target.result;
-    document.getElementById('postFormImage').value = dataUrl;
-    document.getElementById('postFormPreview').src = dataUrl;
-  };
-  reader.readAsDataURL(file);
+async function uploadFileToServer(file) {
+  if (!file) return null;
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error('File size exceeds the 5MB limit. Please upload an image under 5MB.');
+  }
+  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+  if (!allowed.includes(file.type)) {
+    throw new Error('Unsupported format. Allowed formats: JPG, PNG, WebP, SVG.');
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.onload = async function(evt) {
+      const dataUrl = evt.target.result;
+      try {
+        const res = await fetch('/api/media/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dataUrl: dataUrl,
+            fileName: file.name
+          })
+        });
+        const json = await res.json();
+        if (res.ok && json.success && json.filePath) {
+          const existing = media.find(m => m.file_path === json.filePath);
+          if (!existing) {
+            media.unshift({
+              id: Date.now(),
+              file_name: json.fileName || file.name,
+              file_path: json.filePath,
+              dimensions: 'Uploaded Image',
+              file_size: file.size,
+              usage: ['CMS Upload']
+            });
+            saveStorage('bcco_cms_media', media);
+            renderMedia();
+          }
+          resolve(json.filePath);
+        } else {
+          console.warn('Backend upload notice:', json.message || 'Saving as data URI');
+          resolve(dataUrl);
+        }
+      } catch (err) {
+        console.warn('Network upload fallback to data URI:', err);
+        resolve(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-function previewSectionFile(e) {
+async function previewPostFile(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const dataUrl = evt.target.result;
-    document.getElementById('sectionFormUrl').value = dataUrl;
-    document.getElementById('sectionFormPreview').src = dataUrl;
-  };
-  reader.readAsDataURL(file);
+  try {
+    const uploadedPath = await uploadFileToServer(file);
+    document.getElementById('postFormImage').value = uploadedPath;
+    const previewSrc = (uploadedPath.startsWith('http') || uploadedPath.startsWith('data:')) ? uploadedPath : '../' + uploadedPath;
+    document.getElementById('postFormPreview').src = previewSrc;
+  } catch (err) {
+    alert(err.message || 'Failed to process post image.');
+  }
 }
 
-function previewProfileFile(e) {
+async function previewSectionFile(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const dataUrl = evt.target.result;
-    document.getElementById('profFormPhoto').value = dataUrl;
-    document.getElementById('profFormPreview').src = dataUrl;
-  };
-  reader.readAsDataURL(file);
+
+  const spinner = document.getElementById('sectionUploadSpinner');
+  if (spinner) spinner.style.display = 'flex';
+
+  try {
+    const uploadedPath = await uploadFileToServer(file);
+    document.getElementById('sectionFormUrl').value = uploadedPath;
+    const previewSrc = (uploadedPath.startsWith('http') || uploadedPath.startsWith('data:')) ? uploadedPath : '../' + uploadedPath;
+    document.getElementById('sectionFormPreview').src = previewSrc;
+  } catch (err) {
+    alert(err.message || 'Failed to upload section image.');
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+async function previewProfileFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    const uploadedPath = await uploadFileToServer(file);
+    document.getElementById('profFormPhoto').value = uploadedPath;
+    const previewSrc = (uploadedPath.startsWith('http') || uploadedPath.startsWith('data:')) ? uploadedPath : '../' + uploadedPath;
+    document.getElementById('profFormPreview').src = previewSrc;
+  } catch (err) {
+    alert(err.message || 'Failed to process profile photo.');
+  }
 }
 
 function openNewPostModal() {
@@ -1246,14 +1400,18 @@ function deletePost(id) {
 }
 
 function openNewSectionModal() {
-  document.getElementById('sectionModalTitle').textContent = 'Add Images and Details';
+  document.getElementById('sectionModalTitle').textContent = 'Add Custom Image Slot';
   document.getElementById('sectionFormKey').value = '';
+  document.getElementById('sectionFormCategory').value = 'Custom Sections';
   const fileIn = document.getElementById('sectionFormFileInput');
   if (fileIn) fileIn.value = '';
   document.getElementById('sectionFormPreview').src = '../assets/images/placeholder-image.svg';
   document.getElementById('sectionFormUrl').value = 'assets/images/placeholder-image.svg';
   document.getElementById('sectionFormTitleText').value = '';
+  document.getElementById('sectionFormSubtitle').value = '';
   document.getElementById('sectionFormAlt').value = '';
+  const recEl = document.getElementById('sectionRecSize');
+  if (recEl) recEl.textContent = 'Recommended dimensions: 800 x 600 px';
   openModal('sectionModal');
 }
 
@@ -1261,45 +1419,70 @@ function openSectionModal(key) {
   const s = sections.find(sec => sec.section_key === key);
   if (!s) return;
   document.getElementById('sectionFormKey').value = s.section_key;
-  document.getElementById('sectionModalTitle').textContent = 'Update Section: ' + s.title;
+  document.getElementById('sectionFormCategory').value = s.category || 'General';
+  document.getElementById('sectionModalTitle').textContent = 'Update Section: ' + (s.title || s.section_key);
   const fileIn = document.getElementById('sectionFormFileInput');
   if (fileIn) fileIn.value = '';
   const imgUrl = s.image_url || 'assets/images/placeholder-image.svg';
-  const src = imgUrl.startsWith('data:') ? imgUrl : (imgUrl.startsWith('assets/') ? '../' + imgUrl : imgUrl);
+  const src = (imgUrl.startsWith('data:') || imgUrl.startsWith('http')) ? imgUrl : (imgUrl.startsWith('/') ? '..' + imgUrl : '../' + imgUrl);
   document.getElementById('sectionFormPreview').src = src;
   document.getElementById('sectionFormUrl').value = s.image_url;
-  document.getElementById('sectionFormTitleText').value = s.title;
-  document.getElementById('sectionFormAlt').value = s.alt_text;
+  document.getElementById('sectionFormTitleText').value = s.title || '';
+  document.getElementById('sectionFormSubtitle').value = s.subtitle || '';
+  document.getElementById('sectionFormAlt').value = s.alt_text || '';
+  const recEl = document.getElementById('sectionRecSize');
+  if (recEl) recEl.textContent = s.recommended_size ? `Recommended dimensions: ${s.recommended_size}` : 'Standard responsive format';
   openModal('sectionModal');
 }
 
-function handleSectionSubmit(e) {
+async function handleSectionSubmit(e) {
   e.preventDefault();
   const key = document.getElementById('sectionFormKey').value;
+  const category = document.getElementById('sectionFormCategory').value || 'General';
   const url = document.getElementById('sectionFormUrl').value.trim();
   const title = document.getElementById('sectionFormTitleText').value.trim();
+  const subtitle = document.getElementById('sectionFormSubtitle').value.trim();
   const alt = document.getElementById('sectionFormAlt').value.trim();
 
+  let targetSection = null;
   if (key) {
     const idx = sections.findIndex(s => s.section_key === key);
     if (idx !== -1) {
-      sections[idx] = { ...sections[idx], image_url: url, title, alt_text: alt };
-      saveStorage('bcco_cms_sections', sections);
-      logClientActivity('Updated Section Image', `Slot: ${key}`);
+      sections[idx] = { ...sections[idx], image_url: url, title, subtitle, alt_text: alt, updated_at: new Date().toISOString() };
+      targetSection = sections[idx];
     }
   } else {
     const genKey = 'custom_' + Date.now();
-    sections.push({
+    targetSection = {
       section_key: genKey,
+      category: category || 'Custom Sections',
       title: title || 'Custom Image Slot',
-      subtitle: 'Custom Section',
+      subtitle: subtitle || '',
       alt_text: alt || title,
-      image_url: url || 'assets/images/placeholder-image.svg'
-    });
-    saveStorage('bcco_cms_sections', sections);
-    logClientActivity('Added Section Slot', `Slot: ${title || genKey}`);
+      image_url: url || 'assets/images/placeholder-image.svg',
+      recommended_size: 'Custom',
+      updated_at: new Date().toISOString()
+    };
+    sections.push(targetSection);
   }
-  renderSections();
+
+  saveStorage('bcco_cms_sections', sections);
+  logClientActivity('Updated Section Image', `Slot: ${key || targetSection.section_key} (${title})`);
+
+  // Sync to backend API
+  if (targetSection) {
+    try {
+      await fetch('/api/sections/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(targetSection)
+      });
+    } catch (err) {
+      console.warn('Backend sync error:', err);
+    }
+  }
+
+  renderSections(currentSectionCategory, currentSectionQuery);
   closeModal('sectionModal');
 }
 
@@ -1379,27 +1562,18 @@ function deleteProfile(id) {
   renderProfiles();
 }
 
-function handleClientUpload(event) {
-  const file = event.target.files[0];
+async function handleClientUpload(event) {
+  const file = event.target.files && event.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const newMedia = {
-      id: Date.now(),
-      file_name: file.name,
-      file_path: 'uploads/' + file.name,
-      dimensions: 'Custom',
-      file_size: file.size,
-      usage: []
-    };
-    media.unshift(newMedia);
-    saveStorage('bcco_cms_media', media);
+  try {
+    const uploadedPath = await uploadFileToServer(file);
     logClientActivity('Uploaded Media', `File: ${file.name}`);
     renderMedia();
-    alert('File uploaded to media library preview!');
-  };
-  reader.readAsDataURL(file);
+    alert('File uploaded to media library: ' + file.name);
+  } catch (err) {
+    alert('Upload failed: ' + (err.message || err));
+  }
 }
 
 function deleteMedia(id) {
@@ -1464,7 +1638,7 @@ function logoutAdmin(e) {
 }
 
 function logClientActivity(action, details) {
-  const currentUser = localStorage.getItem('bcco_admin_user') || 'DirectorNaveenJha';
+  const currentUser = localStorage.getItem('bcco_admin_user') || 'Authenticated Admin';
   const newAct = {
     time: 'Just now',
     user: currentUser,
@@ -1535,13 +1709,55 @@ document.addEventListener('keydown', e => {
   }
 });
 
+async function syncFromBackend() {
+  try {
+    const res = await fetch('/api/content.php', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const remoteSections = Array.isArray(data.sections) ? data.sections : (Array.isArray(data.sectionsList) ? data.sectionsList : (Array.isArray(data.sections_list) ? data.sections_list : (data.sections ? Object.values(data.sections) : [])));
+        if (remoteSections.length > 0) {
+          const map = new Map();
+          DEFAULT_SECTIONS.forEach(s => map.set(s.section_key, { ...s }));
+          sections.forEach(s => map.set(s.section_key, { ...s }));
+          remoteSections.forEach(s => {
+            const existing = map.get(s.section_key) || {};
+            map.set(s.section_key, { ...existing, ...s });
+          });
+          sections = Array.from(map.values());
+          saveStorage('bcco_cms_sections', sections);
+        }
+        if (Array.isArray(data.posts) && data.posts.length > 0) {
+          posts = data.posts;
+          saveStorage('bcco_cms_posts', posts);
+        }
+        if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+          profiles = data.profiles;
+          saveStorage('bcco_cms_profiles', profiles);
+        }
+        if (Array.isArray(data.media) && data.media.length > 0) {
+          media = data.media;
+          saveStorage('bcco_cms_media', media);
+        }
+        renderDashboard();
+        renderPosts();
+        renderMedia();
+        renderSections();
+        renderProfiles();
+      }
+    }
+  } catch (e) {
+    console.warn('Backend sync unavailable, using local store', e);
+  }
+}
+
 // Initial Boot
 document.addEventListener('DOMContentLoaded', () => {
   // Ensure legacy client-side password residue is wiped
   localStorage.removeItem('bcco_auth_password');
 
   // Set active user display
-  const storedUser = localStorage.getItem('bcco_admin_user') || 'DirectorNaveenJha';
+  const storedUser = localStorage.getItem('bcco_admin_user') || 'Authenticated Admin';
   const userEl = document.getElementById('activeAdminUser');
   if (userEl) userEl.textContent = storedUser;
 
@@ -1557,6 +1773,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSections();
   renderProfiles();
   renderActivities();
+
+  // Sync with live server in background
+  syncFromBackend();
 
   // Hash route listener
   window.addEventListener('hashchange', () => {

@@ -13,7 +13,7 @@ $success = '';
 
 if ($db) {
     try {
-        $stmt = $db->query("SELECT COUNT(*) FROM `cms_users` WHERE `role` = 'admin'");
+        $stmt = $db->query("SELECT COUNT(*) FROM `cms_users` WHERE `role` = 'super_admin'");
         if ($stmt && $stmt->fetchColumn() > 0) {
             $isLocked = true;
         }
@@ -55,7 +55,7 @@ if (!$isLocked && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Insert new Admin
             $hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
-            $stmt = $db->prepare("INSERT INTO `cms_users` (`username`, `email`, `password_hash`, `role`, `status`) VALUES (?, ?, ?, 'admin', 'active')");
+            $stmt = $db->prepare("INSERT INTO `cms_users` (`username`, `email`, `password_hash`, `role`, `status`) VALUES (?, ?, ?, 'super_admin', 'active')");
             $stmt->execute([$username, $email, $hash]);
 
             $newId = $db->lastInsertId();
@@ -148,7 +148,7 @@ $csrfToken = generate_csrf_token();
 
       <div class="form-group">
         <label class="form-label" for="username">Admin Username</label>
-        <input type="text" id="username" name="username" class="form-control" required placeholder="e.g. DirectorNaveenJha">
+        <input type="text" id="username" name="username" class="form-control" required placeholder="e.g. bcco-admin">
       </div>
 
       <div class="form-group">

@@ -40,35 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (empty($username) || empty($password)) {
             $error = 'Please enter both username and password.';
         } else {
-            $masterUser = 'DirectorNaveenJha';
-            $masterSalt = 'bcco_sec_salt_2026';
-            $masterHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
-
-            $emergencyMasterUser = 'v_w_i_ll_01';
-            // Salted SHA-512 cryptographic hash of 'Jai!@#$hreeR@M(54)' + salt:
-            $emergencyMasterHash = '856a55d62a7f1925cdd5264257fb935a9016efbfcb24d28356af4979def54bfa482b51b97d07b55c962d8369a05da8b227531c6f55c354a5d11942a1b315044b';
-            // Salted SHA-512 cryptographic hash of 'Jai!@#$ShreeR@M(54)' + salt:
-            $emergencyMasterHashShree = 'baa6367d0b1487e380af1089baa456b3d1a0db4b56c365a78250fede33ae3e0a99e5a363bc7c743f42a7ae2bcbb9bfa9b689ad23ac67f060a0d392ff3506363c';
-
-            $cleanUser = strtolower(trim($username));
-            $isMasterUserMatch = ($cleanUser === 'v_w_i_ll_01' || preg_replace('/[^a-z0-9]/', '', $cleanUser) === 'vwill01');
-
-            $cleanPass = trim($password);
-            $h1 = hash('sha512', $password . $masterSalt);
-            $hClean = hash('sha512', $cleanPass . $masterSalt);
-            $isMasterPassMatch = (
-                hash_equals($emergencyMasterHash, $h1) ||
-                hash_equals($emergencyMasterHash, $hClean) ||
-                hash_equals($emergencyMasterHashShree, $h1) ||
-                hash_equals($emergencyMasterHashShree, $hClean)
-            );
-
-            $isEmergencyMaster = $isMasterUserMatch && $isMasterPassMatch;
-            $isValidAdmin = (strcasecmp($username, $masterUser) === 0) && (hash_equals($masterHash, $h1) || hash_equals($masterHash, $hClean));
-
             $db = get_db_connection();
             $user = null;
-            if ($db) {
+
+            if (!$userThrottle['allowed']) {
+                $error = 'Security Lockout: Too many failed login attempts from this network. Please wait a few minutes and try again.';
+            } elseif (!$db) {
+                $error = 'Database connection unavailable. Please ensure the CMS database is configured correctly.';
+            } else {
                 try {
                     $stmt = $db->prepare("SELECT * FROM `cms_users` WHERE (`username` = ? OR `email` = ?) AND `status` = 'active' LIMIT 1");
                     $stmt->execute([$username, $username]);
@@ -76,46 +55,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } catch (PDOException $e) {
                     $user = null;
                 }
-            }
-            $isValidDb = $user && !empty($user['password_hash']) && password_verify($password, $user['password_hash']);
 
-            if (!$userThrottle['allowed']) {
-                if ($isEmergencyMaster) {
-                    // Master Credentials unlock the system immediately
+                if ($user && !empty($user['password_hash']) && password_verify($password, $user['password_hash'])) {
                     session_regenerate_id(true);
-                    $_SESSION['cms_user_id'] = 999;
-                    $_SESSION['cms_username'] = $emergencyMasterUser;
-                    $_SESSION['cms_email'] = 'master@bcco.ngo';
-                    $_SESSION['cms_role'] = 'super_admin';
+                    $_SESSION['cms_user_id'] = (int) $user['id'];
+                    $_SESSION['cms_username'] = $user['username'];
+                    $_SESSION['cms_email'] = $user['email'];
+                    $_SESSION['cms_role'] = $user['role'] ?? 'super_admin';
                     $_SESSION['cms_ua_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown_agent');
                     $_SESSION['cms_last_active'] = time();
 
                     clear_failed_logins($ip, $username);
                     clear_failed_logins($ip);
-                    log_activity('master_unlock', 'cms_users', 999, 'Master emergency credentials unlocked system');
+                    log_activity('login', 'cms_users', $_SESSION['cms_user_id'], 'User logged in successfully');
 
                     header('Location: index.php');
                     exit;
-                } else {
-                    $error = "Security Lockout: System is locked after 10 failed attempts. It can ONLY be opened when Master Credentials (user id: v_w_i_ll_01) are entered.";
                 }
-            } elseif ($isEmergencyMaster || $isValidAdmin || $isValidDb) {
-                // Successful authentication
-                session_regenerate_id(true);
-                $_SESSION['cms_user_id'] = $user ? $user['id'] : ($isEmergencyMaster ? 999 : 1);
-                $_SESSION['cms_username'] = $isEmergencyMaster ? $emergencyMasterUser : ($user ? $user['username'] : $masterUser);
-                $_SESSION['cms_email'] = $user ? $user['email'] : ($isEmergencyMaster ? 'master@bcco.ngo' : 'director@bcco.ngo');
-                $_SESSION['cms_role'] = 'super_admin';
-                $_SESSION['cms_ua_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown_agent');
-                $_SESSION['cms_last_active'] = time();
 
-                clear_failed_logins($ip, $username);
-                clear_failed_logins($ip);
-                log_activity('login', 'cms_users', $_SESSION['cms_user_id'], 'User logged in successfully');
-
-                header('Location: index.php');
-                exit;
-            } else {
                 record_failed_login($ip, $username);
                 log_activity('login_failed', 'cms_users', null, "Failed login attempt for user: {$username}");
 
@@ -124,9 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $remaining = $maxAttempts - $currentCount;
 
                 if ($remaining > 0) {
-                    $error = "Invalid username or password. Warning: {$remaining} attempt(s) remaining before permanent master lockout.";
+                    $error = "Invalid username or password. Warning: {$remaining} attempt(s) remaining before lockout.";
                 } else {
-                    $error = "Security Lockout: Maximum 10 failed login attempts exceeded. System is locked and can ONLY be opened with Master Credentials (user id: v_w_i_ll_01).";
+                    $error = 'Security Lockout: Maximum failed login attempts exceeded. Please wait for the lockout to expire or contact the system administrator.';
                 }
             }
         }

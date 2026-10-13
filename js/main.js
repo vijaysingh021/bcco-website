@@ -902,40 +902,261 @@
   });
 
   /* ==========================================================================
-     24. CMS Content Hydration (Graceful Background Enhancement)
+     24. CMS Content & Image Hydration (Seamless Dynamic Rendering)
      ========================================================================== */
-  async function hydrateFromCMS() {
-    try {
-      const res = await fetch('api/content.php', { cache: 'default' });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (!data || !data.success) return;
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
-      // 1. Hydrate dynamic posts into ARTICLES store
-      if (Array.isArray(data.posts) && data.posts.length > 0) {
-        data.posts.forEach(post => {
-          if (!post.slug) return;
-          ARTICLES[post.slug] = {
-            cat: post.category || 'Patient Guidance',
-            mins: '4 min read',
-            title: post.title,
-            paras: post.content ? post.content.split(/\n\n+/).filter(Boolean) : [post.excerpt || '']
+  async function hydrateFromCMS() {
+    let cmsData = null;
+
+    // Try fetching from server API first
+    try {
+      const res = await fetch('api/content.php', { cache: 'no-cache' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success) cmsData = json;
+      }
+    } catch (e) {
+      // Continue to local storage fallback
+    }
+
+    // Fallback or augment with localStorage
+    if (!cmsData) {
+      try {
+        const localSecs = localStorage.getItem('bcco_cms_sections');
+        const localPosts = localStorage.getItem('bcco_cms_posts');
+        const localProfs = localStorage.getItem('bcco_cms_profiles');
+        if (localSecs || localPosts || localProfs) {
+          cmsData = {
+            success: true,
+            sections: localSecs ? JSON.parse(localSecs) : [],
+            posts: localPosts ? JSON.parse(localPosts) : [],
+            profiles: localProfs ? JSON.parse(localProfs) : []
           };
+        }
+      } catch (err) {}
+    }
+
+    if (!cmsData) return;
+
+    // Normalize sections into a lookup map
+    const secMap = {};
+    if (Array.isArray(cmsData.sections)) {
+      cmsData.sections.forEach(s => { secMap[s.section_key] = s; });
+    } else if (cmsData.sections && typeof cmsData.sections === 'object') {
+      Object.assign(secMap, cmsData.sections);
+    }
+    if (Array.isArray(cmsData.sectionsList)) {
+      cmsData.sectionsList.forEach(s => { secMap[s.section_key] = s; });
+    }
+    if (Array.isArray(cmsData.sections_list)) {
+      cmsData.sections_list.forEach(s => { secMap[s.section_key] = s; });
+    }
+
+    function cleanImgSrc(url) {
+      if (!url) return '';
+      return url.trim();
+    }
+
+    // 1. Hero Care Photograph (hero_panel)
+    const heroSec = secMap.hero_panel;
+    if (heroSec && heroSec.image_url && !heroSec.image_url.includes('placeholder')) {
+      const heroPanel = $('.hero__panel');
+      if (heroPanel) {
+        let heroImg = heroPanel.querySelector('.hero__care-img');
+        if (!heroImg) {
+          heroImg = doc.createElement('img');
+          heroImg.className = 'hero__care-img';
+          heroPanel.insertBefore(heroImg, heroPanel.firstChild);
+        }
+        heroImg.src = cleanImgSrc(heroSec.image_url);
+        heroImg.alt = heroSec.alt_text || heroSec.title || 'Bihar Cancer Care Organisation Patient Support';
+        heroImg.loading = 'eager';
+        heroImg.onerror = function() { this.style.display = 'none'; };
+        const phTag = heroPanel.querySelector('.ph__tag');
+        if (phTag) phTag.style.display = 'none';
+      }
+    }
+
+    // 2. About Editorial Photograph (about_editorial)
+    const aboutSec = secMap.about_editorial;
+    if (aboutSec && aboutSec.image_url && !aboutSec.image_url.includes('placeholder')) {
+      const aboutBox = $('.about__media .ph--a');
+      if (aboutBox) {
+        let aboutImg = aboutBox.querySelector('.about__img');
+        if (!aboutImg) {
+          aboutImg = doc.createElement('img');
+          aboutImg.className = 'about__img';
+          aboutBox.insertBefore(aboutImg, aboutBox.firstChild);
+        }
+        aboutImg.src = cleanImgSrc(aboutSec.image_url);
+        aboutImg.alt = aboutSec.alt_text || 'Guiding Bihar Cancer Care';
+        aboutImg.loading = 'lazy';
+        aboutImg.onerror = function() { this.remove(); };
+        const phTag = aboutBox.querySelector('.ph__tag');
+        if (phTag) phTag.style.display = 'none';
+      }
+    }
+
+    // 3. Media & News Card Images (media_card_1, media_card_2, media_card_3)
+    const mediaSlots = [
+      { key: 'media_card_1', selector: '.media-card[data-category="gallery"] .media-card__thumb-wrap' },
+      { key: 'media_card_2', selector: '.media-card[data-video]:nth-of-type(1) .media-card__thumb-wrap' },
+      { key: 'media_card_3', selector: '.media-card[data-video]:nth-of-type(2) .media-card__thumb-wrap' }
+    ];
+
+    mediaSlots.forEach(slot => {
+      const sData = secMap[slot.key];
+      if (sData && sData.image_url && !sData.image_url.includes('placeholder')) {
+        $$(slot.selector).forEach(thumbWrap => {
+          let realImg = thumbWrap.querySelector('.media-card__real-img');
+          if (!realImg) {
+            realImg = doc.createElement('img');
+            realImg.className = 'media-card__real-img';
+            thumbWrap.insertBefore(realImg, thumbWrap.firstChild);
+          }
+          realImg.src = cleanImgSrc(sData.image_url);
+          realImg.alt = sData.alt_text || sData.title || '';
+          realImg.loading = 'lazy';
+          realImg.onerror = function() { this.remove(); };
         });
       }
+    });
 
-      // 2. Hydrate homepage section images if configured
-      if (data.sections) {
-        if (data.sections.about_editorial && data.sections.about_editorial.image_url) {
-          const aboutImg = $('.about__media img');
-          if (aboutImg) {
-            aboutImg.src = data.sections.about_editorial.image_url;
-            if (data.sections.about_editorial.alt_text) aboutImg.alt = data.sections.about_editorial.alt_text;
+    // 4. Past Highlights Photo Gallery (gallery_1 to gallery_6)
+    const galleryItems = $$('#highlights .gal .gitem');
+    for (let i = 1; i <= 6; i++) {
+      const gSec = secMap['gallery_' + i] || secMap['gallery_item_' + i];
+      const gEl = galleryItems[i - 1];
+      if (gSec && gEl) {
+        if (gSec.image_url && !gSec.image_url.includes('placeholder')) {
+          let gImg = gEl.querySelector('.gal__img');
+          if (!gImg) {
+            gImg = doc.createElement('img');
+            gImg.className = 'gal__img';
+            gEl.insertBefore(gImg, gEl.firstChild);
+          }
+          gImg.src = cleanImgSrc(gSec.image_url);
+          gImg.alt = gSec.alt_text || gSec.title || 'Past highlight photo';
+          gImg.loading = 'lazy';
+          gImg.onerror = function() { this.remove(); };
+        }
+        if (gSec.subtitle || gSec.title) {
+          const cap = gEl.querySelector('figcaption');
+          if (cap) {
+            cap.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>${escapeHtml(gSec.subtitle || gSec.title)}`;
           }
         }
       }
-    } catch (e) {
-      // Fail silently without disrupting static site rendering
+    }
+
+    // 5. Contact Section Map / Visual (contact_map)
+    const mapSec = secMap.contact_map || secMap.contact_map_preview;
+    if (mapSec && mapSec.image_url && !mapSec.image_url.includes('placeholder')) {
+      const mapBox = $('.mapph');
+      if (mapBox) {
+        let mapImg = mapBox.querySelector('.map__img');
+        if (!mapImg) {
+          mapImg = doc.createElement('img');
+          mapImg.className = 'map__img';
+          mapBox.insertBefore(mapImg, mapBox.firstChild);
+        }
+        mapImg.src = cleanImgSrc(mapSec.image_url);
+        mapImg.alt = mapSec.alt_text || 'BCCO Registered Office Patna';
+        mapImg.loading = 'lazy';
+        mapImg.onerror = function() { this.remove(); };
+      }
+    }
+
+    // 6. Partner Logos (partner_1 to partner_4)
+    const partnerRow = $('.partner-row');
+    if (partnerRow) {
+      const partnerEls = partnerRow.querySelectorAll('.partner');
+      for (let p = 1; p <= 4; p++) {
+        const pSec = secMap['partner_' + p];
+        const pEl = partnerEls[p - 1];
+        if (pSec && pEl && pSec.image_url) {
+          pEl.innerHTML = `<img src="${cleanImgSrc(pSec.image_url)}" class="partner-logo-img" alt="${escapeHtml(pSec.alt_text || pSec.title || 'Partner')}" onerror="this.onerror=null;this.parentElement.innerHTML='<span style=\\'font-weight:600;font-size:13px;color:#5B176F;\\'>${escapeHtml(pSec.title || 'Partner')}</span>';">`;
+        }
+      }
+    }
+
+    // 7. Branding Logos (header_logo, footer_logo)
+    if (secMap.header_logo && secMap.header_logo.image_url) {
+      const headLogo = $('header .brand-img');
+      if (headLogo) {
+        headLogo.src = cleanImgSrc(secMap.header_logo.image_url);
+        if (secMap.header_logo.alt_text) headLogo.alt = secMap.header_logo.alt_text;
+      }
+    }
+    if (secMap.footer_logo && secMap.footer_logo.image_url) {
+      const footLogo = $('footer .brand-img');
+      if (footLogo) {
+        footLogo.src = cleanImgSrc(secMap.footer_logo.image_url);
+        if (secMap.footer_logo.alt_text) footLogo.alt = secMap.footer_logo.alt_text;
+      }
+    }
+
+    // 8. Profiles (Leadership & Advisors)
+    if (Array.isArray(cmsData.profiles) && cmsData.profiles.length > 0) {
+      // Hydrate homepage advisory carousel
+      const advisoryCards = $$('#home-advisory .track .card');
+      const advisors = cmsData.profiles.filter(pr => pr.category === 'advisor' || !pr.category);
+      if (advisors.length > 0 && advisoryCards.length > 0) {
+        advisoryCards.forEach((card, idx) => {
+          const prof = advisors[idx % advisors.length];
+          if (!prof) return;
+          const nameEl = card.querySelector('.phone-name');
+          const roleEl = card.querySelector('.phone-role');
+          const avWrap = card.querySelector('.phone-avatar');
+          if (nameEl) nameEl.textContent = prof.name;
+          if (roleEl) roleEl.textContent = prof.role + (prof.organization ? ' · ' + prof.organization : '');
+          if (avWrap && prof.photo_url && !prof.photo_url.includes('avatar-default')) {
+            avWrap.innerHTML = `<img src="${cleanImgSrc(prof.photo_url)}" class="phone-avatar-img" alt="${escapeHtml(prof.name)}" onerror="this.onerror=null;this.remove();">`;
+          }
+        });
+      }
+
+      // Hydrate team page
+      const teamCards = $$('#page-team #team .mcard');
+      const teamMembers = cmsData.profiles.filter(pr => pr.category === 'team');
+      if (teamMembers.length > 0 && teamCards.length > 0) {
+        teamMembers.forEach((prof, idx) => {
+          const card = teamCards[idx];
+          if (!card) return;
+          const h3 = card.querySelector('h3');
+          const role = card.querySelector('.mcard__role');
+          const bio = card.querySelector('.mcard__bio');
+          const av = card.querySelector('.avatar');
+          if (h3) h3.textContent = prof.name;
+          if (role) role.textContent = prof.role;
+          if (bio && prof.organization) bio.textContent = `${prof.role} at ${prof.organization}. Dedicated to advancing community cancer support and guidance across Bihar.`;
+          if (av && prof.photo_url && !prof.photo_url.includes('avatar-default')) {
+            av.innerHTML = `<img src="${cleanImgSrc(prof.photo_url)}" class="mcard-avatar-img" alt="${escapeHtml(prof.name)}">`;
+          }
+        });
+      }
+    }
+
+    // 9. Dynamic posts into ARTICLES store
+    if (Array.isArray(cmsData.posts) && cmsData.posts.length > 0) {
+      cmsData.posts.forEach(post => {
+        if (!post.slug) return;
+        ARTICLES[post.slug] = {
+          cat: post.category || 'Patient Guidance',
+          mins: '4 min read',
+          title: post.title,
+          paras: post.content ? post.content.split(/\n\n+/).filter(Boolean) : [post.excerpt || '']
+        };
+      });
     }
   }
 

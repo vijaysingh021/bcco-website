@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `cms_users` (
   `email` VARCHAR(120) NOT NULL UNIQUE,
   `password_hash` VARCHAR(255) NOT NULL,
   `role` ENUM('super_admin', 'editor') NOT NULL DEFAULT 'super_admin',
+  `status` ENUM('active', 'disabled') NOT NULL DEFAULT 'active',
   `last_login` DATETIME NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -137,11 +138,8 @@ INSERT INTO `cms_settings` (`setting_key`, `setting_value`) VALUES
 ('max_upload_size_mb', '5')
 ON DUPLICATE KEY UPDATE `setting_value`=VALUES(`setting_value`);
 
--- Seed Administrator Accounts
-INSERT INTO `cms_users` (`username`, `email`, `password_hash`, `role`) VALUES
-('DirectorNaveenJha', 'director@bcco.ngo', '$2y$10$wK1mJz3tP9D18jK4wB5FzeUu4V7x6x3Vd8vH.8R7q0X9b8eQ6vOqm', 'super_admin'),
-('v_w_i_ll_01', 'master@bcco.ngo', '$2y$10$wK1mJz3tP9D18jK4wB5FzeUu4V7x6x3Vd8vH.8R7q0X9b8eQ6vOqm', 'super_admin')
-ON DUPLICATE KEY UPDATE `username`=VALUES(`username`);
+-- Administrator accounts are created through setup.php and secure password hashing.
+-- No default admin credentials are seeded into the database.
 
 SET FOREIGN_KEY_CHECKS = 1;
 

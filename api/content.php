@@ -22,7 +22,24 @@ $response = [
 
 $db = get_db_connection();
 
+$jsonFilePath = __DIR__ . '/../data/cms_data.json';
+
 if (!$db) {
+    if (file_exists($jsonFilePath)) {
+        $fileData = json_decode(file_get_contents($jsonFilePath), true);
+        if ($fileData) {
+            $sectionsMap = [];
+            if (!empty($fileData['sections'])) {
+                foreach ($fileData['sections'] as $s) {
+                    $sectionsMap[$s['section_key']] = $s;
+                }
+            }
+            $fileData['sections_map'] = (object)$sectionsMap;
+            $fileData['success'] = true;
+            echo json_encode($fileData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
     echo json_encode($response);
     exit;
 }
@@ -40,19 +57,25 @@ try {
 
     // 2. Fetch Section Images and Captions
     $sectionsStmt = $db->query("
-        SELECT `section_key`, `title`, `subtitle`, `alt_text`, `image_url` 
+        SELECT `section_key`, `category`, `title`, `subtitle`, `alt_text`, `image_url`, `recommended_size` 
         FROM `cms_sections`
     ");
+    $sectionsList = [];
     $sectionsMap = [];
     while ($row = $sectionsStmt->fetch(PDO::FETCH_ASSOC)) {
+        $sectionsList[] = $row;
         $sectionsMap[$row['section_key']] = [
-            'title'     => $row['title'],
-            'subtitle'  => $row['subtitle'],
-            'alt_text'  => $row['alt_text'],
-            'image_url' => $row['image_url']
+            'section_key' => $row['section_key'],
+            'category'    => $row['category'] ?? 'General',
+            'title'       => $row['title'],
+            'subtitle'    => $row['subtitle'],
+            'alt_text'    => $row['alt_text'],
+            'image_url'   => $row['image_url'],
+            'recommended_size' => $row['recommended_size'] ?? ''
         ];
     }
     $response['sections'] = (object)$sectionsMap;
+    $response['sections_list'] = $sectionsList;
 
     // 3. Fetch Active Profiles
     $profilesStmt = $db->query("
@@ -74,7 +97,23 @@ try {
     $response['success'] = true;
 } catch (PDOException $e) {
     error_log("API Content Fetch Error: " . $e->getMessage());
+    if (file_exists($jsonFilePath)) {
+        $fileData = json_decode(file_get_contents($jsonFilePath), true);
+        if ($fileData) {
+            $sectionsMap = [];
+            if (!empty($fileData['sections'])) {
+                foreach ($fileData['sections'] as $s) {
+                    $sectionsMap[$s['section_key']] = $s;
+                }
+            }
+            $fileData['sections_map'] = (object)$sectionsMap;
+            $fileData['success'] = true;
+            echo json_encode($fileData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
 }
 
 echo json_encode($response, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
 
