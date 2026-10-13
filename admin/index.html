@@ -7,7 +7,7 @@
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/admin.css?v=3.5">
   <style>
-    /* Critical Modal Overlay Fix */
+    /* Modal Overlay */
     .modal,
     .modal-admin {
       position: fixed !important;
@@ -19,7 +19,7 @@
       height: 100vh !important;
       background: rgba(15, 6, 22, 0.75) !important;
       backdrop-filter: blur(6px) !important;
-      display: none !important;
+      display: none;
       align-items: center !important;
       justify-content: center !important;
       z-index: 999999 !important;
@@ -288,19 +288,19 @@
           <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="openNewPostModal()">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Write New Article
+              Write New Article / Post
+            </button>
+            <button class="btn btn-outline" onclick="openNewProfileModal()">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              + Add New Leader / Advisor
+            </button>
+            <button class="btn btn-outline" onclick="openNewSectionModal()">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Add Images &amp; Details
             </button>
             <button class="btn btn-outline" onclick="switchTab('media')">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Upload to Media Library
-            </button>
-            <button class="btn btn-outline" onclick="switchTab('sections')">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              Update Website Images
-            </button>
-            <button class="btn btn-outline" onclick="switchTab('profiles')">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-              Manage Advisors &amp; Team
             </button>
           </div>
         </div>
@@ -408,10 +408,15 @@
       <!-- ================= TAB 4: SECTIONS ================= -->
       <div id="tab-sections" class="tab-pane">
         <div class="card" style="margin-bottom: 24px;">
-          <h2 class="card-title" style="margin-bottom: 6px;">Homepage Image Slots (11 Configured)</h2>
-          <p style="color: #718096; font-size: 0.85rem; margin: 0;">
-            Update any photo, banner, illustration, or map slot across the live homepage without writing code. Changes update immediately.
-          </p>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h2 class="card-title" style="margin-bottom: 6px;">Homepage Image Slots (<span id="sectionsCount">11</span> Configured)</h2>
+              <p style="color: #718096; font-size: 0.85rem; margin: 0;">
+                Update any photo, banner, illustration, or map slot across the live homepage without writing code. Changes update immediately.
+              </p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openNewSectionModal()">+ Add Images and Details</button>
+          </div>
         </div>
 
         <div class="section-grid" id="sectionsGrid">
@@ -602,7 +607,7 @@
 </div>
 
 <!-- ================= MODAL: POST EDITOR ================= -->
-<div class="modal modal-admin" id="postModal" style="display: none;">
+<div class="modal modal-admin" id="postModal">
   <div class="modal-dialog modal-box" style="max-width: 720px;">
     <div class="modal-header">
       <h3 class="modal-title" id="postModalTitle">Write New Article</h3>
@@ -648,9 +653,20 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Featured Image Path or URL</label>
-          <input type="text" id="postFormImage" class="form-control" placeholder="assets/images/news-1.jpg or uploads/...">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+          <div class="form-group">
+            <label class="form-label">Upload Featured Image</label>
+            <input type="file" id="postFormFileInput" class="form-control" accept="image/jpeg,image/png,image/webp" onchange="previewPostFile(event)">
+            <small class="form-hint">Choose photo from your device</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Image URL / Path</label>
+            <input type="text" id="postFormImage" class="form-control" placeholder="assets/images/placeholder-image.svg" oninput="document.getElementById('postFormPreview').src=this.value">
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 16px;">
+          <img id="postFormPreview" src="../assets/images/placeholder-image.svg" alt="Preview" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border); object-fit: cover;" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
         </div>
 
         <div class="form-group">
@@ -660,7 +676,7 @@
 
         <div class="form-group">
           <label class="form-label">Full Article Content *</label>
-          <textarea id="postFormContent" class="form-control" rows="8" required placeholder="Write the full news story or announcement here..."></textarea>
+          <textarea id="postFormContent" class="form-control" rows="6" required placeholder="Write the full news story or announcement here..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -672,7 +688,7 @@
 </div>
 
 <!-- ================= MODAL: SECTION IMAGE EDITOR ================= -->
-<div class="modal modal-admin" id="sectionModal" style="display: none;">
+<div class="modal modal-admin" id="sectionModal">
   <div class="modal-dialog modal-box">
     <div class="modal-header">
       <h3 class="modal-title" id="sectionModalTitle">Update Section Image</h3>
@@ -683,22 +699,31 @@
         <input type="hidden" id="sectionFormKey" value="">
 
         <div style="text-align: center; margin-bottom: 16px;">
-          <img id="sectionFormPreview" src="" alt="Preview" style="max-height: 140px; border-radius: 8px; border: 1px solid #CBD5E0; object-fit: cover;">
+          <div style="width: 100%; height: 160px; background: #FAF7FB; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            <img id="sectionFormPreview" src="../assets/images/placeholder-image.svg" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Image Path / URL *</label>
-          <input type="text" id="sectionFormUrl" class="form-control" required oninput="document.getElementById('sectionFormPreview').src=this.value">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+          <div class="form-group">
+            <label class="form-label">Upload New Photo</label>
+            <input type="file" id="sectionFormFileInput" class="form-control" accept="image/jpeg,image/png,image/webp" onchange="previewSectionFile(event)">
+            <small class="form-hint">JPG, PNG, or WebP</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Image Path / URL *</label>
+            <input type="text" id="sectionFormUrl" class="form-control" required oninput="document.getElementById('sectionFormPreview').src=this.value">
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Slot Title / Headline</label>
-          <input type="text" id="sectionFormTitleText" class="form-control">
+          <input type="text" id="sectionFormTitleText" class="form-control" placeholder="e.g. Hero Section Mockup">
         </div>
 
         <div class="form-group">
           <label class="form-label">Alt Text (Accessibility &amp; SEO)</label>
-          <input type="text" id="sectionFormAlt" class="form-control">
+          <input type="text" id="sectionFormAlt" class="form-control" placeholder="Describe the image...">
         </div>
       </div>
       <div class="modal-footer">
@@ -710,7 +735,7 @@
 </div>
 
 <!-- ================= MODAL: PROFILE EDITOR ================= -->
-<div class="modal modal-admin" id="profileModal" style="display: none;">
+<div class="modal modal-admin" id="profileModal">
   <div class="modal-dialog modal-box">
     <div class="modal-header">
       <h3 class="modal-title" id="profileModalTitle">Add Advisor / Leader Profile</h3>
@@ -745,9 +770,20 @@
           <input type="text" id="profFormOrg" class="form-control" placeholder="e.g. AIIMS Patna / Ex-IGIMS">
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Photo URL / Path</label>
-          <input type="text" id="profFormPhoto" class="form-control" placeholder="assets/images/advisor-1.jpg or uploads/...">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
+          <div class="form-group">
+            <label class="form-label">Upload Profile Photo</label>
+            <input type="file" id="profFormFileInput" class="form-control" accept="image/jpeg,image/png,image/webp" onchange="previewProfileFile(event)">
+            <small class="form-hint">Choose portrait photo</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Photo URL / Path</label>
+            <input type="text" id="profFormPhoto" class="form-control" placeholder="assets/images/avatar-default.svg" oninput="document.getElementById('profFormPreview').src=this.value">
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 12px;">
+          <img id="profFormPreview" src="../assets/images/avatar-default.svg" alt="Preview" style="width: 56px; height: 56px; border-radius: 12px; border: 1.5px solid var(--border); object-fit: cover;" onerror="this.onerror=null;this.src='../assets/images/avatar-default.svg';">
         </div>
       </div>
       <div class="modal-footer">
@@ -889,12 +925,13 @@ function renderPosts(filter = 'all', query = '') {
   }
 
   tbody.innerHTML = filtered.map(p => {
-    const isLogo = p.featured_image.includes('logo');
+    const isLogo = p.featured_image && p.featured_image.includes('logo');
     const fallbackImg = '../assets/images/placeholder-image.svg';
+    const displayImg = p.featured_image ? (p.featured_image.startsWith('data:') ? p.featured_image : (p.featured_image.startsWith('http') ? p.featured_image : '../' + p.featured_image)) : fallbackImg;
     return `
     <tr>
       <td>
-        <img src="../${p.featured_image}" alt="Thumb" class="table-thumb" style="${isLogo ? 'object-fit:contain;padding:4px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
+        <img src="${displayImg}" alt="Thumb" class="table-thumb" style="${isLogo ? 'object-fit:contain;padding:4px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
       </td>
       <td>
         <strong style="color:var(--text-main);font-size:14.5px;">${escapeHtml(p.title)}</strong>
@@ -949,11 +986,14 @@ function renderMedia(query = '') {
 }
 
 function renderSections() {
+  const countEl = document.getElementById('sectionsCount');
+  if (countEl) countEl.textContent = sections.length;
   const container = document.getElementById('sectionsGrid');
   container.className = 'section-grid';
   container.innerHTML = sections.map(s => {
-    const isLogo = s.image_url.includes('logo');
+    const isLogo = s.image_url && s.image_url.includes('logo');
     const fallbackImg = '../assets/images/placeholder-image.svg';
+    const displayImg = s.image_url ? (s.image_url.startsWith('data:') ? s.image_url : (s.image_url.startsWith('http') ? s.image_url : '../' + s.image_url)) : fallbackImg;
     return `
     <div class="section-card">
       <div>
@@ -965,7 +1005,7 @@ function renderSections() {
         </div>
 
         <div class="section-card-preview">
-          <img src="../${s.image_url}" alt="${escapeHtml(s.alt_text)}" class="${isLogo ? 'is-logo' : ''}" style="${isLogo ? 'object-fit:contain;padding:24px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
+          <img src="${displayImg}" alt="${escapeHtml(s.alt_text)}" class="${isLogo ? 'is-logo' : ''}" style="${isLogo ? 'object-fit:contain;padding:24px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
         </div>
 
         <div class="section-card-meta">
@@ -991,12 +1031,20 @@ function renderProfiles(category = 'all') {
   if (category !== 'all') filtered = filtered.filter(p => p.category === category);
 
   tbody.innerHTML = filtered.map(p => {
-    const isLogo = p.photo_url.includes('logo');
-    const displayImg = isLogo ? '../assets/images/avatar-default.svg' : `../${p.photo_url}`;
+    const isLogo = p.photo_url && p.photo_url.includes('logo');
+    const fallbackImg = '../assets/images/avatar-default.svg';
+    let displayImg;
+    if (!p.photo_url || isLogo) {
+      displayImg = fallbackImg;
+    } else if (p.photo_url.startsWith('data:') || p.photo_url.startsWith('http')) {
+      displayImg = p.photo_url;
+    } else {
+      displayImg = `../${p.photo_url}`;
+    }
     return `
     <tr>
       <td>
-        <img src="${displayImg}" alt="${escapeHtml(p.name)}" class="table-avatar" onerror="this.onerror=null;this.src='../assets/images/avatar-default.svg';">
+        <img src="${displayImg}" alt="${escapeHtml(p.name)}" class="table-avatar" onerror="this.onerror=null;this.src='${fallbackImg}';">
       </td>
       <td>
         <strong style="color:var(--text-main);font-size:14.5px;">${escapeHtml(p.name)}</strong>
@@ -1062,6 +1110,42 @@ function switchTab(tabId) {
 }
 
 // ================= ACTIONS & CRUD =================
+function previewPostFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUrl = evt.target.result;
+    document.getElementById('postFormImage').value = dataUrl;
+    document.getElementById('postFormPreview').src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewSectionFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUrl = evt.target.result;
+    document.getElementById('sectionFormUrl').value = dataUrl;
+    document.getElementById('sectionFormPreview').src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewProfileFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUrl = evt.target.result;
+    document.getElementById('profFormPhoto').value = dataUrl;
+    document.getElementById('profFormPreview').src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
 function openNewPostModal() {
   document.getElementById('postModalTitle').textContent = 'Write New Article';
   document.getElementById('editPostId').value = '';
@@ -1070,7 +1154,10 @@ function openNewPostModal() {
   document.getElementById('postFormCategory').value = 'Medical';
   document.getElementById('postFormAuthor').value = 'BCCO Team';
   document.getElementById('postFormStatus').value = 'published';
-  document.getElementById('postFormImage').value = 'assets/images/about-editorial.jpg';
+  document.getElementById('postFormImage').value = 'assets/images/placeholder-image.svg';
+  document.getElementById('postFormPreview').src = '../assets/images/placeholder-image.svg';
+  const fileIn = document.getElementById('postFormFileInput');
+  if (fileIn) fileIn.value = '';
   document.getElementById('postFormExcerpt').value = '';
   document.getElementById('postFormContent').value = '';
   openModal('postModal');
@@ -1087,6 +1174,11 @@ function editPost(id) {
   document.getElementById('postFormAuthor').value = p.author;
   document.getElementById('postFormStatus').value = p.status;
   document.getElementById('postFormImage').value = p.featured_image;
+  const fileIn = document.getElementById('postFormFileInput');
+  if (fileIn) fileIn.value = '';
+  const imgUrl = p.featured_image || 'assets/images/placeholder-image.svg';
+  const src = imgUrl.startsWith('data:') ? imgUrl : (imgUrl.startsWith('assets/') ? '../' + imgUrl : imgUrl);
+  document.getElementById('postFormPreview').src = src;
   document.getElementById('postFormExcerpt').value = p.excerpt;
   document.getElementById('postFormContent').value = p.content;
   openModal('postModal');
@@ -1144,12 +1236,28 @@ function deletePost(id) {
   renderPosts();
 }
 
+function openNewSectionModal() {
+  document.getElementById('sectionModalTitle').textContent = 'Add Images and Details';
+  document.getElementById('sectionFormKey').value = '';
+  const fileIn = document.getElementById('sectionFormFileInput');
+  if (fileIn) fileIn.value = '';
+  document.getElementById('sectionFormPreview').src = '../assets/images/placeholder-image.svg';
+  document.getElementById('sectionFormUrl').value = 'assets/images/placeholder-image.svg';
+  document.getElementById('sectionFormTitleText').value = '';
+  document.getElementById('sectionFormAlt').value = '';
+  openModal('sectionModal');
+}
+
 function openSectionModal(key) {
   const s = sections.find(sec => sec.section_key === key);
   if (!s) return;
   document.getElementById('sectionFormKey').value = s.section_key;
   document.getElementById('sectionModalTitle').textContent = 'Update Section: ' + s.title;
-  document.getElementById('sectionFormPreview').src = '../' + s.image_url;
+  const fileIn = document.getElementById('sectionFormFileInput');
+  if (fileIn) fileIn.value = '';
+  const imgUrl = s.image_url || 'assets/images/placeholder-image.svg';
+  const src = imgUrl.startsWith('data:') ? imgUrl : (imgUrl.startsWith('assets/') ? '../' + imgUrl : imgUrl);
+  document.getElementById('sectionFormPreview').src = src;
   document.getElementById('sectionFormUrl').value = s.image_url;
   document.getElementById('sectionFormTitleText').value = s.title;
   document.getElementById('sectionFormAlt').value = s.alt_text;
@@ -1163,14 +1271,27 @@ function handleSectionSubmit(e) {
   const title = document.getElementById('sectionFormTitleText').value.trim();
   const alt = document.getElementById('sectionFormAlt').value.trim();
 
-  const idx = sections.findIndex(s => s.section_key === key);
-  if (idx !== -1) {
-    sections[idx] = { ...sections[idx], image_url: url, title, alt_text: alt };
+  if (key) {
+    const idx = sections.findIndex(s => s.section_key === key);
+    if (idx !== -1) {
+      sections[idx] = { ...sections[idx], image_url: url, title, alt_text: alt };
+      saveStorage('bcco_cms_sections', sections);
+      logClientActivity('Updated Section Image', `Slot: ${key}`);
+    }
+  } else {
+    const genKey = 'custom_' + Date.now();
+    sections.push({
+      section_key: genKey,
+      title: title || 'Custom Image Slot',
+      subtitle: 'Custom Section',
+      alt_text: alt || title,
+      image_url: url || 'assets/images/placeholder-image.svg'
+    });
     saveStorage('bcco_cms_sections', sections);
-    logClientActivity('Updated Section Image', `Slot: ${key}`);
-    renderSections();
-    closeModal('sectionModal');
+    logClientActivity('Added Section Slot', `Slot: ${title || genKey}`);
   }
+  renderSections();
+  closeModal('sectionModal');
 }
 
 function openNewProfileModal() {
@@ -1180,7 +1301,10 @@ function openNewProfileModal() {
   document.getElementById('profFormCat').value = 'advisor';
   document.getElementById('profFormRole').value = '';
   document.getElementById('profFormOrg').value = '';
-  document.getElementById('profFormPhoto').value = 'assets/images/logo.png';
+  document.getElementById('profFormPhoto').value = 'assets/images/avatar-default.svg';
+  document.getElementById('profFormPreview').src = '../assets/images/avatar-default.svg';
+  const fileIn = document.getElementById('profFormFileInput');
+  if (fileIn) fileIn.value = '';
   openModal('profileModal');
 }
 
@@ -1194,6 +1318,11 @@ function editProfile(id) {
   document.getElementById('profFormRole').value = p.role;
   document.getElementById('profFormOrg').value = p.organization || '';
   document.getElementById('profFormPhoto').value = p.photo_url;
+  const fileIn = document.getElementById('profFormFileInput');
+  if (fileIn) fileIn.value = '';
+  const imgUrl = p.photo_url || 'assets/images/avatar-default.svg';
+  const src = imgUrl.startsWith('data:') ? imgUrl : (imgUrl.startsWith('assets/') ? '../' + imgUrl : imgUrl);
+  document.getElementById('profFormPreview').src = src;
   openModal('profileModal');
 }
 
@@ -1324,21 +1453,25 @@ function saveStorage(key, data) {
   } catch (e) {}
 }
 
-window.openModal = function(id) {
+function openModal(id) {
   const m = document.getElementById(id);
   if (m) {
     m.classList.add('open');
-    m.style.setProperty('display', 'flex', 'important');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
-};
+}
+window.openModal = openModal;
 
-window.closeModal = function(id) {
+function closeModal(id) {
   const m = document.getElementById(id);
   if (m) {
     m.classList.remove('open');
-    m.style.setProperty('display', 'none', 'important');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
   }
-};
+}
+window.closeModal = closeModal;
 
 document.querySelectorAll('.modal, .modal-admin').forEach(m => {
   m.addEventListener('click', e => {
@@ -1346,11 +1479,18 @@ document.querySelectorAll('.modal, .modal-admin').forEach(m => {
   });
 });
 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal.open, .modal-admin.open').forEach(m => closeModal(m.id));
+  }
+});
+
 // Initial Boot
 document.addEventListener('DOMContentLoaded', () => {
   // Ensure all modals are closed on boot
   document.querySelectorAll('.modal, .modal-admin').forEach(m => {
-    m.style.setProperty('display', 'none', 'important');
+    m.classList.remove('open');
+    m.style.display = 'none';
   });
 
   renderDashboard();

@@ -57,20 +57,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Modal helpers
-  window.openModal = function(id) {
+  function openModal(id) {
     const m = document.getElementById(id);
-    if (m) m.classList.add('open');
-  };
+    if (m) {
+      m.classList.add('open');
+      m.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  window.openModal = openModal;
 
-  window.closeModal = function(id) {
+  function closeModal(id) {
     const m = document.getElementById(id);
-    if (m) m.classList.remove('open');
-  };
+    if (m) {
+      m.classList.remove('open');
+      m.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+  window.closeModal = closeModal;
 
   document.querySelectorAll('.modal, .modal-admin').forEach(m => {
     m.addEventListener('click', e => {
-      if (e.target === m) m.classList.remove('open');
+      if (e.target === m) closeModal(m.id);
     });
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal.open, .modal-admin.open').forEach(m => closeModal(m.id));
+    }
   });
 
   // Copy to clipboard helper
