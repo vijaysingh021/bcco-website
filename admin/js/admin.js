@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (m) m.classList.remove('open');
   };
 
-  document.querySelectorAll('.modal-admin').forEach(m => {
+  document.querySelectorAll('.modal, .modal-admin').forEach(m => {
     m.addEventListener('click', e => {
       if (e.target === m) m.classList.remove('open');
     });
@@ -95,3 +95,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+

@@ -32,3 +32,4 @@ Options -Indexes -ExecCGI
         Allow from all
     </IfModule>
 </FilesMatch>
+

@@ -45,3 +45,4 @@ define('LOGIN_LOCKOUT_MINUTES', 15);
 if (file_exists(CMS_PATH . '/includes/config.local.php')) {
     include_once CMS_PATH . '/includes/config.local.php';
 }
+

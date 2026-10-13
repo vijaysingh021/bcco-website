@@ -131,3 +131,4 @@ function log_activity($action, $entityType = '', $entityId = null, $details = ''
         error_log("Activity Log Error: " . $e->getMessage());
     }
 }
+

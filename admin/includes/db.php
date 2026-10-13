@@ -35,3 +35,4 @@ function is_db_connected() {
     $db = get_db_connection();
     return ($db !== null);
 }
+
