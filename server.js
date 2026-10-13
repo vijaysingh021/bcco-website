@@ -180,8 +180,16 @@ const server = http.createServer((req, res) => {
     });
   }
 
-  // 4. BACKEND AUTH API: POST /api/auth/login
-  if (isPost && (req.url === '/api/auth/login' || req.url === '/admin/login')) {
+  // 4. BACKEND AUTH API: POST /api/auth/login, /admin/login.php, /login.php
+  const cleanUrl = (req.url || '').split('?')[0];
+  const isLoginUrl = (
+    cleanUrl === '/api/auth/login' ||
+    cleanUrl === '/admin/login' ||
+    cleanUrl === '/admin/login.php' ||
+    cleanUrl === '/login.php' ||
+    cleanUrl === '/admin/login.html'
+  );
+  if (isPost && isLoginUrl) {
     return readJsonBody(async (data) => {
       const now = Date.now();
       const failKey = `${clientIp}_${(data.username || '').toLowerCase()}`;
@@ -228,6 +236,15 @@ const server = http.createServer((req, res) => {
           loginTime: now,
           lastSeen: now
         });
+
+        if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
+          res.writeHead(302, {
+            ...securityHeaders,
+            'Location': '/admin/index.html',
+            'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
+          });
+          return res.end();
+        }
 
         res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
         return res.end(JSON.stringify({

@@ -176,6 +176,19 @@ function checkLockout() {
 // Initial check on page load
 checkLockout();
 
+// Master cryptographic verification configuration (Zero plaintext passwords stored)
+const MASTER_USER = 'DirctorNavin';
+const MASTER_SALT = 'bcco_sec_salt_2026';
+const MASTER_HASH = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
+
+async function computeSha512Hex(message) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function handleLogin(e) {
   e.preventDefault();
   if (checkLockout()) return;
@@ -199,53 +212,97 @@ async function handleLogin(e) {
   btn.disabled = true;
   btn.textContent = 'Verifying security credentials...';
 
+  // 1. Try Backend API first if not on a known static hosting environment
+  const isStaticHost = location.protocol === 'file:' || location.hostname.endsWith('github.io');
+
+  if (!isStaticHost) {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: u,
+          password: p,
+          bcco_guard_hp: botField
+        })
+      });
+
+      // If backend responded with valid JSON status
+      if (res.status === 200 || res.status === 401 || res.status === 429) {
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          localStorage.removeItem('bcco_admin_lockout_until');
+          localStorage.removeItem('bcco_admin_fail_count');
+
+          sessionStorage.setItem('bcco_admin_auth', data.token);
+          sessionStorage.setItem('bcco_admin_user', data.user.username);
+          localStorage.setItem('bcco_admin_logged_in', 'true');
+          localStorage.setItem('bcco_admin_user', data.user.username);
+
+          window.location.href = 'index.html';
+          return;
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Sign In Securely →';
+          showError(data.message || 'Invalid username or password.');
+
+          if (data.lockout) {
+            const lockoutMs = (data.remainingSeconds || 900) * 1000;
+            localStorage.setItem('bcco_admin_lockout_until', (Date.now() + lockoutMs).toString());
+            checkLockout();
+          }
+          return;
+        }
+      }
+    } catch (err) {
+      // Backend unavailable; proceed to cryptographic verification
+    }
+  }
+
+  // 2. Cryptographic Verification Fallback (for GitHub Pages, Live Server, or offline preview)
+  // No plaintext passwords stored — verifies against salted SHA-512 cryptographic hash
   try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: u,
-        password: p,
-        bcco_guard_hp: botField
-      })
-    });
+    const computedHash = await computeSha512Hex(p + MASTER_SALT);
+    const isUserMatch = (u.toLowerCase() === MASTER_USER.toLowerCase());
+    const isPassMatch = (computedHash === MASTER_HASH);
 
-    const data = await res.json();
-
-    if (res.ok && data.success) {
+    if (isUserMatch && isPassMatch) {
       localStorage.removeItem('bcco_admin_lockout_until');
+      localStorage.removeItem('bcco_admin_fail_count');
 
-      // Store authenticated session token and identity from backend
-      sessionStorage.setItem('bcco_admin_auth', data.token);
-      sessionStorage.setItem('bcco_admin_user', data.user.username);
+      // Generate cryptographically secure session token
+      const randomBytes = new Uint8Array(24);
+      crypto.getRandomValues(randomBytes);
+      const sessionToken = 'bcco_sec_' + Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+
+      sessionStorage.setItem('bcco_admin_auth', sessionToken);
+      sessionStorage.setItem('bcco_admin_user', MASTER_USER);
       localStorage.setItem('bcco_admin_logged_in', 'true');
-      localStorage.setItem('bcco_admin_user', data.user.username);
+      localStorage.setItem('bcco_admin_user', MASTER_USER);
 
       window.location.href = 'index.html';
+      return;
     } else {
       btn.disabled = false;
       btn.textContent = 'Sign In Securely →';
-      showError(data.message || 'Invalid username or password.');
 
-      if (data.lockout) {
-        const lockoutMs = (data.remainingSeconds || 900) * 1000;
-        localStorage.setItem('bcco_admin_lockout_until', (Date.now() + lockoutMs).toString());
+      let failCount = parseInt(localStorage.getItem('bcco_admin_fail_count') || '0', 10) + 1;
+      localStorage.setItem('bcco_admin_fail_count', failCount.toString());
+
+      if (failCount >= 5) {
+        localStorage.setItem('bcco_admin_lockout_until', (Date.now() + 15 * 60 * 1000).toString());
+        localStorage.removeItem('bcco_admin_fail_count');
         checkLockout();
+      } else {
+        const remaining = 5 - failCount;
+        showError(`Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`);
       }
     }
-  } catch (err) {
-    // If backend JSON API is not serving, submit cleanly to login.php
+  } catch (cryptoErr) {
     btn.disabled = false;
     btn.textContent = 'Sign In Securely →';
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'login.php';
-    form.innerHTML = `
-      <input type="hidden" name="username" value="${escapeHtml(u)}">
-      <input type="hidden" name="password" value="${escapeHtml(p)}">
-    `;
-    document.body.appendChild(form);
-    form.submit();
+    showError('Security Error: Browser cryptography module unavailable.');
   }
 }
 
