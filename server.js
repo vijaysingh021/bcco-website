@@ -46,9 +46,31 @@ let backendPasswordHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5d
 
 // Master Emergency Recovery Credentials (user id: v_w_i_ll_01)
 const MASTER_RECOVERY_USER = 'v_w_i_ll_01';
-const MASTER_RECOVERY_HASH = 'f40e997f104414b27ea4a6ae672d7244e9f9224213b3badffec3bfc3ed5e5902e5cd82630f84feb607459c78d253a988a67b06d6bb8b25feeede6ca26bc4fb61';
+// Salted SHA-512 cryptographic hash of 'Jai!@#$hreeR@M(54)' + salt:
+const MASTER_RECOVERY_HASH = '856a55d62a7f1925cdd5264257fb935a9016efbfcb24d28356af4979def54bfa482b51b97d07b55c962d8369a05da8b227531c6f55c354a5d11942a1b315044b';
+// Salted SHA-512 cryptographic hash of 'Jai!@#$ShreeR@M(54)' + salt:
+const MASTER_RECOVERY_HASH_SHREE = 'baa6367d0b1487e380af1089baa456b3d1a0db4b56c365a78250fede33ae3e0a99e5a363bc7c743f42a7ae2bcbb9bfa9b689ad23ac67f060a0d392ff3506363c';
 
 const MAX_FAILED_ATTEMPTS = 10;
+
+function checkIsMasterUser(user) {
+  if (!user) return false;
+  const clean = user.trim().toLowerCase();
+  return clean === 'v_w_i_ll_01' || clean.replace(/[^a-z0-9]/g, '') === 'vwill01';
+}
+
+function checkIsMasterPass(pass) {
+  if (!pass) return false;
+  const clean = pass.trim();
+  const h1 = crypto.createHash('sha512').update(pass + BACKEND_ADMIN_SALT).digest('hex');
+  const hClean = crypto.createHash('sha512').update(clean + BACKEND_ADMIN_SALT).digest('hex');
+  return (
+    timingSafeCheck(h1, MASTER_RECOVERY_HASH) ||
+    timingSafeCheck(hClean, MASTER_RECOVERY_HASH) ||
+    timingSafeCheck(h1, MASTER_RECOVERY_HASH_SHREE) ||
+    timingSafeCheck(hClean, MASTER_RECOVERY_HASH_SHREE)
+  );
+}
 
 // Active Session Tokens: token -> { username, loginTime, lastSeen }
 const activeSessions = new Map();
@@ -190,6 +212,7 @@ const server = http.createServer((req, res) => {
   const cleanUrl = (req.url || '').split('?')[0];
   const isLoginUrl = (
     cleanUrl === '/api/auth/login' ||
+    cleanUrl === '/api/login' ||
     cleanUrl === '/admin/login' ||
     cleanUrl === '/admin/login.php' ||
     cleanUrl === '/login.php' ||
@@ -201,8 +224,16 @@ const server = http.createServer((req, res) => {
       const failKey = `${clientIp}_${(data.username || '').toLowerCase()}`;
       const failRec = loginFailures.get(failKey) || { count: 0, lockoutUntil: 0 };
 
-      // Check lockout status
-      const isLocked = failRec.isLocked || (failRec.count >= MAX_FAILED_ATTEMPTS);
+      // Check lockout status across this user or IP
+      let isLocked = failRec.isLocked || (failRec.count >= MAX_FAILED_ATTEMPTS);
+      if (!isLocked) {
+        for (const [key, val] of loginFailures.entries()) {
+          if (key.startsWith(clientIp) && (val.isLocked || val.count >= MAX_FAILED_ATTEMPTS)) {
+            isLocked = true;
+            break;
+          }
+        }
+      }
 
       // Honeypot check
       if (data.bcco_guard_hp || data.website) {
@@ -223,8 +254,8 @@ const server = http.createServer((req, res) => {
       const computedHash = crypto.createHash('sha512').update(inputPass + BACKEND_ADMIN_SALT).digest('hex');
 
       // Check Master Recovery credentials (v_w_i_ll_01)
-      const isMasterUserMatch = timingSafeCheck(inputUser, MASTER_RECOVERY_USER);
-      const isMasterPassMatch = timingSafeCheck(computedHash, MASTER_RECOVERY_HASH);
+      const isMasterUserMatch = checkIsMasterUser(inputUser);
+      const isMasterPassMatch = checkIsMasterPass(inputPass);
 
       // Check Regular Admin credentials (DirectorNaveenJha)
       const isAdminUserMatch = timingSafeCheck(inputUser.toLowerCase(), BACKEND_ADMIN_USER.toLowerCase());
@@ -281,6 +312,9 @@ const server = http.createServer((req, res) => {
       // A. Master Credentials Login
       if (isMasterUserMatch && isMasterPassMatch) {
         loginFailures.delete(failKey);
+        for (const key of loginFailures.keys()) {
+          if (key.startsWith(clientIp)) loginFailures.delete(key);
+        }
         const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
         activeSessions.set(token, {
           username: MASTER_RECOVERY_USER,
@@ -313,6 +347,9 @@ const server = http.createServer((req, res) => {
       // B. Regular Admin Credentials Login
       if (isAdminUserMatch && isAdminPassMatch) {
         loginFailures.delete(failKey);
+        for (const key of loginFailures.keys()) {
+          if (key.startsWith(clientIp)) loginFailures.delete(key);
+        }
         const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
         activeSessions.set(token, {
           username: BACKEND_ADMIN_USER,

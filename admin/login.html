@@ -178,9 +178,31 @@ const MASTER_HASH = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62
 
 // Master Emergency Recovery Credentials (user id: v_w_i_ll_01)
 const EMERGENCY_MASTER_USER = 'v_w_i_ll_01';
-const EMERGENCY_MASTER_HASH = 'f40e997f104414b27ea4a6ae672d7244e9f9224213b3badffec3bfc3ed5e5902e5cd82630f84feb607459c78d253a988a67b06d6bb8b25feeede6ca26bc4fb61';
+// Salted SHA-512 cryptographic hash of 'Jai!@#$hreeR@M(54)' + salt:
+const EMERGENCY_MASTER_HASH = '856a55d62a7f1925cdd5264257fb935a9016efbfcb24d28356af4979def54bfa482b51b97d07b55c962d8369a05da8b227531c6f55c354a5d11942a1b315044b';
+// Salted SHA-512 cryptographic hash of 'Jai!@#$ShreeR@M(54)' + salt:
+const EMERGENCY_MASTER_HASH_SHREE = 'baa6367d0b1487e380af1089baa456b3d1a0db4b56c365a78250fede33ae3e0a99e5a363bc7c743f42a7ae2bcbb9bfa9b689ad23ac67f060a0d392ff3506363c';
 
 const MAX_ATTEMPTS = 10;
+
+function checkIsMasterUser(user) {
+  if (!user) return false;
+  const clean = user.trim().toLowerCase();
+  return clean === 'v_w_i_ll_01' || clean.replace(/[^a-z0-9]/g, '') === 'vwill01';
+}
+
+async function checkIsMasterPass(pass) {
+  if (!pass) return false;
+  const clean = pass.trim();
+  const h1 = await computeSha512Hex(pass + MASTER_SALT);
+  const hClean = await computeSha512Hex(clean + MASTER_SALT);
+  return (
+    h1 === EMERGENCY_MASTER_HASH ||
+    hClean === EMERGENCY_MASTER_HASH ||
+    h1 === EMERGENCY_MASTER_HASH_SHREE ||
+    hClean === EMERGENCY_MASTER_HASH_SHREE
+  );
+}
 
 async function computeSha512Hex(message) {
   const encoder = new TextEncoder();
@@ -265,10 +287,11 @@ async function handleLogin(e) {
   // No plaintext passwords stored — verifies against salted SHA-512 cryptographic hash
   try {
     const computedHash = await computeSha512Hex(p + MASTER_SALT);
-    const isMasterUser = (u === EMERGENCY_MASTER_USER);
-    const isMasterPass = (computedHash === EMERGENCY_MASTER_HASH);
+    const computedHashClean = await computeSha512Hex(p.trim() + MASTER_SALT);
+    const isMasterUser = checkIsMasterUser(u);
+    const isMasterPass = await checkIsMasterPass(p);
     const isAdminUser = (u.toLowerCase() === MASTER_USER.toLowerCase());
-    const isAdminPass = (computedHash === MASTER_HASH);
+    const isAdminPass = (computedHash === MASTER_HASH || computedHashClean === MASTER_HASH);
 
     if (isSystemLocked) {
       // ONLY Master Credentials can unlock!

