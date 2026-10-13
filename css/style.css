@@ -692,10 +692,16 @@ section[id] {
   flex: none;
 }
 .brand img, .brand-img {
-  height: 42px;
+  height: 48px;
   width: auto;
-  max-width: 185px;
+  max-width: 190px;
   object-fit: contain;
+  display: block;
+  transition: height .3s var(--ease);
+}
+.nav.scrolled .brand img,
+.nav.scrolled .brand-img {
+  height: 42px;
 }
 .brand-fb {
   display: none;
@@ -2971,10 +2977,11 @@ body.menu-open {
   margin-bottom: 22px;
 }
 .footer__plate img, .footer__plate .brand-img {
-  height: 36px;
+  height: 44px;
   width: auto;
-  max-width: 210px;
+  max-width: 200px;
   object-fit: contain;
+  display: block;
 }
 .footer__plate .brand-fb .mk {
   width: 34px;
@@ -4303,7 +4310,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
   .hero__ring { display: none; }
   .inv-grid--4 { grid-template-columns: 1fr; }
   .footer__cols { grid-template-columns: 1fr; }
-  .brand img, .brand-img { max-width: 140px; height: 32px; }
+  .brand img, .brand-img { max-width: 140px; height: 38px; }
   .stats__grid { grid-template-columns: 1fr; }
   .btn--sm { padding: 8px 14px; font-size: 13px; }
   .hero__trust { gap: 10px 14px; }
@@ -4312,7 +4319,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 @media (max-width: 360px) {
   .container, .container--wide { width: calc(100% - 16px); }
   .nav__inner { padding: 10px 8px; gap: 6px; }
-  .brand img, .brand-img { max-width: 120px; height: 28px; }
+  .brand img, .brand-img { max-width: 120px; height: 32px; }
   .nav__actions { gap: 6px; }
   .nav__actions .btn { padding: 7px 10px; font-size: 12px; }
   .hamburger { width: 42px; height: 42px; }

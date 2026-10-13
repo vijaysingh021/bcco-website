@@ -93,12 +93,11 @@ $csrfToken = generate_csrf_token();
       margin-bottom: 28px;
     }
     .login-brand img {
-      width: 72px;
-      height: 72px;
-      border-radius: 14px;
-      margin-bottom: 12px;
+      max-width: 220px;
+      height: 60px;
+      margin-bottom: 14px;
       object-fit: contain;
-      box-shadow: 0 4px 12px rgba(91, 23, 111, 0.2);
+      display: inline-block;
     }
     .login-brand h1 {
       font-size: 1.4rem;

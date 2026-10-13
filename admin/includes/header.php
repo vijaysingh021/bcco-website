@@ -25,7 +25,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   <!-- Sidebar -->
   <aside class="admin-sidebar">
     <a href="index.php" class="sidebar-brand">
-      <img src="../assets/images/logo.png" alt="BCCO Logo">
+      <img src="../assets/images/logo-icon.png" alt="BCCO Logo" style="width:34px;height:34px;border-radius:8px;object-fit:contain;">
       <div>
         <span>BCCO CMS</span>
         <small>Control Center</small>
