@@ -196,16 +196,24 @@
       </span>
     </a>
     <nav class="nav__links" aria-label="Primary">
-      <a class="nav__link" data-route="home" href="#/home">Home</a>
-      <a class="nav__link" data-route="cancer" href="#/cancer">Know Your Cancer</a>
-      <a class="nav__link" data-route="news" href="#/news">Media &amp; News</a>
-      <a class="nav__link" data-route="home-advisory" href="#/home/home-advisory">Board of Advisors</a>
-      <a class="nav__link" data-route="certificates" href="#/certificates">Registration Certificates</a>
-      <a class="nav__link" data-route="careers" href="#/careers">Careers</a>
-      <a class="nav__link" data-route="contact" href="#/contact">Contact Us</a>
+      <a class="nav__link" data-route="home" href="#/home" data-i18n="nav_home">Home</a>
+      <a class="nav__link" data-route="cancer" href="#/cancer" data-i18n="nav_cancer">Know Your Cancer</a>
+      <a class="nav__link" data-route="news" href="#/news" data-i18n="nav_news">Media &amp; News</a>
+      <a class="nav__link" data-route="home-advisory" href="#/home/home-advisory" data-i18n="nav_advisory">Board of Advisors</a>
+      <a class="nav__link" data-route="certificates" href="#/certificates" data-i18n="nav_certificates">Registration Certificates</a>
+      <a class="nav__link" data-route="careers" href="#/careers" data-i18n="nav_careers">Careers</a>
+      <a class="nav__link" data-route="contact" href="#/contact" data-i18n="nav_contact">Contact Us</a>
     </nav>
     <div class="nav__actions">
-      <button class="btn btn--primary btn--sm magnetic" data-open-donate>Donate <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
+      <div class="lang-selector-wrap">
+        <button class="lang-selector-btn" id="langSelectorBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Select Indian Language" title="Change Language / भाषा बदलें">
+          <svg class="icon icon-globe" aria-hidden="true"><use href="#i-globe"/></svg>
+          <span class="lang-selector-btn__label" id="currentLangLabel">English (India)</span>
+          <span class="lang-selector-btn__badge" id="currentLangCode">EN</span>
+          <svg class="icon icon-chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <button class="btn btn--primary btn--sm magnetic" data-open-donate><span data-i18n="nav_donate">Donate</span> <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
       <button class="hamburger" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><span></span><span></span></button>
     </div>
   </div>
@@ -214,16 +222,26 @@
 <!-- Mobile Navigation Menu -->
 <div class="mmenu" id="mobileMenu" aria-label="Mobile navigation">
   <nav aria-label="Mobile primary">
-    <a class="mmenu__link" style="--i:0" href="#/home">Home <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:1" href="#/cancer">Know Your Cancer <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:2" href="#/news">Media &amp; News <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:3" href="#/home/home-advisory">Board of Advisors <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:4" href="#/certificates">Registration Certificates <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:5" href="#/careers">Careers <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
-    <a class="mmenu__link" style="--i:6" href="#/contact">Contact Us <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:0" href="#/home"><span data-i18n="nav_home">Home</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:1" href="#/cancer"><span data-i18n="nav_cancer">Know Your Cancer</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:2" href="#/news"><span data-i18n="nav_news">Media &amp; News</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:3" href="#/home/home-advisory"><span data-i18n="nav_advisory">Board of Advisors</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:4" href="#/certificates"><span data-i18n="nav_certificates">Registration Certificates</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:5" href="#/careers"><span data-i18n="nav_careers">Careers</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
+    <a class="mmenu__link" style="--i:6" href="#/contact"><span data-i18n="nav_contact">Contact Us</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-r"/></svg></a>
   </nav>
   <div class="mmenu__foot">
-    <button class="btn btn--primary btn--lg" data-open-donate>Donate · Support Our Mission <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
+    <div class="mmenu__lang-box">
+      <button class="mmenu__lang-btn" id="mobileLangBtn" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg>
+        <div class="mmenu__lang-btn__info">
+          <span class="mmenu__lang-btn__title">Language / भाषा:</span>
+          <strong class="mmenu__lang-btn__curr" id="mmenuCurrentLang">English (India)</strong>
+        </div>
+        <span class="mmenu__lang-btn__tag">Change / बदलें</span>
+      </button>
+    </div>
+    <button class="btn btn--primary btn--lg" data-open-donate><span data-i18n="nav_donate_support">Donate · Support Our Mission</span> <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
     <p class="mmenu__meta">BCCO Support Line · <a href="tel:+919431893358" style="color:inherit;font-weight:700;">+91 9431893358</a> · <a href="tel:+916123573290" style="color:inherit;font-weight:700;">+91 6123573290</a></p>
   </div>
 </div>
@@ -2293,6 +2311,7 @@
 </noscript>
 
 <!-- Script -->
+<script src="js/i18n.min.js" defer></script>
 <script src="js/main.min.js" defer></script>
 <script src="js/ai-assistant.min.js" defer></script>
 </body>

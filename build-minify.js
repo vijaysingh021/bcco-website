@@ -49,6 +49,15 @@ try {
     fs.writeFileSync(aiJsMinPath, minAiJs, 'utf8');
     console.log(`AI JS minified: ${rawAiJs.length} -> ${minAiJs.length} bytes`);
   }
+
+  const i18nJsPath = path.join(__dirname, 'js', 'i18n.js');
+  const i18nJsMinPath = path.join(__dirname, 'js', 'i18n.min.js');
+  if (fs.existsSync(i18nJsPath)) {
+    const rawI18nJs = fs.readFileSync(i18nJsPath, 'utf8');
+    const minI18nJs = minifyJS(rawI18nJs);
+    fs.writeFileSync(i18nJsMinPath, minI18nJs, 'utf8');
+    console.log(`i18n JS minified: ${rawI18nJs.length} -> ${minI18nJs.length} bytes`);
+  }
 } catch (err) {
   console.error('Minification failed:', err);
   process.exit(1);

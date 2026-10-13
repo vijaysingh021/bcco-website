@@ -59,19 +59,69 @@
   ];
 
   // Initialize Welcome Message
-  function initChat() {
-    bodyEl.innerHTML = `
-      <div class="ai-msg ai-msg--bot">
-        <div class="ai-msg__avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  function initChat(lang) {
+    const curLang = lang || (window.BCCO_I18N ? window.BCCO_I18N.getCurrentLanguage() : 'en-IN');
+    let welcomeHtml = '';
+
+    if (curLang === 'hi' || curLang === 'mai' || curLang === 'doi' || curLang === 'brx') {
+      welcomeHtml = `
+        <div class="ai-msg ai-msg--bot">
+          <div class="ai-msg__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div class="ai-msg__bubble">
+            <p><strong>नमस्ते!</strong> मैं <strong>बीसीसीओ कैंसर केयर एआई सहायक</strong> हूँ।</p>
+            <p>मैं बिहार में कैंसर के लक्षण, अस्पताल मार्गदर्शन, आयुष्मान भारत सरकारी योजनाओं और चिकित्सीय सलाह से जुड़े आपके सभी प्रश्नों का उत्तर दे सकता हूँ।</p>
+            <p style="font-size:0.85em; opacity:0.85; margin-bottom:0;">नीचे दिए गए विषयों में से चुनें या अपना प्रश्न अपनी भाषा में लिखें।</p>
+          </div>
         </div>
-        <div class="ai-msg__bubble">
-          <p><strong>Namaste!</strong> I am the <strong>BCCO Care AI Assistant</strong>.</p>
-          <p>I can help answer your questions about cancer symptoms, hospital guidance in Bihar, government schemes (Ayushman Bharat), or find medical knowledge directly from the web.</p>
-          <p style="font-size:0.85em; opacity:0.85; margin-bottom:0;">Feel free to choose a topic below or type your question in English, Hindi, or Hinglish.</p>
+      `;
+      if (input) input.placeholder = "कैंसर या अस्पताल के बारे में कोई भी प्रश्न पूछें...";
+    } else if (curLang === 'bn' || curLang === 'as' || curLang === 'mni') {
+      welcomeHtml = `
+        <div class="ai-msg ai-msg--bot">
+          <div class="ai-msg__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div class="ai-msg__bubble">
+            <p><strong>নমস্কার!</strong> আমি <strong>বিসিসিও এআই কেয়ার সহকারী</strong>।</p>
+            <p>আমি ক্যান্সারের প্রাথমিক লক্ষণ, বিহারের হাসপাতাল নির্দেশনা এবং সরকারি প্রকল্পের তথ্যে আপনাকে সাহায্য করতে পারি।</p>
+            <p style="font-size:0.85em; opacity:0.85; margin-bottom:0;">নিচে দেওয়া বিষয় নির্বাচন করুন বা আপনার প্রশ্ন লিখুন।</p>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+      if (input) input.placeholder = "ক্যান্সার বা চিকিৎসা সংক্রান্ত প্রশ্ন লিখুন...";
+    } else if (curLang === 'ur' || curLang === 'ks') {
+      welcomeHtml = `
+        <div class="ai-msg ai-msg--bot">
+          <div class="ai-msg__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div class="ai-msg__bubble">
+            <p><strong>السلام علیکم!</strong> میں <strong>بی سی سی او کیئر اے آئی اسسٹنٹ</strong> ہوں۔</p>
+            <p>میں بہار میں کینسر کی علامات، ہسپتال رہنمائی اور آیوشمان بھارت اسکیم کے بارے میں آپ کی مدد کر سکتا ہوں۔</p>
+            <p style="font-size:0.85em; opacity:0.85; margin-bottom:0;">نیچے دیے گئے عنوانات منتخب کریں یا اپنا سوال ٹائپ کریں۔</p>
+          </div>
+        </div>
+      `;
+      if (input) input.placeholder = "کینسر یا ہسپتال کے بارے میں سوال پوچھیں...";
+    } else {
+      welcomeHtml = `
+        <div class="ai-msg ai-msg--bot">
+          <div class="ai-msg__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </div>
+          <div class="ai-msg__bubble">
+            <p><strong>Namaste!</strong> I am the <strong>BCCO Care AI Assistant</strong>.</p>
+            <p>I can help answer your questions about cancer symptoms, hospital guidance in Bihar, government schemes (Ayushman Bharat), or find medical knowledge directly from the web.</p>
+            <p style="font-size:0.85em; opacity:0.85; margin-bottom:0;">Feel free to choose a topic below or type your question in English or your preferred Indian language.</p>
+          </div>
+        </div>
+      `;
+      if (input) input.placeholder = "Ask any question about cancer, doctors...";
+    }
+
+    bodyEl.innerHTML = welcomeHtml;
   }
 
   initChat();
@@ -326,6 +376,15 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && widget.classList.contains('is-open')) {
       closeWidget();
+    }
+  });
+
+  // Multilingual integration listener
+  window.addEventListener('bcco:languageChanged', e => {
+    const lang = (e.detail && e.detail.language) ? e.detail.language : 'en-IN';
+    const userMsgs = bodyEl.querySelectorAll('.ai-msg--user');
+    if (userMsgs.length === 0) {
+      initChat(lang);
     }
   });
 
