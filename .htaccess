@@ -1,15 +1,16 @@
 # ==============================================================================
-# Bihar Cancer Care Organisation (BCCO) - Apache .htaccess Configuration
-# Optimized for GoDaddy cPanel Linux Hosting (Apache 2.4+)
+# Bihar Cancer Care Organisation (BCCO) - Enterprise Apache Security & Performance
+# Hardened for GoDaddy cPanel Linux Hosting (Apache 2.4+)
+# Includes: DDoS Mitigation, Anti-Bruteforce, Bot Blocking, WAF Rules, & Security Headers
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 1. DIRECTORY LISTING & HIDDEN FILES PROTECTION
+# 1. SERVER SIGNATURE & DIRECTORY PROTECTION
 # ------------------------------------------------------------------------------
-Options -Indexes
-Options -MultiViews
+ServerSignature Off
+Options -Indexes -MultiViews
 
-# Block access to hidden files (.git, .env, .htaccess, etc.)
+# Block access to hidden files and directories (.git, .env, .htaccess, etc.)
 <FilesMatch "^\.">
     <IfModule mod_authz_core.c>
         Require all denied
@@ -20,35 +21,99 @@ Options -MultiViews
     </IfModule>
 </FilesMatch>
 
-# ------------------------------------------------------------------------------
-# 2. CUSTOM ERROR DOCUMENT
-# ------------------------------------------------------------------------------
-# In cPanel public_html, this points to 404.html
-ErrorDocument 404 /404.html
+# Block direct access to sensitive configuration, database and project files
+<FilesMatch "(?i)\.(env|config|ini|log|sql|sqlite|db|bak|backup|old|orig|sh|bash|yml|yaml|dist)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Block server & build script files from public execution
+<FilesMatch "^(server\.js|build-minify\.js|test_.*\.js|composer\.json|package\.json|package-lock\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
 
 # ------------------------------------------------------------------------------
-# 3. CANONICAL REDIRECTS (APEX NON-WWW & HTTPS)
+# 2. DDOS MITIGATION & RESOURCE EXHAUSTION PROTECTION
+# ------------------------------------------------------------------------------
+# Limit request body to 10MB to prevent memory exhaustion / slow HTTP POST attacks
+LimitRequestBody 10485760
+
+# ------------------------------------------------------------------------------
+# 3. CUSTOM ERROR DOCUMENTS
+# ------------------------------------------------------------------------------
+ErrorDocument 400 /404.html
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /404.html
+
+# ------------------------------------------------------------------------------
+# 4. WEB APPLICATION FIREWALL (WAF) & ATTACK SHIELD
 # ------------------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
+    # 4.1 Block Unsafe HTTP Methods (prevent TRACE/TRACK/CONNECT abuse)
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|CONNECT|DEBUG) [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.2 Block Known Vulnerability & Scanner Probe URLs
+    RewriteCond %{REQUEST_URI} ^/(wp-login|wp-admin|xmlrpc\.php|wp-content|phpmyadmin|pma|adminer|cgi-bin|\.git|\.env|core\.php|config\.php) [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.3 Block Bad User-Agents (DDoS Flooders, Exploit Scanners, Scrapers)
+    RewriteCond %{HTTP_USER_AGENT} (sqlmap|nikto|wpscan|havij|acunetix|masscan|zgrab|nmap|dirbuster|gobuster|libwww-perl|Morfeus|ZmEu|scan|miner|python-urllib|perl|curl|Go-http-client) [NC]
+    # Allow legitimate bots (Google, Bing, Yahoo, DuckDuckGo)
+    RewriteCond %{HTTP_USER_AGENT} !(Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot) [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.4 Block SQL Injection Patterns in Query Strings
+    RewriteCond %{QUERY_STRING} (union.*select|information_schema|benchmark\(|sleep\(|concat\(|drop\s+table|insert\s+into|select.*from|char\(|waitfor\s+delay) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\%27|\')(\s*)(or|and)(\s*)(\%27|\'|[0-9]+=[0-9]+) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\;|<|>|\'|\"|\)|%0A|%0D|%22|%27|%3C|%3E|%00).*(/\*|union|select|insert|cast|set|declare|drop|md5|benchmark) [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.5 Block Cross-Site Scripting (XSS) Patterns in Query Strings
+    RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (javascript:|vbscript:|onload=|onerror=|onclick=|document\.cookie) [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.6 Block Path Traversal & Remote File Inclusion (RFI)
+    RewriteCond %{QUERY_STRING} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e\/) [NC,OR]
+    RewriteCond %{QUERY_STRING} (boot\.ini|etc/passwd|win\.ini|windows/system32) [NC,OR]
+    RewriteCond %{QUERY_STRING} =(https?|ftp|php): [NC]
+    RewriteRule ^ - [F,L]
+
+    # 4.7 Block Base64 Execution Exploits
+    RewriteCond %{QUERY_STRING} (base64_encode|base64_decode|eval\(|gzinflate) [NC]
+    RewriteRule ^ - [F,L]
+
+    # --------------------------------------------------------------------------
+    # 5. CANONICAL REDIRECTS (APEX NON-WWW & HTTPS)
+    # --------------------------------------------------------------------------
     # 1. Canonical Apex Redirect (redirect www.bcco.ngo to bcco.ngo)
-    # Preserves current request scheme to avoid SSL errors during initial setup
     RewriteCond %{HTTP_HOST} ^www\.bcco\.ngo$ [NC]
     RewriteRule ^ %{REQUEST_SCHEME}://bcco.ngo%{REQUEST_URI} [L,NE,R=301]
 
     # 2. Force HTTPS Redirect (Canonical: https://bcco.ngo/)
-    # PRE-DEPLOYMENT SAFETY DIRECTIVE:
-    # Do not enable HTTPS redirection until DNS has fully propagated to GoDaddy
-    # and a valid SSL certificate is issued & verified active in cPanel (AutoSSL).
-    # Once SSL is confirmed active, uncomment the two lines below:
+    # Once SSL is confirmed active on GoDaddy/cPanel, uncomment the two lines below:
     # RewriteCond %{HTTPS} off
     # RewriteRule ^ https://bcco.ngo%{REQUEST_URI} [L,NE,R=301]
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 4. COMPRESSION (MOD_DEFLATE)
+# 6. COMPRESSION (MOD_DEFLATE)
 # ------------------------------------------------------------------------------
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html
@@ -69,13 +134,13 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 5. BROWSER CACHING (MOD_EXPIRES & CACHE-CONTROL)
+# 7. BROWSER CACHING (MOD_EXPIRES & CACHE-CONTROL)
 # ------------------------------------------------------------------------------
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault "access plus 1 month"
 
-    # HTML: Short cache (no-cache / revalidate)
+    # HTML: Short cache (revalidate)
     ExpiresByType text/html "access plus 0 seconds"
 
     # CSS & JavaScript: 1 year (static versioned)
@@ -115,17 +180,23 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 6. SECURITY HEADERS
+# 8. HARDENED SECURITY HEADERS
 # ------------------------------------------------------------------------------
 <IfModule mod_headers.c>
     # Prevent MIME type sniffing
     Header set X-Content-Type-Options "nosniff"
 
-    # Clickjacking protection
+    # Prevent clickjacking
     Header set X-Frame-Options "SAMEORIGIN"
+
+    # Cross-Site Scripting filter
+    Header set X-XSS-Protection "1; mode=block"
 
     # Referrer policy
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Cross-Origin isolation
+    Header set Cross-Origin-Opener-Policy "same-origin"
 
     # Restrict risky browser features
     Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
@@ -135,11 +206,10 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 7. MIME TYPES FOR MODERN ASSETS
+# 9. MIME TYPES FOR MODERN ASSETS
 # ------------------------------------------------------------------------------
 <IfModule mod_mime.c>
     AddType font/woff2 .woff2
     AddType application/manifest+json .webmanifest
     AddType image/svg+xml .svg
 </IfModule>
-

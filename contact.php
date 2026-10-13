@@ -11,9 +11,11 @@
 $TO_EMAIL = "bccoofficial01@gmail.com";
 $SITE_NAME = "Bihar Cancer Care Organisation";
 
-// Set JSON response header
+// Set JSON response header & security headers
 header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -32,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $honeypot = isset($_POST['website']) ? trim($_POST['website']) : '';
 if (!empty($honeypot)) {
     // Artificial delay to deter bots, then return success response
-    sleep(1);
+    sleep(2);
     echo json_encode([
         'success' => true,
         'message' => 'Thank you for reaching out.'
@@ -41,7 +43,10 @@ if (!empty($honeypot)) {
 }
 
 // 2. IP-based rate limiting (Max 5 requests per 10 minutes per IP)
-$clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$clientIp = !empty($_SERVER['HTTP_CF_CONNECTING_IP']) 
+    ? $_SERVER['HTTP_CF_CONNECTING_IP'] 
+    : (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0] : ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'));
+$clientIp = filter_var(trim($clientIp), FILTER_VALIDATE_IP) ? trim($clientIp) : '0.0.0.0';
 $rateLimitKey = md5('bcco_rl_' . $clientIp);
 $tempDir = sys_get_temp_dir();
 $rateLimitFile = $tempDir . DIRECTORY_SEPARATOR . 'bcco_rl_' . $rateLimitKey . '.json';

@@ -1,9 +1,17 @@
 # ==============================================================================
-# BCCO Uploads Directory - Apache Execution Protection
+# BCCO Uploads Directory - Strict Execution & Exploitation Lockdown
+# Ensures files uploaded by users can NEVER execute server-side code
 # ==============================================================================
-# Prevent script execution in upload directory to prevent remote code execution
-Options -Indexes -ExecCGI
 
+# Disable directory indexing and CGI execution
+Options -Indexes -ExecCGI -Includes
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .sh .bash .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .sh .bash .phar
+
+# Turn off PHP engines in Apache
+<IfModule mod_php5.c>
+    php_flag engine off
+</IfModule>
 <IfModule mod_php7.c>
     php_flag engine off
 </IfModule>
@@ -11,8 +19,8 @@ Options -Indexes -ExecCGI
     php_flag engine off
 </IfModule>
 
-# Block access to any executable scripts
-<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|cgi|pl|py|sh|bash|exe|bat)$">
+# Block all script and executable file extensions
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|phar|cgi|pl|py|sh|bash|exe|bat|cmd|com|msi|vbs|vbe|wsf|wsh|hta|jar|jsp|asp|aspx|cer|csr|shtml|env|config|sql|log|bak)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -22,7 +30,7 @@ Options -Indexes -ExecCGI
     </IfModule>
 </FilesMatch>
 
-# Only allow safe image file types
+# Only allow safe static image assets
 <FilesMatch "(?i)\.(jpg|jpeg|png|webp|gif|ico|svg)$">
     <IfModule mod_authz_core.c>
         Require all granted
@@ -33,3 +41,9 @@ Options -Indexes -ExecCGI
     </IfModule>
 </FilesMatch>
 
+# Set strict security headers on uploaded files
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Disposition "inline"
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>

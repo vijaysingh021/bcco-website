@@ -14,48 +14,81 @@ if (is_logged_in()) {
 $error = '';
 $ip = get_client_ip();
 
+// Pre-check throttle status for display
+$throttle = check_login_throttle($ip);
+if (!$throttle['allowed']) {
+    $error = "Security Lockout: Too many failed login attempts from this network. Please wait {$throttle['remaining_minutes']} minute(s) before trying again.";
+}
+
 // Handle login POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrfToken = $_POST['csrf_token'] ?? '';
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (!verify_csrf_token($csrfToken)) {
-        $error = 'Security session expired. Please refresh and try again.';
-    } elseif (!check_login_throttle($ip)) {
-        $error = 'Too many failed login attempts. Please wait 15 minutes before trying again.';
-    } elseif (empty($username) || empty($password)) {
-        $error = 'Please enter both username and password.';
+    // 1. Honeypot bot trap
+    $honeypot = trim($_POST['bcco_guard_hp'] ?? '');
+    if (!empty($honeypot)) {
+        sleep(2);
+        $error = 'Authentication verification failed. Please try again.';
     } else {
-        $db = get_db_connection();
-        if (!$db) {
-            $error = 'Database connection failed. Please ensure the database credentials in admin/includes/config.php are correct.';
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        // Re-check throttle with username
+        $userThrottle = check_login_throttle($ip, $username);
+
+        if (!verify_csrf_token($csrfToken)) {
+            $error = 'Security session expired. Please refresh the page and try again.';
+        } elseif (!$userThrottle['allowed']) {
+            $error = "Security Lockout: Too many failed attempts. Please wait {$userThrottle['remaining_minutes']} minute(s) before trying again.";
+        } elseif (empty($username) || empty($password)) {
+            $error = 'Please enter both username and password.';
         } else {
-            $stmt = $db->prepare("SELECT * FROM `cms_users` WHERE (`username` = ? OR `email` = ?) AND `status` = 'active' LIMIT 1");
-            $stmt->execute([$username, $username]);
-            $user = $stmt->fetch();
-
-            if ($user && password_verify($password, $user['password_hash'])) {
-                // Successful login
-                session_regenerate_id(true);
-                $_SESSION['cms_user_id'] = $user['id'];
-                $_SESSION['cms_username'] = $user['username'];
-                $_SESSION['cms_email'] = $user['email'];
-                $_SESSION['cms_role'] = $user['role'];
-
-                // Update last login
-                $updateStmt = $db->prepare("UPDATE `cms_users` SET `last_login` = NOW() WHERE `id` = ?");
-                $updateStmt->execute([$user['id']]);
-
-                clear_failed_logins($ip);
-                log_activity('login', 'cms_users', $user['id'], 'User logged in successfully');
-
-                header('Location: index.php');
-                exit;
+            $db = get_db_connection();
+            if (!$db) {
+                $error = 'Database connection failed. Please ensure the database credentials in admin/includes/config.php are correct.';
             } else {
-                record_failed_login($ip);
-                log_activity('login_failed', 'cms_users', null, "Failed login attempt for user: {$username}");
-                $error = 'Invalid username or password.';
+                $stmt = $db->prepare("
+                    SELECT * FROM `cms_users` 
+                    WHERE (`username` = ? OR `email` = ?) AND `status` = 'active' 
+                    LIMIT 1
+                ");
+                $stmt->execute([$username, $username]);
+                $user = $stmt->fetch();
+
+                if ($user && password_verify($password, $user['password_hash'])) {
+                    // Successful authentication: regenerate session ID to prevent fixation
+                    session_regenerate_id(true);
+                    $_SESSION['cms_user_id'] = $user['id'];
+                    $_SESSION['cms_username'] = $user['username'];
+                    $_SESSION['cms_email'] = $user['email'];
+                    $_SESSION['cms_role'] = $user['role'];
+                    $_SESSION['cms_ua_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown_agent');
+                    $_SESSION['cms_last_active'] = time();
+
+                    // Update last login timestamp
+                    $updateStmt = $db->prepare("UPDATE `cms_users` SET `last_login` = NOW() WHERE `id` = ?");
+                    $updateStmt->execute([$user['id']]);
+
+                    clear_failed_logins($ip, $username);
+                    log_activity('login', 'cms_users', $user['id'], 'User logged in successfully');
+
+                    header('Location: index.php');
+                    exit;
+                } else {
+                    record_failed_login($ip, $username);
+                    log_activity('login_failed', 'cms_users', null, "Failed login attempt for user: {$username}");
+
+                    $currentCount = $userThrottle['attempts'] + 1;
+                    $remaining = (defined('MAX_LOGIN_ATTEMPTS') ? MAX_LOGIN_ATTEMPTS : 5) - $currentCount;
+
+                    if ($remaining > 0 && $remaining <= 3) {
+                        $error = "Invalid username or password. Warning: {$remaining} attempt(s) remaining before temporary lockout.";
+                    } elseif ($remaining <= 0) {
+                        $lockMinutes = defined('LOGIN_LOCKOUT_MINUTES') ? LOGIN_LOCKOUT_MINUTES : 15;
+                        $error = "Account locked out due to multiple failed attempts. Please wait {$lockMinutes} minutes.";
+                    } else {
+                        $error = 'Invalid username or password.';
+                    }
+                }
             }
         }
     }
@@ -110,6 +143,15 @@ $csrfToken = generate_csrf_token();
       color: #718096;
       margin: 4px 0 0 0;
     }
+    .security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #718096;
+      margin-top: 18px;
+    }
   </style>
 </head>
 <body>
@@ -118,7 +160,7 @@ $csrfToken = generate_csrf_token();
   <div class="login-brand">
     <img src="../assets/images/logo.png" alt="BCCO Logo">
     <h1>BCCO Admin CMS</h1>
-    <p>Sign in to manage website content and media</p>
+    <p>Secure control center for Bihar Cancer Care</p>
   </div>
 
   <?php if (!empty($error)): ?>
@@ -129,6 +171,9 @@ $csrfToken = generate_csrf_token();
 
   <form method="POST" action="login.php" autocomplete="on">
     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
+    
+    <!-- Honeypot Bot Trap (invisible to humans) -->
+    <input type="text" name="bcco_guard_hp" style="display:none!important;" tabindex="-1" autocomplete="off" aria-hidden="true">
 
     <div class="form-group">
       <label class="form-label" for="username">Username or Email</label>
@@ -141,9 +186,14 @@ $csrfToken = generate_csrf_token();
     </div>
 
     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1rem;">
-      Sign In to Dashboard
+      Sign In Securely &rarr;
     </button>
   </form>
+
+  <div class="security-badge">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Protected by Anti-Bruteforce &amp; WAF Rate Limiting</span>
+  </div>
 
   <div style="margin-top: 24px; text-align: center; border-top: 1px solid #E2E8F0; padding-top: 16px;">
     <a href="../" style="font-size: 0.85rem; color: #5B176F; text-decoration: none; font-weight: 600;">
@@ -154,4 +204,3 @@ $csrfToken = generate_csrf_token();
 
 </body>
 </html>
-

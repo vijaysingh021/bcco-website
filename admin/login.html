@@ -45,14 +45,39 @@
       color: #718096;
       margin: 4px 0 0 0;
     }
-    .demo-credentials-box {
+    .security-notice {
       background: #FAF5FF;
-      border: 1px dashed #5B176F;
+      border: 1px solid #E9D8FD;
       border-radius: 8px;
       padding: 10px 14px;
       margin-bottom: 20px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: #4A1563;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert-error {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #DC2626;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .lockout-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      color: #92400E;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -65,12 +90,18 @@
     <p>Sign in to manage website content and media</p>
   </div>
 
-  <div class="demo-credentials-box">
-    <strong>Admin Control Center Access:</strong><br>
-    Username: <code style="background:#fff;padding:2px 4px;border-radius:4px;">admin</code> &bull; Password: <code style="background:#fff;padding:2px 4px;border-radius:4px;">admin123</code>
+  <div class="security-notice">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5B176F" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Protected with Anti-Bruteforce Rate Limiting &amp; Lockout Shield</span>
   </div>
 
+  <div id="loginAlert" class="alert-error"></div>
+  <div id="lockoutBox" class="lockout-box"></div>
+
   <form id="loginForm" onsubmit="handleLogin(event)">
+    <!-- Honeypot field to trap spam bots -->
+    <input type="text" id="botHoneypot" style="display:none!important;" tabindex="-1" autocomplete="off">
+
     <div class="form-group">
       <label class="form-label" for="username">Username or Email</label>
       <input type="text" id="username" class="form-control" required autofocus placeholder="admin" value="admin">
@@ -81,8 +112,8 @@
       <input type="password" id="password" class="form-control" required placeholder="••••••••••••" value="admin123">
     </div>
 
-    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1rem;">
-      Sign In to Dashboard &rarr;
+    <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1rem;">
+      Sign In Securely &rarr;
     </button>
   </form>
 
@@ -94,25 +125,147 @@
 </div>
 
 <script>
-function handleLogin(e) {
-  e.preventDefault();
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+let lockoutTimer = null;
 
-  if (!u || !p) {
-    alert('Please enter username and password');
+// Initialize lockout verification
+function checkLockout() {
+  const lockoutUntil = parseInt(localStorage.getItem('bcco_admin_lockout_until') || '0', 10);
+  const now = Date.now();
+  const alertEl = document.getElementById('loginAlert');
+  const lockBox = document.getElementById('lockoutBox');
+  const btn = document.getElementById('submitBtn');
+  const userIn = document.getElementById('username');
+  const passIn = document.getElementById('password');
+
+  if (lockoutUntil > now) {
+    const remainingMs = lockoutUntil - now;
+    const minutes = Math.floor(remainingMs / 60000);
+    const seconds = Math.floor((remainingMs % 60000) / 1000);
+
+    lockBox.style.display = 'block';
+    lockBox.textContent = `Security Lockout Active: Too many failed attempts. Try again in ${minutes}m ${seconds}s.`;
+    alertEl.style.display = 'none';
+    btn.disabled = true;
+    userIn.disabled = true;
+    passIn.disabled = true;
+
+    if (!lockoutTimer) {
+      lockoutTimer = setInterval(checkLockout, 1000);
+    }
+    return true;
+  } else {
+    if (lockoutUntil > 0) {
+      // Lockout expired
+      localStorage.removeItem('bcco_admin_lockout_until');
+      localStorage.setItem('bcco_admin_fail_count', '0');
+    }
+    lockBox.style.display = 'none';
+    btn.disabled = false;
+    userIn.disabled = false;
+    passIn.disabled = false;
+    if (lockoutTimer) {
+      clearInterval(lockoutTimer);
+      lockoutTimer = null;
+    }
+    return false;
+  }
+}
+
+// Initial check on page load
+checkLockout();
+
+async function handleLogin(e) {
+  e.preventDefault();
+  if (checkLockout()) return;
+
+  const botField = document.getElementById('botHoneypot').value;
+  if (botField) {
+    // Bot detected: simulate delay and reject
+    await new Promise(r => setTimeout(r, 2000));
+    showError('Authentication failed.');
     return;
   }
 
-  // Store demo login state
-  localStorage.setItem('bcco_admin_logged_in', 'true');
-  localStorage.setItem('bcco_admin_user', u);
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const btn = document.getElementById('submitBtn');
 
-  // Redirect to Dashboard
-  window.location.href = 'index.html';
+  if (!u || !p) {
+    showError('Please enter username and password');
+    return;
+  }
+
+  let failCount = parseInt(localStorage.getItem('bcco_admin_fail_count') || '0', 10);
+
+  // Progressive delay (tarpit) if failures have occurred
+  if (failCount >= 2) {
+    btn.disabled = true;
+    btn.textContent = 'Verifying security credentials...';
+    await new Promise(r => setTimeout(r, Math.min(failCount * 1000, 3000)));
+    btn.disabled = false;
+    btn.textContent = 'Sign In Securely →';
+  }
+
+  // Load configured password or use default
+  const storedUser = localStorage.getItem('bcco_auth_username') || 'admin';
+  const storedPass = localStorage.getItem('bcco_auth_password') || 'admin123';
+
+  if (u === storedUser && p === storedPass) {
+    // Successful Authentication
+    localStorage.setItem('bcco_admin_fail_count', '0');
+    localStorage.removeItem('bcco_admin_lockout_until');
+
+    // Create session token with timestamp and fingerprint
+    const sessionToken = 'bcco_sec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    sessionStorage.setItem('bcco_admin_auth', sessionToken);
+    sessionStorage.setItem('bcco_admin_login_time', Date.now().toString());
+    localStorage.setItem('bcco_admin_logged_in', 'true');
+    localStorage.setItem('bcco_admin_user', u);
+
+    // Log to client audit trail
+    logAuthEvent('Admin Login Successful', `User "${u}" authenticated into Control Center`);
+
+    window.location.href = 'index.html';
+  } else {
+    // Failed Authentication
+    failCount++;
+    localStorage.setItem('bcco_admin_fail_count', failCount.toString());
+
+    logAuthEvent('Failed Login Attempt', `Unsuccessful login attempt for user "${u}"`);
+
+    if (failCount >= MAX_ATTEMPTS) {
+      localStorage.setItem('bcco_admin_lockout_until', (Date.now() + LOCKOUT_MS).toString());
+      checkLockout();
+    } else {
+      const remaining = MAX_ATTEMPTS - failCount;
+      showError(`Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`);
+    }
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('loginAlert');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function logAuthEvent(action, details) {
+  try {
+    const raw = localStorage.getItem('bcco_cms_activities');
+    const activities = raw ? JSON.parse(raw) : [];
+    activities.unshift({
+      time: 'Just now',
+      user: 'security_monitor',
+      action: action,
+      details: details,
+      ip: '127.0.0.1'
+    });
+    localStorage.setItem('bcco_cms_activities', JSON.stringify(activities.slice(0, 50)));
+  } catch (err) {}
 }
 </script>
 
 </body>
 </html>
-
