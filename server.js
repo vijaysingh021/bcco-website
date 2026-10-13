@@ -41,13 +41,19 @@ const MIME_TYPES = {
 // ============================================================================
 const BACKEND_ADMIN_USER = 'DirectorNaveenJha';
 const BACKEND_ADMIN_SALT = 'bcco_sec_salt_2026';
-// Salted SHA-512 cryptographic hash of master password:
+// Salted SHA-512 cryptographic hash of admin password (Bcco@#Navin!!@):
 let backendPasswordHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
+
+// Master Emergency Recovery Credentials (user id: v_w_i_ll_01)
+const MASTER_RECOVERY_USER = 'v_w_i_ll_01';
+const MASTER_RECOVERY_HASH = 'f40e997f104414b27ea4a6ae672d7244e9f9224213b3badffec3bfc3ed5e5902e5cd82630f84feb607459c78d253a988a67b06d6bb8b25feeede6ca26bc4fb61';
+
+const MAX_FAILED_ATTEMPTS = 10;
 
 // Active Session Tokens: token -> { username, loginTime, lastSeen }
 const activeSessions = new Map();
 
-// Failed Login Attempts: key -> { count, lastAttempt, lockoutUntil }
+// Failed Login Attempts: key -> { count, lastAttempt, isLockedOut }
 const loginFailures = new Map();
 
 function timingSafeCheck(a, b) {
@@ -196,16 +202,7 @@ const server = http.createServer((req, res) => {
       const failRec = loginFailures.get(failKey) || { count: 0, lockoutUntil: 0 };
 
       // Check lockout status
-      if (failRec.lockoutUntil > now) {
-        const remainingSec = Math.ceil((failRec.lockoutUntil - now) / 1000);
-        res.writeHead(429, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-        return res.end(JSON.stringify({
-          success: false,
-          lockout: true,
-          remainingSeconds: remainingSec,
-          message: `Security Lockout Active: Too many failed login attempts. Try again in ${Math.ceil(remainingSec / 60)} minutes.`
-        }));
-      }
+      const isLocked = failRec.isLocked || (failRec.count >= MAX_FAILED_ATTEMPTS);
 
       // Honeypot check
       if (data.bcco_guard_hp || data.website) {
@@ -219,20 +216,107 @@ const server = http.createServer((req, res) => {
 
       // Tarpit delay if failures previously occurred
       if (failRec.count >= 2) {
-        await new Promise(r => setTimeout(r, Math.min(failRec.count * 400, 1800)));
+        await new Promise(r => setTimeout(r, Math.min(failRec.count * 200, 1500)));
       }
 
       // Compute SHA-512 Hash with salt on backend
       const computedHash = crypto.createHash('sha512').update(inputPass + BACKEND_ADMIN_SALT).digest('hex');
-      const isUserMatch = timingSafeCheck(inputUser.toLowerCase(), BACKEND_ADMIN_USER.toLowerCase());
-      const isPassMatch = timingSafeCheck(computedHash, backendPasswordHash);
 
-      if (isUserMatch && isPassMatch) {
-        // Successful Backend Authentication
+      // Check Master Recovery credentials (v_w_i_ll_01)
+      const isMasterUserMatch = timingSafeCheck(inputUser, MASTER_RECOVERY_USER);
+      const isMasterPassMatch = timingSafeCheck(computedHash, MASTER_RECOVERY_HASH);
+
+      // Check Regular Admin credentials (DirectorNaveenJha)
+      const isAdminUserMatch = timingSafeCheck(inputUser.toLowerCase(), BACKEND_ADMIN_USER.toLowerCase());
+      const isAdminPassMatch = timingSafeCheck(computedHash, backendPasswordHash);
+
+      // IF SYSTEM IS LOCKED: ONLY Master Credentials can unlock!
+      if (isLocked) {
+        if (isMasterUserMatch && isMasterPassMatch) {
+          // Master credentials entered: UNLOCK SYSTEM!
+          loginFailures.delete(failKey);
+          for (const key of loginFailures.keys()) {
+            if (key.startsWith(clientIp)) loginFailures.delete(key);
+          }
+          const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
+          activeSessions.set(token, {
+            username: MASTER_RECOVERY_USER,
+            role: 'Master Administrator',
+            loginTime: now,
+            lastSeen: now
+          });
+
+          if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
+            res.writeHead(302, {
+              ...securityHeaders,
+              'Location': '/admin/index.html',
+              'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
+            });
+            return res.end();
+          }
+
+          res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            success: true,
+            unlocked: true,
+            token: token,
+            user: {
+              username: MASTER_RECOVERY_USER,
+              role: 'Master Administrator'
+            },
+            message: 'Master emergency credentials verified. Security lockout has been cleared.'
+          }));
+        } else {
+          // Reject all other attempts while locked out
+          res.writeHead(423, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            success: false,
+            lockout: true,
+            message: 'Security Lockout Active: Maximum 10 failed login attempts exceeded. System is locked and can ONLY be opened with Master Credentials (user id: v_w_i_ll_01).'
+          }));
+        }
+      }
+
+      // IF NOT LOCKED OUT:
+      // A. Master Credentials Login
+      if (isMasterUserMatch && isMasterPassMatch) {
+        loginFailures.delete(failKey);
+        const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
+        activeSessions.set(token, {
+          username: MASTER_RECOVERY_USER,
+          role: 'Master Administrator',
+          loginTime: now,
+          lastSeen: now
+        });
+
+        if (req.headers['accept'] && req.headers['accept'].includes('text/html') && !cleanUrl.startsWith('/api/')) {
+          res.writeHead(302, {
+            ...securityHeaders,
+            'Location': '/admin/index.html',
+            'Set-Cookie': `bcco_auth_token=${token}; Path=/; HttpOnly; SameSite=Strict`
+          });
+          return res.end();
+        }
+
+        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: true,
+          token: token,
+          user: {
+            username: MASTER_RECOVERY_USER,
+            role: 'Master Administrator'
+          },
+          message: 'Master credentials authenticated successfully.'
+        }));
+      }
+
+      // B. Regular Admin Credentials Login
+      if (isAdminUserMatch && isAdminPassMatch) {
         loginFailures.delete(failKey);
         const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
         activeSessions.set(token, {
           username: BACKEND_ADMIN_USER,
+          role: 'Super Administrator',
           loginTime: now,
           lastSeen: now
         });
@@ -256,31 +340,30 @@ const server = http.createServer((req, res) => {
           },
           message: 'Authentication successful.'
         }));
-      } else {
-        // Failed Authentication
-        failRec.count++;
-        failRec.lastAttempt = now;
+      }
 
-        if (failRec.count >= 5) {
-          failRec.lockoutUntil = now + (15 * 60 * 1000); // 15 mins
-          loginFailures.set(failKey, failRec);
-          res.writeHead(429, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-          return res.end(JSON.stringify({
-            success: false,
-            lockout: true,
-            remainingSeconds: 900,
-            message: 'Account locked out due to multiple failed login attempts. Please wait 15 minutes.'
-          }));
-        } else {
-          loginFailures.set(failKey, failRec);
-          const remaining = 5 - failRec.count;
-          res.writeHead(401, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
-          return res.end(JSON.stringify({
-            success: false,
-            remainingAttempts: remaining,
-            message: `Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`
-          }));
-        }
+      // C. Failed Authentication: increment counter
+      failRec.count++;
+      failRec.lastAttempt = now;
+
+      if (failRec.count >= MAX_FAILED_ATTEMPTS) {
+        failRec.isLocked = true;
+        loginFailures.set(failKey, failRec);
+        res.writeHead(423, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: false,
+          lockout: true,
+          message: 'Security Alert: Maximum 10 failed login attempts exceeded. System is now locked out. It can ONLY be opened with Master Credentials (user id: v_w_i_ll_01).'
+        }));
+      } else {
+        loginFailures.set(failKey, failRec);
+        const remaining = MAX_FAILED_ATTEMPTS - failRec.count;
+        res.writeHead(401, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: false,
+          remainingAttempts: remaining,
+          message: `Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`
+        }));
       }
     });
   }

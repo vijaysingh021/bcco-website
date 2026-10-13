@@ -38,7 +38,7 @@ define('ALLOWED_MIME_TYPES', [
 
 // Security settings
 define('SESSION_LIFETIME', 86400); // 24 hours
-define('MAX_LOGIN_ATTEMPTS', 5);
+define('MAX_LOGIN_ATTEMPTS', 10);
 define('LOGIN_LOCKOUT_MINUTES', 15);
 
 // Check if a local override configuration file exists

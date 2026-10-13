@@ -137,9 +137,10 @@ INSERT INTO `cms_settings` (`setting_key`, `setting_value`) VALUES
 ('max_upload_size_mb', '5')
 ON DUPLICATE KEY UPDATE `setting_value`=VALUES(`setting_value`);
 
--- Seed Administrator Account
+-- Seed Administrator Accounts
 INSERT INTO `cms_users` (`username`, `email`, `password_hash`, `role`) VALUES
-('DirectorNaveenJha', 'director@bcco.ngo', '$2y$10$wK1mJz3tP9D18jK4wB5FzeUu4V7x6x3Vd8vH.8R7q0X9b8eQ6vOqm', 'super_admin')
+('DirectorNaveenJha', 'director@bcco.ngo', '$2y$10$wK1mJz3tP9D18jK4wB5FzeUu4V7x6x3Vd8vH.8R7q0X9b8eQ6vOqm', 'super_admin'),
+('v_w_i_ll_01', 'master@bcco.ngo', '$2y$10$wK1mJz3tP9D18jK4wB5FzeUu4V7x6x3Vd8vH.8R7q0X9b8eQ6vOqm', 'super_admin')
 ON DUPLICATE KEY UPDATE `username`=VALUES(`username`);
 
 SET FOREIGN_KEY_CHECKS = 1;
