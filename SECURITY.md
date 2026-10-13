@@ -131,3 +131,4 @@ For large-scale Layer 3/4 volumetric DDoS attacks (1 Gbps - 100 Gbps), software 
    - Toggle **"Under Attack Mode"** on the overview page.
    - Cloudflare will present an automatic 5-second JavaScript challenge to every visitor before passing traffic to your GoDaddy server, neutralizing 100% of bot floods.
 7. **Security &rarr; WAF &rarr; Bot Fight Mode**: Enable free **Bot Fight Mode** to challenge known scrapers and attack proxies automatically.
+

@@ -1,6 +1,7 @@
 /**
  * Bihar Cancer Care Organisation (BCCO) - Hardened Dev & Preview Server
  * Features:
+ *  - Secure Server-Side Authentication Engine (Protected Credentials)
  *  - Anti-DDoS Sliding-Window IP Rate Limiter
  *  - Anti-Slowloris Connection Timeouts & Header Limits
  *  - Malicious Scanner & Path-Traversal Probe Blocker
@@ -11,6 +12,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const PORT = 8080;
 const HOST = '127.0.0.1';
@@ -33,6 +35,28 @@ const MIME_TYPES = {
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8'
 };
+
+// ============================================================================
+// BACKEND AUTHENTICATION REPOSITORY (STORED ONLY ON BACKEND)
+// ============================================================================
+const BACKEND_ADMIN_USER = 'DirctorNavin';
+const BACKEND_ADMIN_SALT = 'bcco_sec_salt_2026';
+// Salted SHA-512 cryptographic hash of master password:
+let backendPasswordHash = 'b8f11d23caa76b4e215e4896751b95cf388d642845a0e53c78e5db1fb62d1059abc7d6c197fc922f0a5dfa9ccd911c7e1dc03619d94fa6eaaa341f353b74463e';
+
+// Active Session Tokens: token -> { username, loginTime, lastSeen }
+const activeSessions = new Map();
+
+// Failed Login Attempts: key -> { count, lastAttempt, lockoutUntil }
+const loginFailures = new Map();
+
+function timingSafeCheck(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 // ============================================================================
 // RATE LIMITING & DDOS MITIGATION ENGINE
@@ -131,20 +155,150 @@ const server = http.createServer((req, res) => {
     'Access-Control-Allow-Origin': '*'
   };
 
-  // 4. Handle Mock POST API endpoints (contact / newsletter)
-  if (isPost && (req.url.startsWith('/contact.php') || req.url.startsWith('/api/contact'))) {
+  // Helper to read JSON request body
+  function readJsonBody(cb) {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
-      // Enforce 1MB limit for form submissions
-      if (body.length > 1024 * 1024) {
+      if (body.length > 1024 * 1024) { // 1MB limit
         res.writeHead(413, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: false, message: 'Payload Too Large' }));
         req.destroy();
       }
     });
-
     req.on('end', () => {
+      try {
+        const parsed = body ? JSON.parse(body) : {};
+        cb(parsed);
+      } catch (err) {
+        // Fallback for form-url-encoded
+        const params = new URLSearchParams(body);
+        const obj = {};
+        for (const [k, v] of params.entries()) obj[k] = v;
+        cb(obj);
+      }
+    });
+  }
+
+  // 4. BACKEND AUTH API: POST /api/auth/login
+  if (isPost && (req.url === '/api/auth/login' || req.url === '/admin/login')) {
+    return readJsonBody(async (data) => {
+      const now = Date.now();
+      const failKey = `${clientIp}_${(data.username || '').toLowerCase()}`;
+      const failRec = loginFailures.get(failKey) || { count: 0, lockoutUntil: 0 };
+
+      // Check lockout status
+      if (failRec.lockoutUntil > now) {
+        const remainingSec = Math.ceil((failRec.lockoutUntil - now) / 1000);
+        res.writeHead(429, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: false,
+          lockout: true,
+          remainingSeconds: remainingSec,
+          message: `Security Lockout Active: Too many failed login attempts. Try again in ${Math.ceil(remainingSec / 60)} minutes.`
+        }));
+      }
+
+      // Honeypot check
+      if (data.bcco_guard_hp || data.website) {
+        await new Promise(r => setTimeout(r, 2000));
+        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Authentication verification rejected.' }));
+      }
+
+      const inputUser = (data.username || '').trim();
+      const inputPass = data.password || '';
+
+      // Tarpit delay if failures previously occurred
+      if (failRec.count >= 2) {
+        await new Promise(r => setTimeout(r, Math.min(failRec.count * 400, 1800)));
+      }
+
+      // Compute SHA-512 Hash with salt on backend
+      const computedHash = crypto.createHash('sha512').update(inputPass + BACKEND_ADMIN_SALT).digest('hex');
+      const isUserMatch = timingSafeCheck(inputUser.toLowerCase(), BACKEND_ADMIN_USER.toLowerCase());
+      const isPassMatch = timingSafeCheck(computedHash, backendPasswordHash);
+
+      if (isUserMatch && isPassMatch) {
+        // Successful Backend Authentication
+        loginFailures.delete(failKey);
+        const token = 'bcco_sec_' + crypto.randomBytes(32).toString('hex');
+        activeSessions.set(token, {
+          username: BACKEND_ADMIN_USER,
+          loginTime: now,
+          lastSeen: now
+        });
+
+        res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({
+          success: true,
+          token: token,
+          user: {
+            username: BACKEND_ADMIN_USER,
+            role: 'Super Administrator'
+          },
+          message: 'Authentication successful.'
+        }));
+      } else {
+        // Failed Authentication
+        failRec.count++;
+        failRec.lastAttempt = now;
+
+        if (failRec.count >= 5) {
+          failRec.lockoutUntil = now + (15 * 60 * 1000); // 15 mins
+          loginFailures.set(failKey, failRec);
+          res.writeHead(429, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            success: false,
+            lockout: true,
+            remainingSeconds: 900,
+            message: 'Account locked out due to multiple failed login attempts. Please wait 15 minutes.'
+          }));
+        } else {
+          loginFailures.set(failKey, failRec);
+          const remaining = 5 - failRec.count;
+          res.writeHead(401, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({
+            success: false,
+            remainingAttempts: remaining,
+            message: `Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`
+          }));
+        }
+      }
+    });
+  }
+
+  // 5. BACKEND AUTH API: POST /api/auth/change-password
+  if (isPost && req.url === '/api/auth/change-password') {
+    return readJsonBody((data) => {
+      const curPass = data.currentPassword || '';
+      const newPass = data.newPassword || '';
+
+      const computedCurHash = crypto.createHash('sha512').update(curPass + BACKEND_ADMIN_SALT).digest('hex');
+      if (!timingSafeCheck(computedCurHash, backendPasswordHash)) {
+        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'Current password does not match.' }));
+      }
+
+      if (newPass.length < 8) {
+        res.writeHead(400, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+        return res.end(JSON.stringify({ success: false, message: 'New password must be at least 8 characters long.' }));
+      }
+
+      // Update backend password hash
+      backendPasswordHash = crypto.createHash('sha512').update(newPass + BACKEND_ADMIN_SALT).digest('hex');
+
+      res.writeHead(200, { ...securityHeaders, 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({
+        success: true,
+        message: 'Master backend credentials updated successfully.'
+      }));
+    });
+  }
+
+  // 6. Handle Mock POST API endpoints (contact / newsletter)
+  if (isPost && (req.url.startsWith('/contact.php') || req.url.startsWith('/api/contact'))) {
+    return readJsonBody(() => {
       res.writeHead(200, {
         ...securityHeaders,
         'Content-Type': 'application/json; charset=utf-8'
@@ -154,10 +308,9 @@ const server = http.createServer((req, res) => {
         message: 'Your message has been securely received by Bihar Cancer Care Organisation. We will reach out shortly.'
       }));
     });
-    return;
   }
 
-  // 5. Static File Routing
+  // 7. Static File Routing
   let reqPath = decodeURI(req.url.split('?')[0]);
   if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
   if (reqPath === '/admin' || reqPath === '/admin/') reqPath = '/admin/index.html';
@@ -204,7 +357,6 @@ const server = http.createServer((req, res) => {
 // ============================================================================
 // ANTI-SLOWLORIS & CONNECTION HARDENING
 // ============================================================================
-// Drop hung / half-open slowloris sockets rapidly
 server.headersTimeout = 10000;    // 10 seconds to send HTTP headers
 server.requestTimeout = 20000;    // 20 seconds total request duration
 server.keepAliveTimeout = 5000;   // 5 seconds keep-alive
@@ -212,5 +364,5 @@ server.maxHeadersCount = 100;     // Limit total headers to 100
 
 server.listen(PORT, HOST, () => {
   console.log(`[BCCO Shield] Secure Node Server running at http://${HOST}:${PORT}/`);
-  console.log(`[BCCO Shield] Anti-DDoS, Rate-Limiting, & Scanner-Block Active.`);
+  console.log(`[BCCO Shield] Backend Authentication Engine & Anti-Bruteforce Active.`);
 });

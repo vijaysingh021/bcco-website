@@ -213,7 +213,7 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <b id="activeAdminUser">bcco_admin</b>
+        <b id="activeAdminUser">DirctorNavin</b>
         <span>Super Administrator</span>
       </div>
       <a href="login.html" onclick="logoutAdmin(event)" class="btn btn-outline btn-sm" title="Log Out" style="color:#fff;border-color:rgba(255,255,255,0.25);">
@@ -881,8 +881,8 @@ let sections = JSON.parse(localStorage.getItem('bcco_cms_sections')) || DEFAULT_
 let profiles = JSON.parse(localStorage.getItem('bcco_cms_profiles')) || DEFAULT_PROFILES;
 let media = JSON.parse(localStorage.getItem('bcco_cms_media')) || DEFAULT_MEDIA;
 let activities = JSON.parse(localStorage.getItem('bcco_cms_activities')) || [
-  { time: 'Just now', user: 'bcco_admin', action: 'Dashboard Initialized', details: 'CMS running in active dual mode', ip: '127.0.0.1' },
-  { time: '10 mins ago', user: 'bcco_admin', action: 'System Audit', details: 'All 11 homepage image slots verified', ip: '127.0.0.1' }
+  { time: 'Just now', user: 'DirctorNavin', action: 'Dashboard Initialized', details: 'CMS running in active dual mode', ip: '127.0.0.1' },
+  { time: '10 mins ago', user: 'DirctorNavin', action: 'System Audit', details: 'All 11 homepage image slots verified', ip: '127.0.0.1' }
 ];
 
 // ================= RENDER FUNCTIONS =================
@@ -1417,14 +1417,13 @@ function saveSettings(e) {
   alert('Website settings saved successfully!');
 }
 
-function handlePasswordUpdate(e) {
+async function handlePasswordUpdate(e) {
   e.preventDefault();
   const curPass = document.getElementById('currentPasswordInput').value;
   const newPass = document.getElementById('newPasswordInput').value;
-  const storedPass = localStorage.getItem('bcco_auth_password') || 'admin123';
 
-  if (curPass !== storedPass) {
-    alert('Security Error: Current password does not match.');
+  if (!curPass || !newPass) {
+    alert('Security Alert: Please enter both current and new passwords.');
     return;
   }
 
@@ -1433,12 +1432,25 @@ function handlePasswordUpdate(e) {
     return;
   }
 
-  localStorage.setItem('bcco_auth_password', newPass);
-  document.getElementById('currentPasswordInput').value = '';
-  document.getElementById('newPasswordInput').value = '';
-
-  logClientActivity('Changed Master Password', 'Admin updated login credentials');
-  alert('Security password updated successfully!');
+  try {
+    const res = await fetch('/api/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword: curPass, newPassword: newPass })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      document.getElementById('currentPasswordInput').value = '';
+      document.getElementById('newPasswordInput').value = '';
+      localStorage.removeItem('bcco_auth_password');
+      logClientActivity('Changed Master Password', 'Admin updated master password in backend');
+      alert('Security password updated successfully in backend!');
+    } else {
+      alert(data.message || 'Security Error: Current password does not match.');
+    }
+  } catch (err) {
+    alert('Security Notice: Master credentials can only be updated securely via the backend server.');
+  }
 }
 
 function logoutAdmin(e) {
@@ -1447,13 +1459,15 @@ function logoutAdmin(e) {
   sessionStorage.removeItem('bcco_admin_login_time');
   localStorage.removeItem('bcco_admin_logged_in');
   localStorage.removeItem('bcco_admin_user');
+  localStorage.removeItem('bcco_auth_password');
   window.location.href = 'login.html';
 }
 
 function logClientActivity(action, details) {
+  const currentUser = localStorage.getItem('bcco_admin_user') || 'DirctorNavin';
   const newAct = {
     time: 'Just now',
-    user: 'bcco_admin',
+    user: currentUser,
     action,
     details,
     ip: '127.0.0.1'
@@ -1523,6 +1537,14 @@ document.addEventListener('keydown', e => {
 
 // Initial Boot
 document.addEventListener('DOMContentLoaded', () => {
+  // Ensure legacy client-side password residue is wiped
+  localStorage.removeItem('bcco_auth_password');
+
+  // Set active user display
+  const storedUser = localStorage.getItem('bcco_admin_user') || 'DirctorNavin';
+  const userEl = document.getElementById('activeAdminUser');
+  if (userEl) userEl.textContent = storedUser;
+
   // Ensure all modals are closed on boot
   document.querySelectorAll('.modal, .modal-admin').forEach(m => {
     m.classList.remove('open');

@@ -104,12 +104,12 @@
 
     <div class="form-group">
       <label class="form-label" for="username">Username or Email</label>
-      <input type="text" id="username" class="form-control" required autofocus placeholder="admin" value="admin">
+      <input type="text" id="username" class="form-control" required autofocus placeholder="Enter username" autocomplete="username">
     </div>
 
     <div class="form-group">
       <label class="form-label" for="password">Password</label>
-      <input type="password" id="password" class="form-control" required placeholder="••••••••••••" value="admin123">
+      <input type="password" id="password" class="form-control" required placeholder="Enter password" autocomplete="current-password">
     </div>
 
     <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1rem;">
@@ -125,8 +125,10 @@
 </div>
 
 <script>
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+// Remove any legacy demo credentials from client storage
+localStorage.removeItem('bcco_auth_username');
+localStorage.removeItem('bcco_auth_password');
+
 let lockoutTimer = null;
 
 // Initialize lockout verification
@@ -157,9 +159,7 @@ function checkLockout() {
     return true;
   } else {
     if (lockoutUntil > 0) {
-      // Lockout expired
       localStorage.removeItem('bcco_admin_lockout_until');
-      localStorage.setItem('bcco_admin_fail_count', '0');
     }
     lockBox.style.display = 'none';
     btn.disabled = false;
@@ -182,7 +182,6 @@ async function handleLogin(e) {
 
   const botField = document.getElementById('botHoneypot').value;
   if (botField) {
-    // Bot detected: simulate delay and reject
     await new Promise(r => setTimeout(r, 2000));
     showError('Authentication failed.');
     return;
@@ -197,51 +196,56 @@ async function handleLogin(e) {
     return;
   }
 
-  let failCount = parseInt(localStorage.getItem('bcco_admin_fail_count') || '0', 10);
+  btn.disabled = true;
+  btn.textContent = 'Verifying security credentials...';
 
-  // Progressive delay (tarpit) if failures have occurred
-  if (failCount >= 2) {
-    btn.disabled = true;
-    btn.textContent = 'Verifying security credentials...';
-    await new Promise(r => setTimeout(r, Math.min(failCount * 1000, 3000)));
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: u,
+        password: p,
+        bcco_guard_hp: botField
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      localStorage.removeItem('bcco_admin_lockout_until');
+
+      // Store authenticated session token and identity from backend
+      sessionStorage.setItem('bcco_admin_auth', data.token);
+      sessionStorage.setItem('bcco_admin_user', data.user.username);
+      localStorage.setItem('bcco_admin_logged_in', 'true');
+      localStorage.setItem('bcco_admin_user', data.user.username);
+
+      window.location.href = 'index.html';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Sign In Securely →';
+      showError(data.message || 'Invalid username or password.');
+
+      if (data.lockout) {
+        const lockoutMs = (data.remainingSeconds || 900) * 1000;
+        localStorage.setItem('bcco_admin_lockout_until', (Date.now() + lockoutMs).toString());
+        checkLockout();
+      }
+    }
+  } catch (err) {
+    // If backend JSON API is not serving, submit cleanly to login.php
     btn.disabled = false;
     btn.textContent = 'Sign In Securely →';
-  }
-
-  // Load configured password or use default
-  const storedUser = localStorage.getItem('bcco_auth_username') || 'admin';
-  const storedPass = localStorage.getItem('bcco_auth_password') || 'admin123';
-
-  if (u === storedUser && p === storedPass) {
-    // Successful Authentication
-    localStorage.setItem('bcco_admin_fail_count', '0');
-    localStorage.removeItem('bcco_admin_lockout_until');
-
-    // Create session token with timestamp and fingerprint
-    const sessionToken = 'bcco_sec_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    sessionStorage.setItem('bcco_admin_auth', sessionToken);
-    sessionStorage.setItem('bcco_admin_login_time', Date.now().toString());
-    localStorage.setItem('bcco_admin_logged_in', 'true');
-    localStorage.setItem('bcco_admin_user', u);
-
-    // Log to client audit trail
-    logAuthEvent('Admin Login Successful', `User "${u}" authenticated into Control Center`);
-
-    window.location.href = 'index.html';
-  } else {
-    // Failed Authentication
-    failCount++;
-    localStorage.setItem('bcco_admin_fail_count', failCount.toString());
-
-    logAuthEvent('Failed Login Attempt', `Unsuccessful login attempt for user "${u}"`);
-
-    if (failCount >= MAX_ATTEMPTS) {
-      localStorage.setItem('bcco_admin_lockout_until', (Date.now() + LOCKOUT_MS).toString());
-      checkLockout();
-    } else {
-      const remaining = MAX_ATTEMPTS - failCount;
-      showError(`Invalid username or password. Warning: ${remaining} attempt(s) remaining before security lockout.`);
-    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'login.php';
+    form.innerHTML = `
+      <input type="hidden" name="username" value="${escapeHtml(u)}">
+      <input type="hidden" name="password" value="${escapeHtml(p)}">
+    `;
+    document.body.appendChild(form);
+    form.submit();
   }
 }
 
@@ -251,19 +255,8 @@ function showError(msg) {
   el.style.display = 'block';
 }
 
-function logAuthEvent(action, details) {
-  try {
-    const raw = localStorage.getItem('bcco_cms_activities');
-    const activities = raw ? JSON.parse(raw) : [];
-    activities.unshift({
-      time: 'Just now',
-      user: 'security_monitor',
-      action: action,
-      details: details,
-      ip: '127.0.0.1'
-    });
-    localStorage.setItem('bcco_cms_activities', JSON.stringify(activities.slice(0, 50)));
-  } catch (err) {}
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 </script>
 
