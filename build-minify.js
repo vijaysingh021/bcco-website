@@ -40,6 +40,15 @@ try {
   const minJs = minifyJS(rawJs);
   fs.writeFileSync(jsMinPath, minJs, 'utf8');
   console.log(`JS minified: ${rawJs.length} -> ${minJs.length} bytes`);
+
+  const aiJsPath = path.join(__dirname, 'js', 'ai-assistant.js');
+  const aiJsMinPath = path.join(__dirname, 'js', 'ai-assistant.min.js');
+  if (fs.existsSync(aiJsPath)) {
+    const rawAiJs = fs.readFileSync(aiJsPath, 'utf8');
+    const minAiJs = minifyJS(rawAiJs);
+    fs.writeFileSync(aiJsMinPath, minAiJs, 'utf8');
+    console.log(`AI JS minified: ${rawAiJs.length} -> ${minAiJs.length} bytes`);
+  }
 } catch (err) {
   console.error('Minification failed:', err);
   process.exit(1);
