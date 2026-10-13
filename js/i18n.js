@@ -2860,59 +2860,8 @@
   // 7. NAVBAR INJECTION & INITIALIZATION
   // ==========================================================================
   function injectNavbarButtons() {
-    // 1. Desktop / Header Navbar Button
-    const navActions = document.querySelector('.nav__actions');
-    if (navActions && !document.getElementById('langSelectorBtn')) {
-      const wrap = document.createElement('div');
-      wrap.className = 'lang-selector-wrap';
-      wrap.innerHTML = `
-        <button class="lang-selector-btn" id="langSelectorBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Select Indian Language" title="Change Language / भाषा बदलें">
-          <svg class="icon icon-globe" aria-hidden="true"><use href="#i-globe"/></svg>
-          <span class="lang-selector-btn__label" id="currentLangLabel">English (India)</span>
-          <span class="lang-selector-btn__badge" id="currentLangCode">EN</span>
-          <svg class="icon icon-chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-      `;
-
-      // Insert before Donate button
-      const donateBtn = navActions.querySelector('[data-open-donate]');
-      if (donateBtn) {
-        navActions.insertBefore(wrap, donateBtn);
-      } else {
-        navActions.prepend(wrap);
-      }
-
-      const btn = document.getElementById('langSelectorBtn');
-      btn.addEventListener('click', openLanguageModal);
-    }
-
-    // 2. Mobile Menu Integration
-    const mobileFoot = document.querySelector('.mmenu__foot');
-    if (mobileFoot && !document.getElementById('mobileLangBtn')) {
-      const mLangBox = document.createElement('div');
-      mLangBox.className = 'mmenu__lang-box';
-      mLangBox.innerHTML = `
-        <button class="mmenu__lang-btn" id="mobileLangBtn" type="button">
-          <svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg>
-          <div class="mmenu__lang-btn__info">
-            <span class="mmenu__lang-btn__title">Language / भाषा:</span>
-            <strong class="mmenu__lang-btn__curr" id="mmenuCurrentLang">English (India)</strong>
-          </div>
-          <span class="mmenu__lang-btn__tag">Change / बदलें</span>
-        </button>
-      `;
-      mobileFoot.prepend(mLangBox);
-
-      const mBtn = document.getElementById('mobileLangBtn');
-      mBtn.addEventListener('click', () => {
-        // Close mobile drawer if open
-        const menuBtn = document.getElementById('menuBtn');
-        if (menuBtn && menuBtn.getAttribute('aria-expanded') === 'true') {
-          menuBtn.click();
-        }
-        openLanguageModal();
-      });
-    }
+    // Language buttons removed from navbar as requested.
+    // Language is automatically detected from the user's browser preferences.
   }
 
   // ==========================================================================
