@@ -902,10 +902,48 @@
   });
 
   /* ==========================================================================
-     20. Footer Current Year
+     24. CMS Content Hydration (Graceful Background Enhancement)
      ========================================================================== */
-  const yearEl = $('#year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  async function hydrateFromCMS() {
+    try {
+      const res = await fetch('api/content.php', { cache: 'default' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data || !data.success) return;
+
+      // 1. Hydrate dynamic posts into ARTICLES store
+      if (Array.isArray(data.posts) && data.posts.length > 0) {
+        data.posts.forEach(post => {
+          if (!post.slug) return;
+          ARTICLES[post.slug] = {
+            cat: post.category || 'Patient Guidance',
+            mins: '4 min read',
+            title: post.title,
+            paras: post.content ? post.content.split(/\n\n+/).filter(Boolean) : [post.excerpt || '']
+          };
+        });
+      }
+
+      // 2. Hydrate homepage section images if configured
+      if (data.sections) {
+        if (data.sections.about_editorial && data.sections.about_editorial.image_url) {
+          const aboutImg = $('.about__media img');
+          if (aboutImg) {
+            aboutImg.src = data.sections.about_editorial.image_url;
+            if (data.sections.about_editorial.alt_text) aboutImg.alt = data.sections.about_editorial.alt_text;
+          }
+        }
+      }
+    } catch (e) {
+      // Fail silently without disrupting static site rendering
+    }
+  }
+
+  if (doc.readyState === 'complete') {
+    hydrateFromCMS();
+  } else {
+    window.addEventListener('load', hydrateFromCMS);
+  }
 
 })();
 

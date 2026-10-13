@@ -23,12 +23,21 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   let reqPath = decodeURI(req.url.split('?')[0]);
   if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
-  const filePath = path.join(__dirname, reqPath);
+  if (reqPath === '/admin' || reqPath === '/admin/') reqPath = '/admin/index.html';
+  let filePath = path.join(__dirname, reqPath);
 
   // Security check: stay within workspace
   if (!filePath.startsWith(__dirname)) {
     res.writeHead(403);
     return res.end('Forbidden');
+  }
+
+  // If path is a directory, check for index.html
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+    const dirIndex = path.join(filePath, 'index.html');
+    if (fs.existsSync(dirIndex)) {
+      filePath = dirIndex;
+    }
   }
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

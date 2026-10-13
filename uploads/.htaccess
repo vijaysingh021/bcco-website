@@ -1,0 +1,34 @@
+# ==============================================================================
+# BCCO Uploads Directory - Apache Execution Protection
+# ==============================================================================
+# Prevent script execution in upload directory to prevent remote code execution
+Options -Indexes -ExecCGI
+
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Block access to any executable scripts
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|cgi|pl|py|sh|bash|exe|bat)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Only allow safe image file types
+<FilesMatch "(?i)\.(jpg|jpeg|png|webp|gif|ico|svg)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
