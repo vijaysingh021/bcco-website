@@ -80,6 +80,7 @@
   function openWidget() {
     widget.removeAttribute('hidden');
     widget.classList.add('is-open');
+    document.body.classList.add('ai-widget-open');
     trigger.setAttribute('aria-expanded', 'true');
     input.focus();
   }
@@ -87,6 +88,7 @@
   function closeWidget() {
     widget.classList.remove('is-open');
     widget.setAttribute('hidden', '');
+    document.body.classList.remove('ai-widget-open');
     trigger.setAttribute('aria-expanded', 'false');
     trigger.focus();
   }
