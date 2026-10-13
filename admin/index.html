@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BCCO Admin CMS — Control Center</title>
   <link rel="icon" type="image/x-icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/admin.css?v=3.0">
+  <link rel="stylesheet" href="css/admin.css?v=3.5">
   <style>
     /* Critical Modal Overlay Fix */
     .modal,
@@ -313,7 +313,7 @@
               <button class="btn btn-outline btn-sm" onclick="switchTab('posts')">View All &rarr;</button>
             </div>
             <div class="table-container">
-              <table id="dashPostsTable">
+              <table id="dashPostsTable" class="table table-dash">
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -360,10 +360,10 @@
 
         <div class="card">
           <div class="table-container">
-            <table>
+            <table class="table table-posts">
               <thead>
                 <tr>
-                  <th style="width: 60px;">Image</th>
+                  <th style="width: 68px;">Image</th>
                   <th>Title &amp; URL Slug</th>
                   <th>Category</th>
                   <th>Author</th>
@@ -414,7 +414,7 @@
           </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;" id="sectionsGrid">
+        <div class="section-grid" id="sectionsGrid">
           <!-- Populated via JS -->
         </div>
       </div>
@@ -435,10 +435,10 @@
 
         <div class="card">
           <div class="table-container">
-            <table>
+            <table class="table table-profiles">
               <thead>
                 <tr>
-                  <th style="width: 50px;">Photo</th>
+                  <th style="width: 64px;">Photo</th>
                   <th>Name &amp; Affiliation</th>
                   <th>Category</th>
                   <th>Designation / Role</th>
@@ -771,7 +771,7 @@ const DEFAULT_POSTS = [
     author: 'BCCO Clinical Team',
     excerpt: 'A first appointment with a cancer specialist can feel overwhelming — but a little preparation turns anxiety into purpose.',
     content: 'A first appointment with a cancer specialist can feel overwhelming — but a little preparation turns anxiety into purpose. Before the visit, write down everything you want to remember: when symptoms began, what tests you have already had, and every medicine or supplement being taken.\n\nBring someone you trust. Two pairs of ears catch more than one, and a companion can take notes while you listen. Ask the doctor to slow down whenever you need — good doctors are grateful for clear questions.\n\nQuestions worth asking: What do we know so far, and what remains uncertain? Which tests are next, and why? What should we watch for at home? Who do we call if something changes?\n\nFinally, ask for the plan in writing, or write it down yourself before leaving. A visit that ends with everyone understanding the next step is a visit that worked.',
-    featured_image: 'assets/images/about-editorial.jpg',
+    featured_image: 'assets/images/placeholder-image.svg',
     status: 'published',
     created_at: '2026-10-10 10:00:00'
   },
@@ -795,39 +795,40 @@ const DEFAULT_POSTS = [
     author: 'BCCO Volunteer Network',
     excerpt: 'Caregivers are the quiet infrastructure of cancer care. They cook, remember, drive, wait and worry — often while managing jobs.',
     content: 'Caregivers are the quiet infrastructure of cancer care. They cook, remember, drive, wait and worry — often while managing jobs and households. Their wellbeing is not a luxury; it is what keeps the whole household standing.\n\nSmall practices sustain: sleep before screens, one daily walk, one honest conversation with someone outside the situation. Accepting specific help — \'can you take Amma to Tuesday\'s appointment?\' — works far better than \'I\'m fine.\'\n\nGuilt is the caregiver\'s most common companion, and it deserves a direct answer: resting is not abandoning. You cannot pour from an empty cup, and the person you care for needs you durable, not heroic.\n\nIf the weight grows heavy, speak to your own doctor or a counsellor, and let BCCO\'s volunteers share the load. Asking for help is not failure — it is part of the care.',
-    featured_image: 'assets/images/about-editorial.jpg',
+    featured_image: 'assets/images/placeholder-image.svg',
     status: 'published',
     created_at: '2026-10-05 09:15:00'
   }
 ];
 
 const DEFAULT_SECTIONS = [
-  { section_key: 'hero_panel', title: 'Hero Stage Mockup', subtitle: 'Mobile Preview Stage', alt_text: 'BCCO mobile support interface showing helpline and care guidance', image_url: 'assets/images/smartphones-stage.png' },
-  { section_key: 'about_editorial', title: 'About Editorial Story', subtitle: 'Guiding Bihar Cancer Care', alt_text: 'Oncologist and health workers examining medical reports', image_url: 'assets/images/about-editorial.jpg' },
-  { section_key: 'media_card_1', title: 'Photo Gallery Highlight', subtitle: 'Field Album Muzaffarpur', alt_text: 'Community cancer awareness camp banner and team', image_url: 'assets/images/about-editorial.jpg' },
-  { section_key: 'media_card_2', title: 'Video Highlight Thumb', subtitle: 'Care, Hope, Life Video', alt_text: 'BCCO documentary title card', image_url: 'assets/images/about-editorial.jpg' },
-  { section_key: 'gallery_1', title: 'Past Highlights 1', subtitle: 'Health Checkup Camp', alt_text: 'Patients receiving screening at district health centre', image_url: 'assets/images/about-editorial.jpg' },
-  { section_key: 'gallery_2', title: 'Past Highlights 2', subtitle: 'Doctor Consultation', alt_text: 'Senior oncologist consulting with family members', image_url: 'assets/images/about-editorial.jpg' },
-  { section_key: 'gallery_3', title: 'Past Highlights 3', subtitle: 'Rural Outreach Session', alt_text: 'Community awareness workshop in rural Patna', image_url: 'assets/images/about-editorial.jpg' },
+  { section_key: 'hero_panel', title: 'Hero Stage Mockup', subtitle: 'Mobile Preview Stage', alt_text: 'BCCO mobile support interface showing helpline and care guidance', image_url: 'assets/images/logo.png' },
+  { section_key: 'about_editorial', title: 'About Editorial Story', subtitle: 'Guiding Bihar Cancer Care', alt_text: 'Oncologist and health workers examining medical reports', image_url: 'assets/images/placeholder-image.svg' },
+  { section_key: 'media_card_1', title: 'Photo Gallery Highlight', subtitle: 'Field Album Muzaffarpur', alt_text: 'Community cancer awareness camp banner and team', image_url: 'assets/images/placeholder-image.svg' },
+  { section_key: 'media_card_2', title: 'Video Highlight Thumb', subtitle: 'Care, Hope, Life Video', alt_text: 'BCCO documentary title card', image_url: 'assets/images/placeholder-image.svg' },
+  { section_key: 'gallery_1', title: 'Past Highlights 1', subtitle: 'Health Checkup Camp', alt_text: 'Patients receiving screening at district health centre', image_url: 'assets/images/placeholder-image.svg' },
+  { section_key: 'gallery_2', title: 'Past Highlights 2', subtitle: 'Doctor Consultation', alt_text: 'Senior oncologist consulting with family members', image_url: 'assets/images/placeholder-image.svg' },
+  { section_key: 'gallery_3', title: 'Past Highlights 3', subtitle: 'Rural Outreach Session', alt_text: 'Community awareness workshop in rural Patna', image_url: 'assets/images/placeholder-image.svg' },
   { section_key: 'partner_1', title: 'Partner Recognition 1', subtitle: 'Healthcare Partner', alt_text: 'Partner Hospital Logo', image_url: 'assets/images/logo.png' },
   { section_key: 'partner_2', title: 'Partner Recognition 2', subtitle: 'Academic Partner', alt_text: 'Medical College Partner Logo', image_url: 'assets/images/logo.png' },
   { section_key: 'partner_3', title: 'Partner Recognition 3', subtitle: 'Diagnostic Partner', alt_text: 'Diagnostic Centre Partner Logo', image_url: 'assets/images/logo.png' },
-  { section_key: 'contact_map', title: 'Patna HQ Map Visual', subtitle: 'Patna Headquarters', alt_text: 'Map illustration showing BCCO office near Patel Bhawan, Patna', image_url: 'assets/images/about-editorial.jpg' }
+  { section_key: 'contact_map', title: 'Patna HQ Map Visual', subtitle: 'Patna Headquarters', alt_text: 'Map illustration showing BCCO office near Patel Bhawan, Patna', image_url: 'assets/images/placeholder-image.svg' }
 ];
 
 const DEFAULT_PROFILES = [
-  { id: 1, name: 'Dr. A. K. Singh', role: 'Chairman & Managing Trustee', organization: 'Senior Oncologist', category: 'advisor', photo_url: 'assets/images/logo.png' },
-  { id: 2, name: 'Dr. Rita Verma', role: 'Chief Medical Advisor', organization: 'Ex-IGIMS Patna', category: 'advisor', photo_url: 'assets/images/logo.png' },
-  { id: 3, name: 'Dr. S. K. Sinha', role: 'Director of Palliative Care', organization: 'AIIMS Patna Affiliate', category: 'advisor', photo_url: 'assets/images/logo.png' },
-  { id: 4, name: 'S. N. Sharma', role: 'Honorary Secretary', organization: 'Trust Board', category: 'committee', photo_url: 'assets/images/logo.png' },
-  { id: 5, name: 'P. K. Choudhary', role: 'Treasurer & Accounts Officer', organization: 'Finance Committee', category: 'committee', photo_url: 'assets/images/logo.png' },
-  { id: 6, name: 'Amit Kumar', role: 'Field Operations Lead', organization: 'Patna District', category: 'team', photo_url: 'assets/images/logo.png' }
+  { id: 1, name: 'Dr. A. K. Singh', role: 'Chairman & Managing Trustee', organization: 'Senior Oncologist', category: 'advisor', photo_url: 'assets/images/avatar-default.svg' },
+  { id: 2, name: 'Dr. Rita Verma', role: 'Chief Medical Advisor', organization: 'Ex-IGIMS Patna', category: 'advisor', photo_url: 'assets/images/avatar-default.svg' },
+  { id: 3, name: 'Dr. S. K. Sinha', role: 'Director of Palliative Care', organization: 'AIIMS Patna Affiliate', category: 'advisor', photo_url: 'assets/images/avatar-default.svg' },
+  { id: 4, name: 'S. N. Sharma', role: 'Honorary Secretary', organization: 'Trust Board', category: 'committee', photo_url: 'assets/images/avatar-default.svg' },
+  { id: 5, name: 'P. K. Choudhary', role: 'Treasurer & Accounts Officer', organization: 'Finance Committee', category: 'committee', photo_url: 'assets/images/avatar-default.svg' },
+  { id: 6, name: 'Amit Kumar', role: 'Field Operations Lead', organization: 'Patna District', category: 'team', photo_url: 'assets/images/avatar-default.svg' }
 ];
 
 const DEFAULT_MEDIA = [
-  { id: 1, file_name: 'logo.png', file_path: 'assets/images/logo.png', dimensions: '512x512', file_size: 42000, usage: ['Website Header', 'Partners', 'Profiles'] },
-  { id: 2, file_name: 'about-editorial.jpg', file_path: 'assets/images/about-editorial.jpg', dimensions: '1200x800', file_size: 245000, usage: ['About Section', 'Articles'] },
-  { id: 3, file_name: 'smartphones-stage.png', file_path: 'assets/images/smartphones-stage.png', dimensions: '1080x720', file_size: 380000, usage: ['Hero Section'] }
+  { id: 1, file_name: 'logo.png', file_path: 'assets/images/logo.png', dimensions: '691x251', file_size: 61667, usage: ['Website Header', 'Partners'] },
+  { id: 2, file_name: 'logo-icon.png', file_path: 'assets/images/logo-icon.png', dimensions: '34x34', file_size: 99504, usage: ['Admin Sidebar', 'Favicon'] },
+  { id: 3, file_name: 'avatar-default.svg', file_path: 'assets/images/avatar-default.svg', dimensions: 'Vector SVG', file_size: 1024, usage: ['Profile Avatars'] },
+  { id: 4, file_name: 'placeholder-image.svg', file_path: 'assets/images/placeholder-image.svg', dimensions: 'Vector SVG', file_size: 1536, usage: ['Content Slots'] }
 ];
 
 let posts = JSON.parse(localStorage.getItem('bcco_cms_posts')) || DEFAULT_POSTS;
@@ -849,12 +850,15 @@ function renderDashboard() {
   const tbody = document.getElementById('dashPostsTbody');
   tbody.innerHTML = posts.slice(0, 5).map(p => `
     <tr>
-      <td><strong>${escapeHtml(p.title)}</strong></td>
+      <td><strong style="color:var(--text-main);font-size:14.5px;">${escapeHtml(p.title)}</strong></td>
       <td><span class="badge badge-purple">${escapeHtml(p.category)}</span></td>
       <td><span class="badge ${p.status === 'published' ? 'badge-success' : 'badge-warning'}">${p.status}</span></td>
-      <td style="color:#718096;font-size:0.85rem;">${p.created_at.split(' ')[0]}</td>
+      <td style="color:var(--text-muted);font-size:13px;white-space:nowrap;">${p.created_at.split(' ')[0]}</td>
       <td style="text-align:right;">
-        <button class="btn btn-outline btn-sm" onclick="editPost(${p.id})">Edit</button>
+        <button class="btn btn-edit btn-sm" onclick="editPost(${p.id})">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Edit
+        </button>
       </td>
     </tr>
   `).join('');
@@ -862,7 +866,7 @@ function renderDashboard() {
   // Dash activity stream
   const actStream = document.getElementById('dashActivityStream');
   actStream.innerHTML = activities.slice(0, 5).map(a => `
-    <div style="font-size:0.85rem;border-bottom:1px solid #EDF2F7;padding-bottom:8px;">
+    <div style="font-size:0.85rem;border-bottom:1px solid #EDF2F7;padding-bottom:10px;">
       <div style="font-weight:600;color:#2D3748;">${escapeHtml(a.action)}</div>
       <div style="color:#718096;font-size:0.8rem;margin:2px 0;">${escapeHtml(a.details)}</div>
       <div style="color:#A0AEC0;font-size:0.75rem;">By ${escapeHtml(a.user)} &bull; ${escapeHtml(a.time)}</div>
@@ -880,29 +884,41 @@ function renderPosts(filter = 'all', query = '') {
   }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:#718096;">No articles found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No articles found.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = filtered.map(p => `
+  tbody.innerHTML = filtered.map(p => {
+    const isLogo = p.featured_image.includes('logo');
+    const fallbackImg = '../assets/images/placeholder-image.svg';
+    return `
     <tr>
       <td>
-        <img src="../${p.featured_image}" alt="Thumb" style="width:48px;height:36px;object-fit:cover;border-radius:4px;border:1px solid #E2E8F0;" onerror="this.src='../assets/images/logo.png';">
+        <img src="../${p.featured_image}" alt="Thumb" class="table-thumb" style="${isLogo ? 'object-fit:contain;padding:4px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
       </td>
       <td>
-        <strong style="color:#2D3748;">${escapeHtml(p.title)}</strong>
-        <div style="font-size:0.75rem;color:#718096;">/${escapeHtml(p.slug)}</div>
+        <strong style="color:var(--text-main);font-size:14.5px;">${escapeHtml(p.title)}</strong>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">/${escapeHtml(p.slug)}</div>
       </td>
       <td><span class="badge badge-purple">${escapeHtml(p.category)}</span></td>
-      <td style="color:#4A5568;font-size:0.85rem;">${escapeHtml(p.author)}</td>
+      <td style="color:var(--text-muted);font-size:13.5px;">${escapeHtml(p.author)}</td>
       <td><span class="badge ${p.status === 'published' ? 'badge-success' : 'badge-warning'}">${p.status}</span></td>
-      <td style="color:#718096;font-size:0.85rem;">${p.created_at.split(' ')[0]}</td>
+      <td style="color:var(--text-muted);font-size:13px;white-space:nowrap;">${p.created_at.split(' ')[0]}</td>
       <td style="text-align:right;white-space:nowrap;">
-        <button class="btn btn-outline btn-sm" onclick="editPost(${p.id})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deletePost(${p.id})">Delete</button>
+        <div class="btn-action-group">
+          <button class="btn btn-edit btn-sm" onclick="editPost(${p.id})">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deletePost(${p.id})">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderMedia(query = '') {
@@ -916,16 +932,16 @@ function renderMedia(query = '') {
 
   grid.innerHTML = filtered.map(m => `
     <div class="media-card">
-      <img src="../${m.file_path}" alt="${escapeHtml(m.file_name)}" onerror="this.src='../assets/images/logo.png';">
+      <img src="../${m.file_path}" alt="${escapeHtml(m.file_name)}" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
       <div class="media-info">
         <div class="media-title" title="${escapeHtml(m.file_name)}">${escapeHtml(m.file_name)}</div>
         <div class="media-meta">${m.dimensions} &bull; ${(m.file_size / 1024).toFixed(0)} KB</div>
-        <div style="margin: 6px 0;">
+        <div style="margin: 8px 0;">
           ${m.usage && m.usage.length ? `<span class="badge badge-success" title="${m.usage.join(', ')}">In Use (${m.usage.length})</span>` : `<span class="badge" style="background:#EDF2F7;color:#4A5568;">Unused</span>`}
         </div>
-        <div style="display:flex;gap:6px;margin-top:8px;">
-          <button class="btn btn-outline btn-sm" style="flex:1;font-size:0.75rem;padding:4px 6px;" onclick="copyToClipboard('${m.file_path}', this)">Copy Path</button>
-          <button class="btn btn-danger btn-sm" style="font-size:0.75rem;padding:4px 8px;" onclick="deleteMedia(${m.id})">Delete</button>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;font-size:0.75rem;padding:6px;" onclick="copyToClipboard('${m.file_path}', this)">Copy Path</button>
+          <button class="btn btn-danger btn-sm" style="font-size:0.75rem;padding:6px 10px;" onclick="deleteMedia(${m.id})">Delete</button>
         </div>
       </div>
     </div>
@@ -934,31 +950,39 @@ function renderMedia(query = '') {
 
 function renderSections() {
   const container = document.getElementById('sectionsGrid');
-  container.innerHTML = sections.map(s => `
-    <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
+  container.className = 'section-grid';
+  container.innerHTML = sections.map(s => {
+    const isLogo = s.image_url.includes('logo');
+    const fallbackImg = '../assets/images/placeholder-image.svg';
+    return `
+    <div class="section-card">
       <div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div class="section-card-header">
           <div>
-            <h3 style="font-size:1.05rem;font-weight:700;color:#2D3748;margin:0;">${escapeHtml(s.title)}</h3>
-            <span class="badge badge-purple" style="font-size:0.75rem;margin-top:4px;">${escapeHtml(s.section_key)}</span>
+            <h3 class="section-card-title">${escapeHtml(s.title)}</h3>
+            <span class="badge badge-purple" style="margin-top:6px;">${escapeHtml(s.section_key)}</span>
           </div>
         </div>
 
-        <div style="width:100%;height:150px;background:#EDF2F7;border-radius:8px;overflow:hidden;margin-bottom:12px;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;">
-          <img src="../${s.image_url}" alt="${escapeHtml(s.alt_text)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='../assets/images/logo.png';">
+        <div class="section-card-preview">
+          <img src="../${s.image_url}" alt="${escapeHtml(s.alt_text)}" class="${isLogo ? 'is-logo' : ''}" style="${isLogo ? 'object-fit:contain;padding:24px;background:#FAF5FC;' : 'object-fit:cover;'}" onerror="this.onerror=null;this.src='${fallbackImg}';">
         </div>
 
-        <p style="font-size:0.85rem;color:#718096;margin-bottom:14px;">
-          <strong>Alt:</strong> ${escapeHtml(s.alt_text)}<br>
-          <small style="word-break:break-all;color:#A0AEC0;">${escapeHtml(s.image_url)}</small>
-        </p>
+        <div class="section-card-meta">
+          <div><strong>Alt Text:</strong> ${escapeHtml(s.alt_text || 'Not configured')}</div>
+          <div style="font-size:11.5px;color:var(--text-subtle);word-break:break-all;margin-top:3px;">
+            ${escapeHtml(s.image_url)}
+          </div>
+        </div>
       </div>
 
-      <button class="btn btn-outline btn-sm" style="width:100%;" onclick="openSectionModal('${s.section_key}')">
+      <button class="btn-section-change" onclick="openSectionModal('${s.section_key}')">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Change Image &amp; Details &rarr;
       </button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderProfiles(category = 'all') {
@@ -966,24 +990,36 @@ function renderProfiles(category = 'all') {
   let filtered = profiles;
   if (category !== 'all') filtered = filtered.filter(p => p.category === category);
 
-  tbody.innerHTML = filtered.map(p => `
+  tbody.innerHTML = filtered.map(p => {
+    const isLogo = p.photo_url.includes('logo');
+    const displayImg = isLogo ? '../assets/images/avatar-default.svg' : `../${p.photo_url}`;
+    return `
     <tr>
       <td>
-        <img src="../${p.photo_url}" alt="${escapeHtml(p.name)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #CBD5E0;" onerror="this.src='../assets/images/logo.png';">
+        <img src="${displayImg}" alt="${escapeHtml(p.name)}" class="table-avatar" onerror="this.onerror=null;this.src='../assets/images/avatar-default.svg';">
       </td>
       <td>
-        <strong style="color:#2D3748;">${escapeHtml(p.name)}</strong>
-        ${p.organization ? `<div style="font-size:0.8rem;color:#718096;">${escapeHtml(p.organization)}</div>` : ''}
+        <strong style="color:var(--text-main);font-size:14.5px;">${escapeHtml(p.name)}</strong>
+        ${p.organization ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${escapeHtml(p.organization)}</div>` : ''}
       </td>
       <td><span class="badge badge-purple">${escapeHtml(p.category)}</span></td>
-      <td style="color:#4A5568;font-size:0.85rem;">${escapeHtml(p.role)}</td>
+      <td style="color:var(--text-muted);font-size:13.5px;">${escapeHtml(p.role)}</td>
       <td><span class="badge badge-success">Active</span></td>
       <td style="text-align:right;white-space:nowrap;">
-        <button class="btn btn-outline btn-sm" onclick="editProfile(${p.id})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteProfile(${p.id})">Delete</button>
+        <div class="btn-action-group">
+          <button class="btn btn-edit btn-sm" onclick="editProfile(${p.id})">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProfile(${p.id})">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderActivities() {

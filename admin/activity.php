@@ -62,7 +62,7 @@ $logs = $stmt->fetchAll();
     </div>
   <?php else: ?>
     <div class="table-container">
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>Time</th>

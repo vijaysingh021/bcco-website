@@ -123,7 +123,7 @@ if ($db) {
       <p style="color: #718096; font-size: 0.9rem; padding: 10px 0;">No posts published yet. Click "Write New Article" to publish your first post!</p>
     <?php else: ?>
       <div class="table-container">
-        <table>
+        <table class="table table-dash">
           <thead>
             <tr>
               <th>Title</th>
@@ -136,7 +136,7 @@ if ($db) {
           <tbody>
             <?php foreach ($recentPosts as $p): ?>
               <tr>
-                <td><strong><?php echo e($p['title']); ?></strong></td>
+                <td><strong style="color: var(--text-main); font-size: 14.5px;"><?php echo e($p['title']); ?></strong></td>
                 <td><span class="badge badge-purple"><?php echo e($p['category']); ?></span></td>
                 <td>
                   <?php if ($p['status'] === 'published'): ?>
@@ -145,9 +145,12 @@ if ($db) {
                     <span class="badge badge-warning">Draft</span>
                   <?php endif; ?>
                 </td>
-                <td style="color:#718096; font-size:0.85rem;"><?php echo date('M d, Y', strtotime($p['created_at'])); ?></td>
+                <td style="color: var(--text-muted); font-size: 13px; white-space: nowrap;"><?php echo date('M d, Y', strtotime($p['created_at'])); ?></td>
                 <td style="text-align: right;">
-                  <a href="posts.php?action=edit&id=<?php echo (int)$p['id']; ?>" class="btn btn-outline btn-sm">Edit</a>
+                  <a href="posts.php?action=edit&id=<?php echo (int)$p['id']; ?>" class="btn btn-edit btn-sm">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Edit
+                  </a>
                 </td>
               </tr>
             <?php endforeach; ?>

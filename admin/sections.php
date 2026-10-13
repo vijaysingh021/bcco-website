@@ -74,38 +74,42 @@ $sections = $sectionsStmt->fetchAll();
   </p>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;">
+<div class="section-grid">
   <?php foreach ($sections as $sec): ?>
     <?php
     $cleanPath = ltrim($sec['image_url'], '/');
+    $isLogo = str_contains($sec['image_url'], 'logo');
     ?>
-    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div class="section-card">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div class="section-card-header">
           <div>
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: #2D3748; margin: 0;"><?php echo e($sec['title'] ?: $sec['section_key']); ?></h3>
-            <span class="badge badge-purple" style="font-size: 0.75rem; margin-top: 4px;"><?php echo e($sec['section_key']); ?></span>
+            <h3 class="section-card-title"><?php echo e($sec['title'] ?: $sec['section_key']); ?></h3>
+            <span class="badge badge-purple" style="margin-top: 6px;"><?php echo e($sec['section_key']); ?></span>
           </div>
         </div>
 
-        <div style="width: 100%; height: 160px; background: #EDF2F7; border-radius: 8px; overflow: hidden; margin-bottom: 14px; border: 1px solid #E2E8F0; display:flex; align-items:center; justify-content:center;">
+        <div class="section-card-preview">
           <?php if (!empty($sec['image_url'])): ?>
-            <img src="../<?php echo e($cleanPath); ?>" alt="<?php echo e($sec['alt_text']); ?>" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='../assets/images/logo.png'; this.style.objectFit='contain';">
+            <img src="../<?php echo e($cleanPath); ?>" alt="<?php echo e($sec['alt_text']); ?>" class="<?php echo $isLogo ? 'is-logo' : ''; ?>" style="<?php echo $isLogo ? 'object-fit:contain;padding:22px;background:#FAF5FC;' : 'object-fit:cover;'; ?>" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
           <?php else: ?>
-            <span style="color: #A0AEC0; font-size: 0.85rem;">No image configured</span>
+            <img src="../assets/images/placeholder-image.svg" alt="Placeholder" style="object-fit: cover;">
           <?php endif; ?>
         </div>
 
-        <p style="font-size: 0.85rem; color: #718096; margin-bottom: 16px;">
-          <strong>Alt:</strong> <?php echo e($sec['alt_text'] ?: 'Not set'); ?><br>
-          <small style="word-break: break-all; color: #A0AEC0;"><?php echo e($sec['image_url']); ?></small>
-        </p>
+        <div class="section-card-meta">
+          <div><strong>Alt Text:</strong> <?php echo e($sec['alt_text'] ?: 'Not set'); ?></div>
+          <div style="font-size: 11.5px; color: var(--text-subtle); word-break: break-all; margin-top: 3px;">
+            <?php echo e($sec['image_url']); ?>
+          </div>
+        </div>
       </div>
 
-      <!-- Quick Edit Form -->
-      <details style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
-        <summary style="font-weight: 600; font-size: 0.85rem; color: #5B176F; cursor: pointer;">
-          Change Image / Details &darr;
+      <!-- Quick Edit Form Dropdown -->
+      <details style="background: #FAF7FB; border: 1.5px solid var(--border); border-radius: 9px; padding: 12px; margin-top: 10px;">
+        <summary style="font-weight: 600; font-size: 13px; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+          <span>Change Image / Details</span>
+          <span style="font-size: 12px;">&darr;</span>
         </summary>
 
         <form method="POST" action="sections.php" enctype="multipart/form-data" style="margin-top: 14px;">
@@ -113,23 +117,23 @@ $sections = $sectionsStmt->fetchAll();
           <input type="hidden" name="section_key" value="<?php echo e($sec['section_key']); ?>">
 
           <div class="form-group">
-            <label class="form-label" style="font-size: 0.8rem;">Upload New Image</label>
-            <input type="file" name="image_file" class="form-control" style="font-size: 0.8rem; padding: 6px;" accept="image/jpeg,image/png,image/webp">
+            <label class="form-label" style="font-size: 12px;">Upload New Image</label>
+            <input type="file" name="image_file" class="form-control" style="font-size: 12px; padding: 6px;" accept="image/jpeg,image/png,image/webp">
           </div>
 
           <div class="form-group">
-            <label class="form-label" style="font-size: 0.8rem;">Or Enter Image Path</label>
-            <input type="text" name="image_url" class="form-control" style="font-size: 0.8rem;" value="<?php echo e($sec['image_url']); ?>">
+            <label class="form-label" style="font-size: 12px;">Or Enter Image Path</label>
+            <input type="text" name="image_url" class="form-control" style="font-size: 12px;" value="<?php echo e($sec['image_url']); ?>">
           </div>
 
           <div class="form-group">
-            <label class="form-label" style="font-size: 0.8rem;">Title / Caption</label>
-            <input type="text" name="title" class="form-control" style="font-size: 0.8rem;" value="<?php echo e($sec['title']); ?>">
+            <label class="form-label" style="font-size: 12px;">Title / Caption</label>
+            <input type="text" name="title" class="form-control" style="font-size: 12px;" value="<?php echo e($sec['title']); ?>">
           </div>
 
           <div class="form-group">
-            <label class="form-label" style="font-size: 0.8rem;">Alt Text (Accessibility)</label>
-            <input type="text" name="alt_text" class="form-control" style="font-size: 0.8rem;" value="<?php echo e($sec['alt_text']); ?>">
+            <label class="form-label" style="font-size: 12px;">Alt Text (Accessibility)</label>
+            <input type="text" name="alt_text" class="form-control" style="font-size: 12px;" value="<?php echo e($sec['alt_text']); ?>">
           </div>
 
           <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 6px;">

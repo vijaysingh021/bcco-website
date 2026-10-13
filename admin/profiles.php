@@ -244,10 +244,10 @@ $csrfToken = generate_csrf_token();
       </div>
     <?php else: ?>
       <div class="table-container">
-        <table>
+        <table class="table table-profiles">
           <thead>
             <tr>
-              <th style="width: 50px;">Photo</th>
+              <th style="width: 64px;">Photo</th>
               <th>Name &amp; Affiliation</th>
               <th>Category</th>
               <th>Role</th>
@@ -260,23 +260,23 @@ $csrfToken = generate_csrf_token();
             <?php foreach ($profiles as $prof): ?>
               <tr>
                 <td>
-                  <?php if (!empty($prof['photo_url'])): ?>
-                    <img src="../<?php echo e(ltrim($prof['photo_url'], '/')); ?>" alt="Photo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #CBD5E0;" onerror="this.src='../assets/images/logo.png';">
+                  <?php if (!empty($prof['photo_url']) && !str_contains($prof['photo_url'], 'logo')): ?>
+                    <img src="../<?php echo e(ltrim($prof['photo_url'], '/')); ?>" alt="Photo" class="table-avatar" onerror="this.onerror=null;this.src='../assets/images/avatar-default.svg';">
                   <?php else: ?>
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #EDF2F7; display:flex; align-items:center; justify-content:center; color:#A0AEC0; font-size:12px;">👤</div>
+                    <img src="../assets/images/avatar-default.svg" alt="Avatar" class="table-avatar">
                   <?php endif; ?>
                 </td>
                 <td>
-                  <strong style="color: #2D3748;"><?php echo e($prof['name']); ?></strong>
+                  <strong style="color: var(--text-main); font-size: 14.5px;"><?php echo e($prof['name']); ?></strong>
                   <?php if (!empty($prof['organization'])): ?>
-                    <div style="font-size: 0.8rem; color: #718096;"><?php echo e($prof['organization']); ?></div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;"><?php echo e($prof['organization']); ?></div>
                   <?php endif; ?>
                 </td>
                 <td>
                   <span class="badge badge-purple"><?php echo ucfirst(e($prof['category'])); ?></span>
                 </td>
-                <td style="color: #4A5568; font-size: 0.85rem;"><?php echo e($prof['role']); ?></td>
-                <td style="color: #718096; font-size: 0.85rem;"><?php echo (int)$prof['sort_order']; ?></td>
+                <td style="color: var(--text-muted); font-size: 13.5px;"><?php echo e($prof['role']); ?></td>
+                <td style="color: var(--text-muted); font-size: 13.5px;"><?php echo (int)$prof['sort_order']; ?></td>
                 <td>
                   <?php if ($prof['status'] === 'active'): ?>
                     <span class="badge badge-success">Active</span>
@@ -285,12 +285,20 @@ $csrfToken = generate_csrf_token();
                   <?php endif; ?>
                 </td>
                 <td style="text-align: right; white-space: nowrap;">
-                  <a href="profiles.php?action=edit&id=<?php echo (int)$prof['id']; ?>" class="btn btn-outline btn-sm">Edit</a>
+                  <div class="btn-action-group">
+                    <a href="profiles.php?action=edit&id=<?php echo (int)$prof['id']; ?>" class="btn btn-edit btn-sm">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                      Edit
+                    </a>
 
-                  <form method="POST" action="profiles.php?action=delete&id=<?php echo (int)$prof['id']; ?>" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
-                    <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                  </form>
+                    <form method="POST" action="profiles.php?action=delete&id=<?php echo (int)$prof['id']; ?>" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this profile?');">
+                      <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
+                      <button type="submit" class="btn btn-danger btn-sm">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             <?php endforeach; ?>

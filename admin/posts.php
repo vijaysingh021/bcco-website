@@ -320,11 +320,11 @@ $csrfToken = generate_csrf_token();
       </div>
     <?php else: ?>
       <div class="table-container">
-        <table>
+        <table class="table table-posts">
           <thead>
             <tr>
-              <th style="width: 60px;">Image</th>
-              <th>Title</th>
+              <th style="width: 68px;">Image</th>
+              <th>Title &amp; Slug</th>
               <th>Category</th>
               <th>Author</th>
               <th>Status</th>
@@ -337,17 +337,17 @@ $csrfToken = generate_csrf_token();
               <tr>
                 <td>
                   <?php if (!empty($p['featured_image'])): ?>
-                    <img src="../<?php echo e(ltrim($p['featured_image'], '/')); ?>" alt="Thumb" style="width: 48px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8F0;">
+                    <img src="../<?php echo e(ltrim($p['featured_image'], '/')); ?>" alt="Thumb" class="table-thumb" onerror="this.onerror=null;this.src='../assets/images/placeholder-image.svg';">
                   <?php else: ?>
-                    <div style="width: 48px; height: 36px; background: #EDF2F7; border-radius: 4px; display:flex; align-items:center; justify-content:center; color:#A0AEC0; font-size:10px;">None</div>
+                    <img src="../assets/images/placeholder-image.svg" alt="Placeholder" class="table-thumb">
                   <?php endif; ?>
                 </td>
                 <td>
-                  <strong style="color: #2D3748;"><?php echo e($p['title']); ?></strong>
-                  <div style="font-size: 0.75rem; color: #718096;"><?php echo e($p['slug']); ?></div>
+                  <strong style="color: var(--text-main); font-size: 14.5px;"><?php echo e($p['title']); ?></strong>
+                  <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">/<?php echo e($p['slug']); ?></div>
                 </td>
                 <td><span class="badge badge-purple"><?php echo e($p['category']); ?></span></td>
-                <td style="color: #4A5568; font-size: 0.85rem;"><?php echo e($p['author']); ?></td>
+                <td style="color: var(--text-muted); font-size: 13.5px;"><?php echo e($p['author']); ?></td>
                 <td>
                   <?php if ($p['status'] === 'published'): ?>
                     <span class="badge badge-success">Published</span>
@@ -355,16 +355,24 @@ $csrfToken = generate_csrf_token();
                     <span class="badge badge-warning">Draft</span>
                   <?php endif; ?>
                 </td>
-                <td style="color: #718096; font-size: 0.85rem;">
+                <td style="color: var(--text-muted); font-size: 13px; white-space: nowrap;">
                   <?php echo date('M d, Y', strtotime($p['published_at'] ?: $p['created_at'])); ?>
                 </td>
                 <td style="text-align: right; white-space: nowrap;">
-                  <a href="posts.php?action=edit&id=<?php echo (int)$p['id']; ?>" class="btn btn-outline btn-sm">Edit</a>
-                  
-                  <form method="POST" action="posts.php?action=delete&id=<?php echo (int)$p['id']; ?>" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to permanently delete this post?');">
-                    <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                  </form>
+                  <div class="btn-action-group">
+                    <a href="posts.php?action=edit&id=<?php echo (int)$p['id']; ?>" class="btn btn-edit btn-sm">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                      Edit
+                    </a>
+                    
+                    <form method="POST" action="posts.php?action=delete&id=<?php echo (int)$p['id']; ?>" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to permanently delete this post?');">
+                      <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
+                      <button type="submit" class="btn btn-danger btn-sm">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             <?php endforeach; ?>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F6EFFB"/>
+      <stop offset="100%" stop-color="#E7D8F0"/>
+    </linearGradient>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B2594"/>
+      <stop offset="100%" stop-color="#5B176F"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="30" fill="url(#avatarGrad)"/>
+  <!-- Head -->
+  <circle cx="100" cy="72" r="32" fill="url(#iconGrad)"/>
+  <!-- Body/Shoulders -->
+  <path d="M44 162 C44 122 70 114 100 114 C130 114 156 122 156 162 Z" fill="url(#iconGrad)"/>
+  <!-- Stethoscope / Medical Collar Accent -->
+  <path d="M85 114 C85 130 92 142 100 142 C108 142 115 130 115 114" stroke="#FAF5FD" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <circle cx="100" cy="146" r="4" fill="#FAF5FD"/>
+</svg>
