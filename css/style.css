@@ -4867,21 +4867,22 @@ body.ai-widget-open .floating-whatsapp {
 /* ============================================================================
    INDIAN MULTILINGUAL SYSTEM & SEARCHABLE LANGUAGE SELECTOR
    ============================================================================ */
-.lang-selector-wrap {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  z-index: 105;
+.lang-selector-wrap,
+.lang-selector-btn,
+#langSelectorBtn,
+.mmenu__lang-box,
+#mobileLangBtn {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
 }
-
-.lang-selector-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(91, 23, 111, 0.2);
-  border-radius: 999px;
-  padding: 6px 14px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;

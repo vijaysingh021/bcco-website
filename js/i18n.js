@@ -2941,8 +2941,10 @@
 
   // Run on DOM ready
   function init() {
+    // Purge any language button elements from DOM
+    document.querySelectorAll('.lang-selector-wrap, .lang-selector-btn, #langSelectorBtn, .mmenu__lang-box, #mobileLangBtn').forEach(el => el.remove());
+
     createLanguageSelectorModal();
-    injectNavbarButtons();
     annotateExistingDom();
 
     const activeLang = getCurrentLanguage();
