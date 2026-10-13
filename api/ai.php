@@ -131,3 +131,4 @@ echo json_encode([
     'answer' => "Cancer care requires timely medical evaluation by a certified surgical, medical, or radiation oncologist. For personalized guidance on diagnosis, staging, treatment options, or financial aid in Bihar, please contact the **Bihar Cancer Care Organisation helpline at +91 94318 93358** or visit our Patna center.",
     'source' => 'BCCO Care Advisory'
 ]);
+
