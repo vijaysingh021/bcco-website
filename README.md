@@ -106,3 +106,14 @@ The following official production values have been integrated:
 - **Statutory Details**: PAN `AAQAB0546B`, CSR Registration `CSR00107875`, `12A and 80G Certified`.
 - **Donation Details**: Account No. `44908340531`, IFSC `SBIN0009004`, UPI `biharcancercareorganisation@sbi`.
 - **Pending Verification**: Verified board/committee member profiles, client-specific impact counter statistics (`data-count`), and partner endorsement logos.
+
+---
+
+## Contributing
+
+We welcome community contributions to support cancer awareness in Bihar! Please review our [Contributing Guidelines](CONTRIBUTING.md) for local setup, commit conventions, and guidelines.
+
+To ensure your GitHub commits appear on your GitHub profile contribution graph:
+1. Make sure your local commit email (`git config user.email`) is added to your GitHub account under [GitHub Email Settings](https://github.com/settings/emails).
+2. If this repository is private, enable **Private contributions** on your GitHub profile page under **Contribution settings**.
+
