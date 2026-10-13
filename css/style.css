@@ -203,12 +203,16 @@ section[id] {
 }
 
 /* ============ LAYOUT / TYPOGRAPHY ============ */
-.container {
-  width: min(var(--container), 100% - 48px);
+.container,
+.container--wide {
   margin-inline: auto;
+  box-sizing: border-box;
+}
+.container {
+  width: min(var(--container), calc(100% - clamp(32px, 5vw, 72px)));
 }
 .container--wide {
-  width: min(1400px, 100% - 48px);
+  width: min(1360px, calc(100% - clamp(36px, 6vw, 96px)));
 }
 .section {
   padding-block: var(--sec);
@@ -888,6 +892,7 @@ body.menu-open {
   align-items: center;
   padding-top: calc(var(--nav-h) + 56px);
   padding-bottom: 150px;
+  padding-inline: clamp(16px, 2.5vw, 32px);
 }
 .hero__title {
   font-family: var(--fh);
@@ -4302,7 +4307,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 }
 
 @media (max-width: 480px) {
-  .container, .container--wide { width: min(var(--container), calc(100% - 24px)); }
+  .container, .container--wide { width: min(var(--container), calc(100% - 32px)); }
   .nav__inner { padding: 12px 14px; gap: 10px; }
   .hero__inner { padding-top: calc(var(--nav-h) + 36px); }
   .hero__card--tl { right: 0; left: auto; max-width: calc(100% - 20px); }
@@ -4317,7 +4322,7 @@ html.has-cursor input, html.has-cursor textarea, html.has-cursor select, html.ha
 }
 
 @media (max-width: 360px) {
-  .container, .container--wide { width: calc(100% - 16px); }
+  .container, .container--wide { width: calc(100% - 24px); }
   .nav__inner { padding: 10px 8px; gap: 6px; }
   .brand img, .brand-img { max-width: 120px; height: 32px; }
   .nav__actions { gap: 6px; }
